@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>vaadin-upload adding files tests</title>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../test-fixture/test-fixture-mocha.js"></script>
+  <link rel="import" href="common.html">
+  <script src="common.js"></script>
+  <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+</head>
+
+<body>
+
+  <test-fixture id="upload">
+    <template>
+      <vaadin-upload></vaadin-upload>
+    </template>
+  </test-fixture>
+
+  <script>
+    describe('adding files', function() {
+      var upload;
+
+      beforeEach(function() {
+        upload = fixture('upload');
+      });
+
+      describe('with button', function() {
+
+        it('should open file dialog by click', function(done) {
+          upload.$.fileInput.addEventListener('click', function() {
+            done();
+          });
+
+          MockInteractions.downAndUp(upload.$.addFiles);
+        });
+
+        it('should fire `file-add` event after dialog', function(done) {
+          upload.addEventListener('file-add', function(event) {
+            expect(event.detail.file).to.be.an.instanceof(Blob);
+            done();
+          });
+
+          // TODO: wire createFile fabrique here
+          var fakeFileInstance = new Blob([]);
+
+          // We can't simply assign `files` property of input[type="file"].
+          // Tweaking __proto__ to make it assignable below.
+          upload.$.fileInput.__proto__ = HTMLElement.prototype;
+          upload.$.fileInput.files = [fakeFileInstance];
+
+          var e = document.createEvent('HTMLEvents');
+          e.initEvent('change', false, true);
+          upload.$.fileInput.dispatchEvent(e);
+        });
+
+      });
+
+    });
+  </script>
+
+</body>
+
+</html>
