@@ -40,6 +40,12 @@ Example:
       method: {
         type: String,
         value: 'POST'
+      },
+      errorHandler: {
+        type: Function,
+        value: function() {
+          return function() {}
+        }
       }
     },
 
@@ -48,29 +54,95 @@ Example:
       return new XMLHttpRequest();
     },
 
+    _configureXhr: function(xhr) {
+      if (typeof this.headers == 'string') {
+        try {
+          this.headers = JSON.parse(this.headers);
+        } catch (e) {
+          this.headers = undefined;
+        }
+      }
+      for (key in this.headers) {
+        xhr.setRequestHeader(key, this.headers[key]);
+      }
+      if (this.timeout) {
+        xhr.timeout = this.timeout;
+      }
+    },
+
     _uploadFile: function(file) {
+      var ini = new Date().getTime();
       var xhr = file.xhr = this._createXhr();
-      console.log("Uploading file: ", file.name);
+      var stalledId;
+
+      // onprogress is called always after onreadystatechange
       xhr.upload.onprogress = function(e) {
-        console.log("Progress", e);
+        console.log("progress", e.loaded, e.total);
+        clearTimeout(stalledId);
+
+        last = new Date().getTime();
+        var ellapsed = (last - ini) / 1000;
+        var done = e.loaded, total = e.total, progress = ~~(done/total*100);
+
+        file.loaded = done;
+        file.progress = progress;
+        file.status = file.totalStr + " (" + file.progress + "%)" ;
+        file.indeterminate = done <= 0 || done >= total, true;
+
+        if (progress < 100) {
+          file.remaining = 1 + ~~(ellapsed * (100 / progress - 1));
+          file.speed = ~~(total / ellapsed / 1024);
+          file.totalStr = total > (1024*1024) ? ((~~(total/1024/1024*10)/10) + " MB") : (~~(total/1024) + " KB");
+          file.doneStr = done > (1024*1024) ? ((~~(done/1024/1024*10)/10) + " MB") : (~~(done/1024) + " KB");
+          file.status += " about " + file.remaining + " seconds remaining.";
+        } else {
+          file.status = "Processing file ...";
+          file.uploading = false;
+        }
+        this.fire("upload-progress", {file: file, xhr: xhr});
+
+        stalledId = setTimeout(function() {
+          file.status = "Stalled.";
+        }.bind(this), 2000);
+
       }.bind(this);
 
-      var url = this.target;
-      xhr.open(this.method, url, true);
-
+      // More reliable than xhr.onload
       xhr.onreadystatechange = function(e) {
-        // console.log(xhr.readyState, xhr.status, xhr.responseText);
-        if (xhr.readyState == 4 && xhr.status == 200) {
-          console.log("Uploaded file: ", file.name, xhr.responseText);
-          this.fire("file-uploaded", {xhr: xhr, file: file});
+        if (xhr.readyState == 4) {
+          clearTimeout(stalledId);
+          file.indeterminate = file.uploading = file.status = false;
+          if (file.abort) {
+            file.error = file.complete = file.progress = false;
+            return;
+          }
+          var error = this.errorHandler(file, xhr);
+          if (!error) {
+            if (xhr.status == 0) error = 'Server Unavailable';
+            else if (xhr.status > 500) error = 'Unexpected Server Error';
+            else if (xhr.status > 400) error = 'Forbiden';
+          }
+          file.error = error;
+          file.complete = !error;
+          this.fire("upload-" + (error ? "error" : "success"), {file: file, xhr: xhr});
         }
       }.bind(this);
+
+      file.status = "Connecting ...";
+      file.indeterminate = true;
+      file.abort = undefined;
+      file.uploading = true;
+      this.fire('upload-start', {file: file, xhr: xhr});
 
       var formData = new FormData();
       formData.append("file", file, file.name);
 
+      var url = this.target.replace("<name>", file.name);
+      xhr.open(this.method, url, true);
+      this._configureXhr(xhr)
       xhr.send(formData);
-    }
+    },
+
   });
 
 </script>
