@@ -27,8 +27,17 @@ Example:
     <style>
       :host {
         @apply(--layout-vertical);
+        display: block;
+        border: 1px dashed;
+        border-color: var(--divider-color,  #666);
+        border-radius: 2px;
+        padding: 16px;
+        text-align: center;
       }
-
+      :host[dragover] {
+        border-color: var(--primary-color, #03A9F4);
+        opacity: 0.7;
+      }
       #buttons {
         @apply(--layout-horizontal);
         @apply(--layout-center-justified);
@@ -41,7 +50,9 @@ Example:
         color: #fff;
       }
     </style>
-
+    <div id="dropLabel">
+      <content></content>
+    </div>
     <div id="buttons">
       <paper-button id="addFiles" raised on-tap="_onAddFilesClick">Add File(s)</paper-button>
     </div>
@@ -57,6 +68,11 @@ Example:
 
     is: 'vaadin-upload',
 
+    /**
+     * Fired when a file is added for uploading.
+     *
+     * @event file-add
+     */
     properties: {
       target: {
         type: String
@@ -64,14 +80,37 @@ Example:
       method: {
         type: String,
         value: 'POST'
+      },
+      dragover: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true
       }
     },
 
-    /**
-     * Fired when a file is added for uploading.
-     *
-     * @event file-add
-     */
+    listeners: {
+      dragover: '_onDragover',
+      dragleave: '_onDragleave',
+      drop: '_onDrop'
+    },
+
+    _onDragover: function(event) {
+      event.preventDefault();
+      this.dragover = true;
+    },
+
+    _onDragleave: function(event) {
+      event.preventDefault();
+      this.dragover = false;
+    },
+
+    _onDrop: function(event) {
+      event.preventDefault();
+      this.dragover = false;
+      Array.prototype.forEach.call(event.dataTransfer.files, function(file) {
+        this._addFile(file);
+      }.bind(this));
+    },
 
     // Override for tests
     _createXhr: function() {
