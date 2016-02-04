@@ -222,7 +222,13 @@ Example:
       var formData = new FormData();
       formData.append('file', file, file.name);
 
-      var url = this.target.replace('%name%', file.name);
+      var url = this.target;
+      var evt = this.fire('upload-before', {file: file, xhr: xhr, url: url}, {cancelable: true});
+      if (evt.defaultPrevented) {
+        return;
+      }
+
+      url = evt.detail.url;
       xhr.open(this.method, url, true);
       this._configureXhr(xhr);
 
@@ -271,8 +277,18 @@ Example:
    *  @param {Object} detail.file the file added
    */
   /**
+   * Fired before the XHR is opened. Could be used for changing the request
+   * URL. If the default is prevented, then XHR would not be opened.
+   *
+   * @event upload-before
+   * @param {Object} detail
+   *  @param {Object} detail.xhr the xhr
+   *  @param {Object} detail.file the file being uploaded
+   *  @param {Object} detail.url the upload request URL, initialized with `target` property value
+   */
+  /**
    * Fired when the XHR has been opened but not sent yet.
-   * useful to change some parameters like headers, etc.
+   * Useful to change some parameters like headers, etc.
    * If the event is preventDefault `vaadin-upload` will not send the
    * request allowing the user to do something on his own.
    *
