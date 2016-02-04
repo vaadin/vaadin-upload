@@ -7,6 +7,9 @@ var touchDevice = (function() {
     return false;
   }
 })();
+var ie = navigator.userAgent.indexOf('Trident/') >= 0;
+var edge = navigator.userAgent.indexOf('Edge/') >= 0;
+var ieOrEdge = ie || edge;
 
 var describeSkipIf = function(bool, title, callback) {
   bool = typeof bool == 'function' ? bool() : bool;
