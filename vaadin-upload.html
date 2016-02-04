@@ -159,8 +159,9 @@ Example:
           // preventing default, changing the xhr, or setting the file error
           var evt = this.fire('upload-response', {file: file, xhr: xhr});
           if (evt.defaultPrevented) {
-            file.error = file.error || 'Unknown Error';
-          } else if (xhr.status === 0) {
+            return;
+          }
+          if (xhr.status === 0) {
             file.error = 'Server Unavailable';
           } else if (xhr.status > 500) {
             file.error = 'Unexpected Server Error';
@@ -246,9 +247,12 @@ Example:
   /**
    * Fired when we have the actual server response, and before the component
    * analises it. It's useful for developers to make the upload fail depending
-   * on the server response. If the event is preventDefault the upload will
-   * fail. Additionally the developer could change the XHR object or set
-   * file properties like file.error.
+   * on the server response. If the event is preventDefault the vaadin-upload
+   * will return allowing the user to do something on his own like retry the
+   * upload, etc. since he has full access to the `xhr` and `file` objects.
+   * Otherwise, if the event is not prevented default `vaadin-upload` continues
+   * with the normal workflow checking the `xhr.status` and `file.error`
+   * which also might be modified by the user to force a customised response.
    *
    * @event upload-response
    * @param {Object} detail
