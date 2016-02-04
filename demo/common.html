@@ -1,6 +1,7 @@
 <!-- Common imports for all examples -->
 <link rel="stylesheet" href="../../elements-demo-resources/demo.css">
 <script src="../../elements-demo-resources/ga.js"></script>
+<script src="../../mock-http-request/lib/mock.js"></script>
 
 <!-- Common JS code for all examples -->
 <script>
@@ -24,5 +25,38 @@
       link.href = base + path;
       document.head.appendChild(link);
     }
+  });
+
+
+  // Use MockHttpRequest in demos
+
+  function mockXhrGenerator(file) {
+    var xhr = new MockHttpRequest();
+    xhr.upload = {};
+    xhr.onsend = function() {
+      var total = file && file.size || 1024, done = 0;
+      function start() {
+        setTimeout(progress, 1000);
+      }
+      function progress() {
+        xhr.upload.onprogress({total: total, loaded: done});
+        if (done < total) {
+          setTimeout(progress, 200);
+          done += 254000;
+        } else {
+          setTimeout(finish, 1000);
+        }
+      }
+      function finish() {
+        xhr.receive(200, '{"message":"OK"}');
+      }
+      start();
+    };
+    return xhr;
+  }
+
+  window.addEventListener('WebComponentsReady', function() {
+    // Monkey-patch vaadin-upload prototype to use MockHttpRequest
+    Object.getPrototypeOf(document.createElement('vaadin-upload'))._createXhr = mockXhrGenerator;
   });
 </script>
