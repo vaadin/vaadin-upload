@@ -106,15 +106,15 @@
           upload._uploadFile(file);
         });
 
-        it('should fire the upload-before with configurable request `url` in event.detail', function(done) {
+        it('should fire the upload-before with configurable request url', function(done) {
           upload.addEventListener('upload-before', function(e) {
             expect(e.detail.file).to.be.ok;
             expect(e.detail.xhr).to.be.ok;
             expect(e.detail.xhr.readyState).to.equal(0);
-            expect(e.detail.url).to.be.ok;
+            expect(e.detail.file.uploadTarget).to.be.ok;
 
             var modifiedUrl = 'http://example.com/modified/url';
-            e.detail.url = modifiedUrl;
+            e.detail.file.uploadTarget = modifiedUrl;
 
             // Monkey-patch xhr.open to check the url param passed into
             var originalOpen = e.detail.xhr.open;

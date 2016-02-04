@@ -222,14 +222,13 @@ Example:
       var formData = new FormData();
       formData.append('file', file, file.name);
 
-      var url = this.target;
-      var evt = this.fire('upload-before', {file: file, xhr: xhr, url: url}, {cancelable: true});
+      file.uploadTarget = this.target;
+      var evt = this.fire('upload-before', {file: file, xhr: xhr}, {cancelable: true});
       if (evt.defaultPrevented) {
         return;
       }
 
-      url = evt.detail.url;
-      xhr.open(this.method, url, true);
+      xhr.open(this.method, file.uploadTarget, true);
       this._configureXhr(xhr);
 
       // Custom listener could modify the xhr just before sending it
@@ -284,7 +283,7 @@ Example:
    * @param {Object} detail
    *  @param {Object} detail.xhr the xhr
    *  @param {Object} detail.file the file being uploaded
-   *  @param {Object} detail.url the upload request URL, initialized with `target` property value
+   *   @param {Object} detail.file.uploadTarget the upload request URL, initialized with the value of vaadin-upload `target` property
    */
   /**
    * Fired when the XHR has been opened but not sent yet.
