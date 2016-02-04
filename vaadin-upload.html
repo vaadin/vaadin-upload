@@ -75,7 +75,8 @@ Example:
        * Server URL.
        */
       target: {
-        type: String
+        type: String,
+        value: ''
       },
       /**
        * HTTP Method used to send the files.
@@ -221,7 +222,7 @@ Example:
       var formData = new FormData();
       formData.append('file', file, file.name);
 
-      var url = (this.target || '').replace('%name%', file.name);
+      var url = this.target.replace('%name%', file.name);
       xhr.open(this.method, url, true);
       this._configureXhr(xhr);
 
