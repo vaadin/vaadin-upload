@@ -125,6 +125,16 @@
           expect(file.xhr.readyState).to.equal(0);
         });
 
+        it('should fire upload-request event', function(done) {
+          upload.addEventListener('upload-request', function(e) {
+            expect(e.detail.file).to.be.ok;
+            expect(e.detail.xhr).to.be.ok;
+            expect(e.detail.xhr.readyState).to.equal(1);
+            done();
+          });
+          upload._uploadFile(file);
+        });
+
         it('should do nothing if a `upload-request` listener prevents default', function(done) {
           upload.addEventListener('upload-request', function(e) {
             e.preventDefault();
