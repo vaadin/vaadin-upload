@@ -10,9 +10,22 @@ This program is available under Apache License Version 2.0, available at https:/
 Example:
 
 ```html
+<vaadin-upload></vaadin-upload>
+```
+
+### Custom File List Item Template
+
+In order to replace `<vaadin-upload-file>` with your file representation,
+add a `<template class="file">...</template>` to the light DOM:
+
+```html
 <vaadin-upload>
+  <template class="file">
+    [[file.name]]: [[file.status]]
+  </template>
 </vaadin-upload>
 ```
+
 
 @element vaadin-upload
 @demo demo/
@@ -21,6 +34,7 @@ Example:
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="vaadin-upload-file.html">
 
 <dom-module id="vaadin-upload">
   <template>
@@ -40,6 +54,10 @@ Example:
         opacity: 0.7;
       }
 
+      #fileList {
+        text-align: left;
+      }
+
       #buttons {
         @apply(--layout-horizontal);
         @apply(--layout-center-justified);
@@ -52,15 +70,21 @@ Example:
         color: #fff;
       }
     </style>
+
+    <template id="defaultFileTemplate">
+      <vaadin-upload-file file="[[file]]"></vaadin-upload-file>
+    </template>
+    <div id="fileList">
+      <template id="fileListRepeater" is="dom-repeat" items="[[files]]" as="file"></template>
+    </div>
+    <content></content>
     <div id="dropLabel">
-      <content>Drop files here ...</content>
+      <content select=".drop-label">Drop files here ...</content>
     </div>
     <div id="buttons">
       <paper-button id="addFiles" raised on-tap="_onAddFilesClick">Add File(s)</paper-button>
     </div>
-
     <input type="file" id="fileInput" on-change="_onFileInputChange" hidden multiple>
-
   </template>
 </dom-module>
 
@@ -107,6 +131,15 @@ Example:
         type: Boolean,
         value: false,
         reflectToAttribute: true
+      },
+      /**
+       * File list
+       */
+      files: {
+        type: Array,
+        value: function() {
+          return [];
+        }
       }
     },
 
@@ -114,6 +147,10 @@ Example:
       dragover: '_onDragover',
       dragleave: '_onDragleave',
       drop: '_onDrop'
+    },
+
+    attached: function() {
+      this._templatizeFileList();
     },
 
     _onDragover: function(event) {
@@ -222,7 +259,7 @@ Example:
       var formData = new FormData();
       formData.append('file', file, file.name);
 
-      file.uploadTarget = this.target;
+      file.uploadTarget = this.target || '';
       var evt = this.fire('upload-before', {file: file, xhr: xhr}, {cancelable: true});
       if (evt.defaultPrevented) {
         return;
@@ -252,6 +289,7 @@ Example:
      * @param {File} file File being added
      */
     _addFile: function(file) {
+      this.push('files', file);
       this.fire('file-add', {file: file});
       this._uploadFile(file);
     },
@@ -266,6 +304,13 @@ Example:
 
     _onFileInputChange: function(event) {
       Array.prototype.forEach.call(event.target.files, this._addFile.bind(this));
+    },
+
+    _templatizeFileList: function() {
+      var template = Polymer.dom(this).querySelector('.file') || this.$.defaultFileTemplate;
+      this.$.fileListRepeater.templatize(template);
+      Polymer.Bind.prepareModel(this.$.fileListRepeater);
+      Polymer.Base.prepareModelNotifyPath(this.$.fileListRepeater);
     }
   });
   /**
