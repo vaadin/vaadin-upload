@@ -146,7 +146,9 @@ add a `<template class="file">...</template>` to the light DOM:
     listeners: {
       dragover: '_onDragover',
       dragleave: '_onDragleave',
-      drop: '_onDrop'
+      drop: '_onDrop',
+      'upload-retry': '_onUploadRetry',
+      'upload-abort': '_onUploadAbort'
     },
 
     attached: function() {
@@ -289,6 +291,27 @@ add a `<template class="file">...</template>` to the light DOM:
       xhr.send(formData);
     },
 
+    _retryFileUpload: function(file) {
+      var evt = this.fire('upload-retry', {file: file, xhr: file.xhr}, {cancelable: true});
+      if (evt.defaultPrevented) {
+        return;
+      }
+
+      this.async(this._uploadFile.bind(this, file));
+    },
+
+    _abortFileUpload: function(file) {
+      var evt = this.fire('upload-abort', {file: file, xhr: file.xhr}, {cancelable: true});
+      if (evt.defaultPrevented) {
+        return;
+      }
+
+      if (file.xhr) {
+        file.xhr.abort();
+      }
+      this._removeFile(file);
+    },
+
     _notifyFileChanges: function(file) {
       var p = 'files.' + this.files.indexOf(file) + '.';
       for (var i in file) {
@@ -310,6 +333,19 @@ add a `<template class="file">...</template>` to the light DOM:
       this._uploadFile(file);
     },
 
+    /**
+     * Remove file from upload list. Called internally if file upload was canceled.
+     * @param {File} file File to remove
+     */
+    _removeFile: function(file) {
+      var evt = this.fire('file-remove', {file: file}, {cancelable: true});
+      if (evt.defaultPrevented) {
+        return;
+      }
+
+      this.splice('files', this.files.indexOf(file), 1);
+    },
+
     _onAddFilesClick: function(event) {
       if (document.createEvent) {
         var ev = document.createEvent('MouseEvents');
@@ -327,7 +363,28 @@ add a `<template class="file">...</template>` to the light DOM:
       this.$.fileListRepeater.templatize(template);
       Polymer.Bind.prepareModel(this.$.fileListRepeater);
       Polymer.Base.prepareModelNotifyPath(this.$.fileListRepeater);
-    }
+    },
+
+    _onUploadRetry: function(event) {
+      // Skip handling if abort event is fired in upload
+      var target = Polymer.dom(event).rootTarget;
+      if (target !== this) {
+        var file = target.file;
+        this._retryFileUpload(file);
+      }
+    },
+
+    _onUploadAbort: function(event) {
+      event.stopPropagation();
+
+      // Skip handling if abort event is fired in upload
+      var target = Polymer.dom(event).rootTarget;
+      if (target !== this) {
+        var file = target.file;
+        this._abortFileUpload(file);
+      }
+    },
+
   });
   /**
    * Fired when a file is added for uploading.
