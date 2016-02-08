@@ -66,7 +66,7 @@ add a `<template class="file">...</template>` to the light DOM:
       }
 
       paper-button {
-        background-color: var(--primary-color, #03A9F4);
+        background-color: var(--default-primary-color, #03A9F4);
         color: #fff;
       }
     </style>
@@ -84,7 +84,7 @@ add a `<template class="file">...</template>` to the light DOM:
     <div id="buttons">
       <paper-button id="addFiles" raised on-tap="_onAddFilesClick">Add File(s)</paper-button>
     </div>
-    <input type="file" id="fileInput" on-change="_onFileInputChange" hidden multiple>
+    <input type="file" id="fileInput" on-change="_onFileInputChange" hidden multiple="{{multiple}}" accept="{{accept}}">
   </template>
 </dom-module>
 
@@ -140,7 +140,22 @@ add a `<template class="file">...</template>` to the light DOM:
         value: function() {
           return [];
         }
-      }
+      },
+      /**
+       * Whether or not to allow multiple files to be uploaded.
+      */
+      multiple: {
+        type: Boolean,
+        value: true
+      },
+      /**
+       * Specifies the types of files that the server accepts.
+       * Syntax: file_extension|audio/*|video/*|image/*|media_type
+       */
+      accept: {
+        type: String,
+        value: true
+      },
     },
 
     listeners: {
@@ -299,15 +314,15 @@ add a `<template class="file">...</template>` to the light DOM:
     },
 
     _abortFileUpload: function(file) {
-      var evt = this.fire('upload-abort', {file: file, xhr: file.xhr}, {cancelable: true});
-      if (!evt.defaultPrevented) {
-        if (file.xhr) {
-          file.abort = true;
-          file.xhr.abort();
-        }
-        this._removeFile(file);
-      }
-    },
+       var evt = this.fire('upload-abort', {file: file, xhr: file.xhr}, {cancelable: true});
+       if (!evt.defaultPrevented) {
+         if (file.xhr) {
+           file.abort = true;
+           file.xhr.abort();
+         }
+         this._removeFile(file);
+       }
+     },
 
     _notifyFileChanges: function(file) {
       var p = 'files.' + this.files.indexOf(file) + '.';
