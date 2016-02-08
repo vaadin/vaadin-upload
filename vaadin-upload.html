@@ -143,7 +143,7 @@ add a `<template class="file">...</template>` to the light DOM:
     <div id="buttons">
       <paper-button id="addFiles" on-tap="_onAddFilesClick">Add File(s)</paper-button>
     </div>
-    <input type="file" id="fileInput" on-change="_onFileInputChange" hidden multiple>
+    <input type="file" id="fileInput" on-change="_onFileInputChange" hidden multiple$="[[_isMultiple()]]" accept="{{accept}}">
   </template>
 </dom-module>
 
@@ -199,7 +199,38 @@ add a `<template class="file">...</template>` to the light DOM:
         value: function() {
           return [];
         }
-      }
+      },
+      /**
+       * Specifies whether the file selection popup is configured to select
+       * multiple files.
+       */
+       noMultiple: {
+         type: Boolean,
+         value: false
+       },
+      /**
+       * Limit of files to upload, by default it is unlimited. If the value is
+       * one, noMultiple is true.
+       */
+       maxFiles: {
+         type: Number,
+         value: 0
+       },
+      /**
+       * Specifies the types of files that the server accepts.
+       * Syntax: file_extension|audio/*|video/*|image/*|media_type
+       */
+      accept: {
+        type: String
+      },
+      /**
+       * Specifies the maximum file size allowed to upload. Default is
+       * unlimited.
+       */
+      maxFileSize: {
+        type: Number,
+        value: 0
+      },
     },
 
     listeners: {
@@ -212,6 +243,10 @@ add a `<template class="file">...</template>` to the light DOM:
 
     attached: function() {
       this._templatizeFileList();
+    },
+
+    _isMultiple: function() {
+      return !this.noMultiple || this.maxFiles != 1;
     },
 
     _dragRippleAction: function(action, event) {
@@ -373,15 +408,15 @@ add a `<template class="file">...</template>` to the light DOM:
     },
 
     _abortFileUpload: function(file) {
-      var evt = this.fire('upload-abort', {file: file, xhr: file.xhr}, {cancelable: true});
-      if (!evt.defaultPrevented) {
-        if (file.xhr) {
-          file.abort = true;
-          file.xhr.abort();
-        }
-        this._removeFile(file);
-      }
-    },
+       var evt = this.fire('upload-abort', {file: file, xhr: file.xhr}, {cancelable: true});
+       if (!evt.defaultPrevented) {
+         if (file.xhr) {
+           file.abort = true;
+           file.xhr.abort();
+         }
+         this._removeFile(file);
+       }
+     },
 
     _notifyFileChanges: function(file) {
       var p = 'files.' + this.files.indexOf(file) + '.';
@@ -398,6 +433,17 @@ add a `<template class="file">...</template>` to the light DOM:
      * @param {File} file File being added
      */
     _addFile: function(file) {
+      if (this.maxFiles && this.files.length >= this.maxFiles) {
+        return;
+      }
+      if (this.maxFileSize && file.size > this.maxFileSize) {
+        return;
+      }
+      var mimeType = file.type ? file.type.match(/^[^\/]*\//)[0] : null;
+      var fileType = file.name.match(/\.[^\.]*$|$/)[0];
+      if (this.accept && !(this.accept.indexOf(mimeType) > -1 || this.accept.indexOf(fileType) > -1)) {
+        return;
+      }
       file.loaded = 0;
       this.push('files', file);
       this.fire('file-add', {file: file});
