@@ -42,11 +42,14 @@ add a `<template class="file">...</template>` to the light DOM:
       :host {
         @apply(--layout-vertical);
         display: block;
+        padding: 16px;
+        text-align: center;
+      }
+
+      :host:not([mobile]) {
         border: 1px dashed;
         border-color: var(--divider-color,  #666);
         border-radius: 2px;
-        padding: 16px;
-        text-align: center;
       }
 
       :host[dragover] {
@@ -71,7 +74,7 @@ add a `<template class="file">...</template>` to the light DOM:
       }
     </style>
 
-    <div id="dropLabel">
+    <div id="dropLabel" hidden$="[[mobile]]">
       <content select=".drop-label">Drop files here ...</content>
     </div>
     <template id="defaultFileTemplate">
@@ -95,6 +98,17 @@ add a `<template class="file">...</template>` to the light DOM:
     is: 'vaadin-upload',
 
     properties: {
+      mobile: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: function() {
+          try {
+            return !!document.createEvent('TouchEvent');
+          } catch (e) {
+            return false;
+          }
+        },
+      },
       /**
        * Server URL.
        */
@@ -166,9 +180,11 @@ add a `<template class="file">...</template>` to the light DOM:
     },
 
     _onDrop: function(event) {
-      event.preventDefault();
-      this.dragover = false;
-      Array.prototype.forEach.call(event.dataTransfer.files, this._addFile.bind(this));
+      if (!mobile) {
+        event.preventDefault();
+        this.dragover = false;
+        Array.prototype.forEach.call(event.dataTransfer.files, this._addFile.bind(this));
+      }
     },
 
     // Override for tests
