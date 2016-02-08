@@ -66,14 +66,11 @@ add a `<template class="file">...</template>` to the light DOM:
       }
 
       paper-button {
-        background-color: var(--primary-color, #03A9F4);
+        background-color: var(--default-primary-color, #03A9F4);
         color: #fff;
       }
     </style>
 
-    <div id="dropLabel">
-      <content select=".drop-label">Drop files here ...</content>
-    </div>
     <template id="defaultFileTemplate">
       <vaadin-upload-file file="[[file]]"></vaadin-upload-file>
     </template>
@@ -81,10 +78,13 @@ add a `<template class="file">...</template>` to the light DOM:
       <template id="fileListRepeater" is="dom-repeat" items="[[files]]" as="file"></template>
     </div>
     <content></content>
+    <div id="dropLabel">
+      <content select=".drop-label">Drop files here ...</content>
+    </div>
     <div id="buttons">
       <paper-button id="addFiles" raised on-tap="_onAddFilesClick">Add File(s)</paper-button>
     </div>
-    <input type="file" id="fileInput" on-change="_onFileInputChange" hidden multiple>
+    <input type="file" id="fileInput" on-change="_onFileInputChange" hidden multiple="{{multiple}}" accept="{{accept}}">
   </template>
 </dom-module>
 
@@ -140,15 +140,30 @@ add a `<template class="file">...</template>` to the light DOM:
         value: function() {
           return [];
         }
-      }
+      },
+      /**
+       * Whether or not to allow multiple files to be uploaded.
+      */
+      multiple: {
+        type: Boolean,
+        value: true
+      },
+      /**
+       * Specifies the types of files that the server accepts.
+       * Syntax: file_extension|audio/*|video/*|image/*|media_type
+       */
+      accept: {
+        type: String,
+        value: true
+      },
     },
 
     listeners: {
       dragover: '_onDragover',
       dragleave: '_onDragleave',
       drop: '_onDrop',
-      'file-retry': '_onFileRetry',
-      'file-abort': '_onFileAbort'
+      'upload-retry': '_onUploadRetry',
+      'upload-abort': '_onUploadAbort'
     },
 
     attached: function() {
@@ -292,21 +307,23 @@ add a `<template class="file">...</template>` to the light DOM:
     },
 
     _retryFileUpload: function(file) {
+
       var evt = this.fire('upload-retry', {file: file, xhr: file.xhr}, {cancelable: true});
       if (!evt.defaultPrevented) {
         this.async(this._uploadFile.bind(this, file));
       }
+
     },
 
     _abortFileUpload: function(file) {
-      var evt = this.fire('upload-abort', {file: file, xhr: file.xhr}, {cancelable: true});
-      if (!evt.defaultPrevented) {
-        if (file.xhr) {
-          file.abort = true;
-          file.xhr.abort();
-        }
-        this._removeFile(file);
+      if (!this.fire('upload-abort', {file: file, xhr: file.xhr}, {cancelable: true}).defaultPrevented) {
+        return;
       }
+
+      if (file.xhr) {
+        file.xhr.abort();
+      }
+      this._removeFile(file);
     },
 
     _notifyFileChanges: function(file) {
@@ -336,9 +353,11 @@ add a `<template class="file">...</template>` to the light DOM:
      */
     _removeFile: function(file) {
       var evt = this.fire('file-remove', {file: file}, {cancelable: true});
-      if (!evt.defaultPrevented) {
-        this.splice('files', this.files.indexOf(file), 1);
+      if (evt.defaultPrevented) {
+        return;
       }
+
+      this.splice('files', this.files.indexOf(file), 1);
     },
 
     _onAddFilesClick: function(event) {
@@ -360,12 +379,22 @@ add a `<template class="file">...</template>` to the light DOM:
       Polymer.Base.prepareModelNotifyPath(this.$.fileListRepeater);
     },
 
-    _onFileRetry: function(event) {
-      this._retryFileUpload(event.detail.file);
+    _onUploadRetry: function(event) {
+      var file = Polymer.dom(event).rootTarget.file;
+      if (file) {
+        this._retryFileUpload(file);
+      }
     },
 
-    _onFileAbort: function(event) {
-      this._abortFileUpload(event.detail.file);
+    _onUploadAbort: function(event) {
+      event.stopPropagation();
+
+      // Skip handling if abort event is fired in upload
+      var target = Polymer.dom(event).rootTarget;
+      if (target !== this) {
+        var file = target.file;
+        this._abortFileUpload(file);
+      }
     },
 
   });
@@ -375,15 +404,6 @@ add a `<template class="file">...</template>` to the light DOM:
    * @event file-add
    * @param {Object} detail
    *  @param {Object} detail.file the file added
-   */
-  /**
-   * Fired when a file is removed from the file list, e. g. when the file
-   * upload is aborted. If the default is prevented, then the file would not be
-   * removed from the list.
-   *
-   * @event file-remove
-   * @param {Object} detail
-   *  @param {Object} detail.file the file to be removed
    */
   /**
    * Fired before the XHR is opened. Could be used for changing the request
@@ -449,24 +469,6 @@ add a `<template class="file">...</template>` to the light DOM:
    * Fired in case the upload process failed.
    *
    * @event upload-error
-   * @param {Object} detail
-   *  @param {Object} detail.xhr the xhr
-   *  @param {Object} detail.file the file being uploaded
-   */
-  /**
-   * Fired when retry upload is requested. If the default is prevented, then
-   * retry would not be performed.
-   *
-   * @event upload-retry
-   * @param {Object} detail
-   *  @param {Object} detail.xhr the previous upload xhr
-   *  @param {Object} detail.file the file being uploaded
-   */
-  /**
-   * Fired when retry abort is requested. If the default is prevented, then the
-   * file upload would not be aborted.
-   *
-   * @event upload-abort
    * @param {Object} detail
    *  @param {Object} detail.xhr the xhr
    *  @param {Object} detail.file the file being uploaded
