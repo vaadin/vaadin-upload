@@ -45,6 +45,7 @@ add a `<template class="file">...</template>` to the light DOM:
         display: block;
         position: relative;
         text-align: center;
+        overflow: hidden;
       }
 
       :host:not([nodrop]) {
@@ -273,14 +274,50 @@ add a `<template class="file">...</template>` to the light DOM:
     },
 
     _dragRippleAction: function(action, event) {
-      this.$.dragRipple[action]({detail: {x: event.clientX, y: event.clientY}});
+      var rippleActionEvent = {
+        detail: {
+          x: event.clientX,
+          y: event.clientY
+        }
+      };
+
+      if (action == 'down') {
+        this.$.dragRipple.downAction(rippleActionEvent);
+        this.$.dragRipple.holdDown = true;
+
+        // paper-ripple currently has hard Ripple.MAX_RADIUS limit of 300, and
+        // doesn’t expose Ripple constructor or any other means to modify the
+        // limit. Monkey-patching the ripple instance radius calculation to
+        // disable the radius limit.
+        var ripple = this.$.dragRipple.ripples[0];
+        Object.defineProperty(ripple, 'radius', {
+          get: function() {
+            var width2 = this.containerMetrics.width * this.containerMetrics.width;
+            var height2 = this.containerMetrics.height * this.containerMetrics.height;
+            var waveRadius = Math.sqrt(width2 + height2) * 1.1 + 5;
+
+            var duration = 0.9 + 0.2 * (waveRadius / 300);
+            var timeNow = this.mouseInteractionSeconds / duration;
+            var size = waveRadius * (1 - Math.pow(80, -timeNow));
+            return Math.abs(size);
+          }
+        });
+
+        // We have to call upAction after a short timeout as well, otherwise
+        // the ripple animation doesn't end.
+        this.async(function() {
+          this.$.dragRipple.upAction(rippleActionEvent);
+        }, 1);
+      } else {
+        this.$.dragRipple.holdDown = false;
+      }
     },
 
     _onDragover: function(event) {
       event.preventDefault();
       if (!this.dragover) {
+        this._dragRippleAction('down', event);
         this.dragover = true;
-        this._dragRippleAction('downAction', event);
       }
     },
 
@@ -290,8 +327,8 @@ add a `<template class="file">...</template>` to the light DOM:
       if (Polymer.dom(event).rootTarget === this) {
         event.preventDefault();
         if (this.dragover) {
+          this._dragRippleAction('up', event);
           this.dragover = false;
-          this._dragRippleAction('upAction', event);
         }
       }
     },
@@ -299,8 +336,8 @@ add a `<template class="file">...</template>` to the light DOM:
     _onDrop: function(event) {
       if (!this.nodrop) {
         event.preventDefault();
+        this._dragRippleAction('up', event);
         this.dragover = false;
-        this._dragRippleAction('upAction', event);
         Array.prototype.forEach.call(event.dataTransfer.files, this._addFile.bind(this));
       }
     },
