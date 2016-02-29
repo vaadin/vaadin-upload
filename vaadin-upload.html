@@ -1,4 +1,4 @@
-<!-- 
+<!--
 @license
 Copyright (c) 2016 Vaadin Ltd.
 This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
@@ -138,7 +138,7 @@ Custom property | Description | Default
     <div id="dropLabel" hidden$="[[nodrop]]">
       <content select=".drop-label">
         <iron-icon icon="file-upload"></iron-icon>
-        Drop files here...
+        [[_dropFileLabel]]
       </content>
     </div>
     <template id="defaultFileTemplate">
@@ -149,7 +149,7 @@ Custom property | Description | Default
     </div>
     <content></content>
     <div id="buttons">
-      <paper-button id="addFiles" on-tap="_onAddFilesClick">Add File(s)</paper-button>
+      <paper-button id="addFiles" on-tap="_onAddFilesClick">[[_addFileLabel]]</paper-button>
       <paper-button id="cancelAll" on-tap="_onCancelAllClick" hidden$="[[!showCancelAll]]">Cancel all</paper-button>
     </div>
     <input type="file" id="fileInput" on-change="_onFileInputChange" hidden accept="{{accept}}">
@@ -271,6 +271,16 @@ Custom property | Description | Default
         type: Number,
         value: 0
       },
+
+      _addFileLabel: {
+        type: String,
+        value: 'Add Files'
+      },
+
+      _dropFileLabel: {
+        type: String,
+        value: 'Drop files here...'
+      },
     },
 
     listeners: {
@@ -283,6 +293,7 @@ Custom property | Description | Default
 
     attached: function() {
       this._templatizeFileList();
+      this._setCaptions();
     },
 
     _dragRippleAction: function(action, event) {
@@ -587,6 +598,17 @@ Custom property | Description | Default
     _onCancelAllClick: function(event) {
       for (var i = this.files.length; i > 0; --i) {
         this._abortFileUpload(this.files[i - 1]);
+      }
+    },
+
+    _setCaptions: function() {
+      // Show `Add file` or `Add files`
+      if (this.maxFiles === 1) {
+        this._addFileLabel = 'Add File';
+        this._dropFileLabel = 'Drop file here...'
+      } else {
+        this._addFileLabel = 'Add Files';
+        this._dropFileLabel = 'Drop files here...'
       }
     }
 
