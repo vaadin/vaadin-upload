@@ -552,7 +552,7 @@ Custom property | Description | Default
         return;
       }
       file.loaded = 0;
-      this.push('files', file);
+      this.unshift('files', file);
       this.fire('file-add', {file: file});
       this._uploadFile(file);
     },
