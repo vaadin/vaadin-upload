@@ -425,9 +425,9 @@ Custom property | Description | Default
         var done = e.loaded, total = e.total, progress = ~~(done / total * 100);
 
         file.loaded = done;
-        file.progress = progress;
+        file.progress = file.abort ? 0 : progress;
         file.indeterminate = done <= 0 || done >= total, true;
-        if (file.error) {
+        if (file.error || file.abort) {
           file.indeterminate = file.status = undefined;
         } else if (progress < 100) {
           this._setStatus(file, total, done, elapsed, progress);
@@ -517,7 +517,13 @@ Custom property | Description | Default
            file.abort = true;
            file.xhr.abort();
          }
-         this._removeFile(file);
+         if (file.uploading) {
+           setTimeout(function() {
+             this._removeFile(file);
+           }.bind(this), 1000);
+         } else {
+           this._removeFile(file);
+         }
        }
      },
 
