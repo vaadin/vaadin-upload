@@ -533,13 +533,7 @@ Custom property | Description | Default
            file.abort = true;
            file.xhr.abort();
          }
-         if (file.uploading) {
-           setTimeout(function() {
-             this._removeFile(file);
-           }.bind(this), 1000);
-         } else {
-           this._removeFile(file);
-         }
+         this._removeFile(file);
        }
      },
 
@@ -590,7 +584,13 @@ Custom property | Description | Default
     _removeFile: function(file) {
       var evt = this.fire('file-remove', {file: file}, {cancelable: true});
       if (!evt.defaultPrevented) {
-        this.splice('files', this.files.indexOf(file), 1);
+        if (file.uploading) {
+          setTimeout(function() {
+            this.splice('files', this.files.indexOf(file), 1);
+          }.bind(this), 1000);
+        } else {
+          this.splice('files', this.files.indexOf(file), 1);
+        }
       }
     },
 
