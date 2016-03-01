@@ -80,7 +80,7 @@ Custom property | Description | Default
         @apply(--vaadin-upload-file-name);
       }
 
-      #status {
+      #status, #abort {
         @apply(--paper-font-caption);
         color: var(--disabled-text-color, gray);
         @apply(--vaadin-upload-file-status);
@@ -150,6 +150,7 @@ Custom property | Description | Default
         <div id="name">[[file.name]]</div>
         <div id="status" hidden$="[[!file.status]]">[[file.status]]</div>
         <div id="error" hidden$="[[!file.error]]">[[file.error]]</div>
+        <div id="abort" hidden$="[[!file.abort]]">Upload cancelled.</div>
       </div>
 
       <div id="commands">
