@@ -121,10 +121,17 @@ Custom property | Description | Default
 
       #buttons {
         @apply(--layout-horizontal);
-        @apply(--layout-center-justified);
         position: relative;
         margin: 8px 0 0;
         @apply(--vaadin-upload-buttons);
+      }
+
+      :host:not([nodrop]) ::content #buttons {
+        @apply(--layout-center-justified);
+      }
+
+      .flexchild {
+        @apply(--layout-flex);
       }
 
       paper-button {
@@ -141,6 +148,11 @@ Custom property | Description | Default
         [[_dropFileLabel]]
       </content>
     </div>
+    <div id="buttons">
+      <paper-button id="addFiles" on-tap="_onAddFilesClick">[[_addFileLabel]]</paper-button>
+      <div class="flexchild" hidden$="[[!nodrop]]"></div>
+      <paper-button id="cancelAll" on-tap="_onCancelAllClick" hidden$="[[!showCancelAll]]">Cancel all</paper-button>
+    </div>
     <template id="defaultFileTemplate">
       <vaadin-upload-file file="[[file]]"></vaadin-upload-file>
     </template>
@@ -148,10 +160,6 @@ Custom property | Description | Default
       <template id="fileListRepeater" is="dom-repeat" items="[[files]]" as="file"></template>
     </div>
     <content></content>
-    <div id="buttons">
-      <paper-button id="addFiles" on-tap="_onAddFilesClick" disabled="[[_maxFilesAdded(maxFiles, files.length)]]">[[_addFileLabel]]<</paper-button>
-      <paper-button id="cancelAll" on-tap="_onCancelAllClick" hidden$="[[!showCancelAll]]">Cancel all</paper-button>
-    </div>
     <input type="file" id="fileInput" on-change="_onFileInputChange" hidden accept="{{accept}}">
     <paper-ripple id="dragRipple" noink></paper-ripple>
   </template>
