@@ -142,9 +142,17 @@ Custom property | Description | Default
         @apply(--vaadin-upload-file-progress-complete);
       }
 
+      .fadeOut {
+        opacity: 0;
+        transition: opacity 1s ease-out;
+        -ms-transition: opacity 1s ease-out;
+        -moz-transition: opacity 1s ease-out;
+        -webkit-transition: opacity 1s ease-out;
+      }
+
     </style>
 
-    <div id="row">
+    <div id="row" class$="{{_fadeOut(file.abort)}}">
 
       <div id="meta" complete$="[[file.complete]]">
         <div id="name">[[file.name]]</div>
@@ -169,6 +177,7 @@ Custom property | Description | Default
         indeterminate$="[[file.indeterminate]]"
         uploading$="[[file.uploading]]"
         complete$="[[file.complete]]"
+        class$="{{_fadeOut(file.fadeOut)}}"
         >
     </paper-progress>
 
@@ -200,6 +209,10 @@ Custom property | Description | Default
       e.preventDefault();
       var button = Polymer.dom(e).localTarget;
       return this.fire(button.getAttribute('file-event'), {file: this.file});
+    },
+
+    _fadeOut: function(fadeOut) {
+      return fadeOut ? 'fadeOut' : '';
     }
 
     /**
