@@ -134,10 +134,18 @@ Custom property | Description | Default
         @apply(--layout-flex);
       }
 
-      paper-button {
+      paper-button:not(#addFiles) {
         @apply(--paper-font-button);
         color: var(--primary-color, #00B4F0);
         padding: .43em .57em;
+        @apply(--vaadin-upload-button);
+      }
+
+      #addFiles {
+        @apply(--paper-font-button);
+        background: var(--primary-color, #00B4F0);
+        padding: .43em .57em;
+        color: #FFFFFF;
         @apply(--vaadin-upload-button);
       }
     </style>
@@ -623,10 +631,10 @@ Custom property | Description | Default
       // Show `Add file` or `Add files`
       if (this.maxFiles === 1) {
         this._addFileLabel = 'Add File';
-        this._dropFileLabel = 'Drop file here...'
+        this._dropFileLabel = 'Drop file here...';
       } else {
         this._addFileLabel = 'Add Files';
-        this._dropFileLabel = 'Drop files here...'
+        this._dropFileLabel = 'Drop files here...';
       }
     }
 
