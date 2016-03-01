@@ -267,7 +267,7 @@
               expect(e.detail.xhr.sent).to.be.ok;
               expect(upload.files.length).to.be.equal(1);
               done();
-            });
+            },1500);
           });
           upload._addFiles(files);
         });
@@ -284,7 +284,7 @@
               Polymer.Base.async(function() {
                 expect(upload.files.length).to.be.empty;
                 done();
-              });
+              },1500);
             }
           });
           upload._addFiles(files);
