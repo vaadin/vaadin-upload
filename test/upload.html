@@ -291,6 +291,20 @@
         });
 
       });
+
+      describe('maxFiles change', function() {
+        it('should show `Add Files` labels in plural when maxFiles is not 1', function() {
+          upload.maxFiles = 3;
+          expect(upload._addFileLabel === 'Add Files').to.be.true;
+          expect(upload._dropFileLabel === 'Drop files here...').to.be.true;
+        });
+
+        it('should show `Add File` labels in singular when maxFiles is 1', function() {
+          upload.maxFiles = 1;
+          expect(upload._addFileLabel === 'Add File').to.be.true;
+          expect(upload._dropFileLabel === 'Drop file here...').to.be.true;
+        });
+      });
     });
   </script>
 

@@ -80,7 +80,7 @@ Custom property | Description | Default
         @apply(--vaadin-upload-file-name);
       }
 
-      #status, #abort {
+      #status {
         @apply(--paper-font-caption);
         color: var(--disabled-text-color, gray);
         @apply(--vaadin-upload-file-status);
@@ -141,24 +141,14 @@ Custom property | Description | Default
       paper-progress[complete] {
         @apply(--vaadin-upload-file-progress-complete);
       }
-
-      .fadeOut {
-        opacity: 0;
-        transition: opacity 1s ease-out;
-        -ms-transition: opacity 1s ease-out;
-        -moz-transition: opacity 1s ease-out;
-        -webkit-transition: opacity 1s ease-out;
-      }
-
     </style>
 
-    <div id="row" class$="{{_fadeOut(file.abort)}}">
+    <div id="row">
 
       <div id="meta" complete$="[[file.complete]]">
         <div id="name">[[file.name]]</div>
         <div id="status" hidden$="[[!file.status]]">[[file.status]]</div>
         <div id="error" hidden$="[[!file.error]]">[[file.error]]</div>
-        <div id="abort" hidden$="[[!file.abort]]">Upload cancelled.</div>
       </div>
 
       <div id="commands">
@@ -177,7 +167,6 @@ Custom property | Description | Default
         indeterminate$="[[file.indeterminate]]"
         uploading$="[[file.uploading]]"
         complete$="[[file.complete]]"
-        class$="{{_fadeOut(file.fadeOut)}}"
         >
     </paper-progress>
 
@@ -209,10 +198,6 @@ Custom property | Description | Default
       e.preventDefault();
       var button = Polymer.dom(e).localTarget;
       return this.fire(button.getAttribute('file-event'), {file: this.file});
-    },
-
-    _fadeOut: function(fadeOut) {
-      return fadeOut ? 'fadeOut' : '';
     }
 
     /**
