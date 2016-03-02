@@ -38,7 +38,11 @@ Custom property | Description | Default
 `--vaadin-upload-drop-label-icon`|styles for the drop icon|`{}`
 `--vaadin-upload-file-list`|styles for the file list|`{}`
 `--vaadin-upload-buttons`|styles for the buttons container|`{}`
-`--vaadin-upload-button`|styles for the upload button|`{}`
+`--vaadin-upload-button`|styles for the buttons|`{}`
+`--vaadin-upload-button-add`|styles for the upload button|`{}`
+`--vaadin-upload-file-cancel-animation`|styles for the upload cancel animation|`{}`
+
+
 
 @element vaadin-upload
 @demo demo/ Basic Examples
@@ -124,17 +128,14 @@ Custom property | Description | Default
         position: relative;
         margin: 8px 0 0;
         @apply(--vaadin-upload-buttons);
+        @apply(--layout-end-justified);
       }
 
-      :host:not([nodrop]) ::content #buttons {
+      :host:not([nodrop]) #buttons {
         @apply(--layout-center-justified);
       }
 
-      .flexchild {
-        @apply(--layout-flex);
-      }
-
-      paper-button:not(#addFiles) {
+      paper-button {
         @apply(--paper-font-button);
         color: var(--primary-color, #00B4F0);
         padding: .43em .57em;
@@ -142,11 +143,23 @@ Custom property | Description | Default
       }
 
       #addFiles {
-        @apply(--paper-font-button);
+        margin-right: auto;
         background: var(--primary-color, #00B4F0);
-        padding: .43em .57em;
         color: var(--primary-font-color, #FFFFFF);
-        @apply(--vaadin-upload-button);
+        @apply(--vaadin-upload-button-add);
+      }
+
+      :host:not([nodrop]) #addFiles {
+        margin-right: 0;
+      }
+
+      .fade-out {
+        opacity: 0;
+        /* Animating with max-height does not work. margin-top -46px has same affect*/
+        margin-top: -38px;
+        padding-top: 0px;
+        transition: opacity 0.5s ease-out, margin-top 1s ease-out, padding-top 1s ease-out;
+        @apply(--vaadin-upload-file-cancel-animation);
       }
     </style>
 
@@ -158,11 +171,10 @@ Custom property | Description | Default
     </div>
     <div id="buttons">
       <paper-button id="addFiles" on-tap="_onAddFilesClick">[[_addFileLabel]]</paper-button>
-      <div class="flexchild" hidden$="[[!nodrop]]"></div>
       <paper-button id="cancelAll" on-tap="_onCancelAllClick" hidden$="[[!showCancelAll]]">Cancel all</paper-button>
     </div>
     <template id="defaultFileTemplate">
-      <vaadin-upload-file file="[[file]]"></vaadin-upload-file>
+      <vaadin-upload-file file="[[file]]" class$="{{_fadeOut(file.abort)}}"></vaadin-upload-file>
     </template>
     <div id="fileList">
       <template id="fileListRepeater" is="dom-repeat" items="[[files]]" as="file"></template>
@@ -268,6 +280,7 @@ Custom property | Description | Default
        maxFiles: {
          type: Number,
          value: -1
+         observer: '_setCaptions'
        },
 
       /**
@@ -288,15 +301,9 @@ Custom property | Description | Default
         value: -1
       },
 
-      _addFileLabel: {
-        type: String,
-        value: 'Add Files'
-      },
+      _addFileLabel: String,
 
-      _dropFileLabel: {
-        type: String,
-        value: 'Drop files here...'
-      },
+      _dropFileLabel: String,
     },
 
     listeners: {
@@ -309,7 +316,6 @@ Custom property | Description | Default
 
     attached: function() {
       this._templatizeFileList();
-      this._setCaptions();
     },
 
     _maxFilesAdded: function() {
@@ -584,13 +590,11 @@ Custom property | Description | Default
     _removeFile: function(file) {
       var evt = this.fire('file-remove', {file: file}, {cancelable: true});
       if (!evt.defaultPrevented) {
-        if (file.uploading) {
-          setTimeout(function() {
-            this.splice('files', this.files.indexOf(file), 1);
-          }.bind(this), 1000);
-        } else {
+        file.status = 'Upload cancelled.';
+        this._notifyFileChanges(file);
+        setTimeout(function() {
           this.splice('files', this.files.indexOf(file), 1);
-        }
+        }.bind(this), 900);
       }
     },
 
@@ -636,6 +640,10 @@ Custom property | Description | Default
         this._addFileLabel = 'Add Files';
         this._dropFileLabel = 'Drop files here...';
       }
+    },
+
+    _fadeOut: function(abort) {
+      return abort ? 'fade-out' : '';
     }
 
   });
