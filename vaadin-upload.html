@@ -125,14 +125,15 @@ Custom property | Description | Default
 
       #buttons {
         @apply(--layout-horizontal);
+        @apply(--layout-center-justified);
         position: relative;
         margin: 8px 0 0;
         @apply(--vaadin-upload-buttons);
-        @apply(--layout-end-justified);
       }
 
-      :host:not([nodrop]) #buttons {
-        @apply(--layout-center-justified);
+      :host:[nodrop] #buttons {
+        @apply(--layout-end-justified);
+        @apply(--vaadin-upload-nodrop-buttons);
       }
 
       paper-button {
@@ -151,15 +152,7 @@ Custom property | Description | Default
 
       :host:not([nodrop]) #addFiles {
         margin-right: 0;
-      }
-
-      .fade-out {
-        opacity: 0;
-        /* Animating with max-height does not work. margin-top -46px has same affect*/
-        margin-top: -38px;
-        padding-top: 0px;
-        transition: opacity 0.5s ease-out, margin-top 1s ease-out, padding-top 1s ease-out;
-        @apply(--vaadin-upload-file-cancel-animation);
+        @apply(--vaadin-upload-button-add-nodrop);
       }
     </style>
 
@@ -174,9 +167,9 @@ Custom property | Description | Default
       <paper-button id="cancelAll" on-tap="_onCancelAllClick" hidden$="[[!showCancelAll]]">Cancel all</paper-button>
     </div>
     <template id="defaultFileTemplate">
-      <vaadin-upload-file file="[[file]]" class$="{{_fadeOut(file.abort)}}"></vaadin-upload-file>
+      <vaadin-upload-file file="[[file]]"></vaadin-upload-file>
     </template>
-    <div id="fileList">
+    <div id="fileList" on-file-remove="_onFileRemove">
       <template id="fileListRepeater" is="dom-repeat" items="[[files]]" as="file"></template>
     </div>
     <content></content>
@@ -449,8 +442,10 @@ Custom property | Description | Default
         file.loaded = done;
         file.progress = file.abort ? 0 : progress;
         file.indeterminate = done <= 0 || done >= total, true;
-        if (file.error || file.abort) {
+        if (file.error) {
           file.indeterminate = file.status = undefined;
+        } else if (file.abort) {
+          file.status = 'Upload cancelled.';
         } else if (progress < 100) {
           this._setStatus(file, total, done, elapsed, progress);
           stalledId = setTimeout(function() {
@@ -535,11 +530,10 @@ Custom property | Description | Default
     _abortFileUpload: function(file) {
        var evt = this.fire('upload-abort', {file: file, xhr: file.xhr}, {cancelable: true});
        if (!evt.defaultPrevented) {
+         file.abort = true;
          if (file.xhr) {
-           file.abort = true;
            file.xhr.abort();
          }
-         this._removeFile(file);
        }
      },
 
@@ -590,11 +584,7 @@ Custom property | Description | Default
     _removeFile: function(file) {
       var evt = this.fire('file-remove', {file: file}, {cancelable: true});
       if (!evt.defaultPrevented) {
-        file.status = 'Upload cancelled.';
-        this._notifyFileChanges(file);
-        setTimeout(function() {
-          this.splice('files', this.files.indexOf(file), 1);
-        }.bind(this), 900);
+        this.splice('files', this.files.indexOf(file), 1);
       }
     },
 
@@ -625,9 +615,15 @@ Custom property | Description | Default
       this._abortFileUpload(event.detail.file);
     },
 
+    _onFileRemove: function(event) {
+      event.stopPropagation();
+      this._removeFile(event.detail.file);
+    },
+
     _onCancelAllClick: function(event) {
       for (var i = this.files.length; i > 0; --i) {
-        this._abortFileUpload(this.files[i - 1]);
+        var file = this.files[i - 1];
+        this._abortFileUpload(file);
       }
     },
 
