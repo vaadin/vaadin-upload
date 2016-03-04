@@ -218,7 +218,11 @@ Custom property | Description | Default
     _fileAborted: function(abort) {
       if (abort) {
         this.toggleClass('fade-out');
-        if (window.getComputedStyle(this).animationName === 'none') {
+        if (
+          window.getComputedStyle(this).animationName === 'none' ||
+          window.getComputedStyle(this).animationName === undefined ||
+          window.getComputedStyle(this).animationName === null
+        ) {
           this.fire('file-remove', {file: this.file});
         } else {
           this.addEventListener('animationend', function() {
