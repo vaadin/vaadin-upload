@@ -38,9 +38,11 @@ Custom property | Description | Default
 `--vaadin-upload-drop-label-icon`|styles for the drop icon|`{}`
 `--vaadin-upload-file-list`|styles for the file list|`{}`
 `--vaadin-upload-buttons`|styles for the buttons container|`{}`
+`--vaadin-upload-buttons-nodrop`|styles for the buttons container when `nodrop` property is `true`|`{}`
 `--vaadin-upload-button`|styles for the buttons|`{}`
 `--vaadin-upload-button-add`|styles for the upload button|`{}`
-`--vaadin-upload-file-cancel-animation`|styles for the upload cancel animation|`{}`
+`--vaadin-upload-button-add-nodrop`|styles for the upload button when `nodrop` property is `true`|`{}`
+`--vaadin-upload-file-canceled`|styles for the upload cancel. Use for overriding file cancel animation|`{}`
 
 
 
@@ -131,9 +133,9 @@ Custom property | Description | Default
         @apply(--vaadin-upload-buttons);
       }
 
-      :host:[nodrop] #buttons {
+      :host[nodrop] #buttons {
         @apply(--layout-end-justified);
-        @apply(--vaadin-upload-nodrop-buttons);
+        @apply(--vaadin-upload-buttons-nodrop);
       }
 
       paper-button {
@@ -144,14 +146,14 @@ Custom property | Description | Default
       }
 
       #addFiles {
-        margin-right: auto;
+        margin-right: 0;
         background: var(--primary-color, #00B4F0);
         color: var(--primary-font-color, #FFFFFF);
         @apply(--vaadin-upload-button-add);
       }
 
-      :host:not([nodrop]) #addFiles {
-        margin-right: 0;
+      :host[nodrop] #addFiles {
+        margin-right: auto;
         @apply(--vaadin-upload-button-add-nodrop);
       }
     </style>
@@ -622,8 +624,7 @@ Custom property | Description | Default
 
     _onCancelAllClick: function(event) {
       for (var i = this.files.length; i > 0; --i) {
-        var file = this.files[i - 1];
-        this._abortFileUpload(file);
+        this._abortFileUpload(this.files[i - 1]);
       }
     },
 
@@ -636,12 +637,7 @@ Custom property | Description | Default
         this._addFileLabel = 'Add Files';
         this._dropFileLabel = 'Drop files here...';
       }
-    },
-
-    _fadeOut: function(abort) {
-      return abort ? 'fade-out' : '';
     }
-
   });
 
   /**

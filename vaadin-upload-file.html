@@ -145,7 +145,7 @@ Custom property | Description | Default
       :host.fade-out {
         animation-name: fade-out;
         animation-duration: 1s;
-        @apply(--vaadin-upload-file-cancel-animation);
+        @apply(--vaadin-upload-file-canceled);
       }
 
       @keyframes fade-out {
@@ -174,8 +174,8 @@ Custom property | Description | Default
       <div id="commands">
         <paper-icon-button disabled icon="done" title="Complete" hidden$="[[!file.complete]]"></paper-icon-button>
         <paper-icon-button disabled icon="warning" title="Error" hidden$="[[!file.error]]"></paper-icon-button>
-        <paper-icon-button icon="refresh" title="Retry Upload" on-tap="_fireFileRetry" hidden$="[[!file.error]]"></paper-icon-button>
-        <paper-icon-button icon="clear" title="Abort Upload" on-tap="_fireFileAbort"></paper-icon-button>
+        <paper-icon-button icon="refresh" title="Retry Upload" file-event="file-retry" on-tap="_fireFileEvent" hidden$="[[!file.error]]"></paper-icon-button>
+        <paper-icon-button icon="clear" title="Abort Upload" file-event="file-abort" on-tap="_fireFileEvent"></paper-icon-button>
       </div>
 
     </div>
@@ -217,12 +217,9 @@ Custom property | Description | Default
 
     _fileAborted: function(abort) {
       if (abort) {
-        this.toggleClass('fade-out');
-        if (
-          window.getComputedStyle(this).animationName === 'none' ||
-          window.getComputedStyle(this).animationName === undefined ||
-          window.getComputedStyle(this).animationName === null
-        ) {
+        this.toggleClass('fade-out', true);
+        var animationName = window.getComputedStyle(this).animationName;
+        if (!animationName || animationName === 'none') {
           this.fire('file-remove', {file: this.file});
         } else {
           this.addEventListener('animationend', function() {
@@ -232,14 +229,10 @@ Custom property | Description | Default
       }
     },
 
-    _fireFileRetry: function(e) {
+    _fireFileEvent: function(e) {
       e.preventDefault();
-      this.fire('file-retry', {file: this.file});
-    },
-
-    _fireFileAbort: function(e) {
-      e.preventDefault();
-      this.fire('file-abort', {file: this.file});
+      var button = Polymer.dom(e).localTarget;
+      return this.fire(button.getAttribute('file-event'), {file: this.file});
     }
 
     /**
