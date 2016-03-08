@@ -165,7 +165,7 @@ Custom property | Description | Default
       </content>
     </div>
     <div id="buttons">
-      <paper-button id="addFiles" on-tap="_onAddFilesClick">[[_addFileLabel]]</paper-button>
+      <paper-button id="addFiles" on-tap="_onAddFilesClick" disabled="[[_maxFilesAdded(maxFiles, files.length)]]">[[_addFileLabel]]</paper-button>
       <paper-button id="cancelAll" on-tap="_onCancelAllClick" hidden$="[[!showCancelAll]]">Cancel all</paper-button>
     </div>
     <template id="defaultFileTemplate">
@@ -274,7 +274,7 @@ Custom property | Description | Default
        */
        maxFiles: {
          type: Number,
-         value: -1
+         value: -1,
          observer: '_setCaptions'
        },
 
