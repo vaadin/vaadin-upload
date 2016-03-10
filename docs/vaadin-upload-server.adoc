@@ -89,9 +89,9 @@ There are certain events to modify the `XHR` before sending it, or the `response
 
 == Server Processing
 
-How to write your server side code to receive the file, is out of the scope of this document.
+How to write your server-side code to receive the file is out of the scope of this document.
 Nevertheless we leave here some links that you can use as reference:
 
-- `Nodejs` example: http://howtonode.org/really-simple-file-uploads
-- `PHP` example: http://www.php.net/manual/en/features.file-upload.post-method.php#example-354
-- `Java` example: http://www.codejava.net/java-ee/servlet/apache-commons-fileupload-example-with-servlet-and-jsp
+- Nodejs example: http://howtonode.org/really-simple-file-uploads
+- PHP example: http://www.php.net/manual/en/features.file-upload.post-method.php#example-354
+- Java example: http://www.codejava.net/java-ee/servlet/apache-commons-fileupload-example-with-servlet-and-jsp
