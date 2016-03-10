@@ -8,7 +8,7 @@ layout: page
 [[vaadin-upload.custom]]
 = Customization
 
-It is possible to customize the [elementname]#vaadin-upload# element in two ways: changing default styles, or providing custom content.
+It is possible to customize the [elementname]#vaadin-upload# element in two ways: by changing default styles or by providing custom content.
 
 == Styling
 
@@ -34,21 +34,21 @@ To override default styles you should use Polymer mixins.
 image::img/vaadin-upload-custom-content-1.png[]
 
 
-=== Color properties
+=== Color Properties
 [elementname]#vaadin-upload# reuses certain color properties from paper styles:
 
 [width="100%", options="header"]
 |======================
 |Property name | default color
-| primary-color | #00B4F0
-| primary-text-color | #000
-| light-primary-color | #7CD8F7
-| error-color | #f40303
-| disabled-text-color | #b3b3b3 or gray
-| divider-color |  #666 or #e0e0e0
+| [propertyname]#primary-color# | #00B4F0
+| [propertyname]#primary-text-color# | #000
+| [propertyname]#light-primary-color# | #7CD8F7
+| [propertyname]#error-color# | #f40303
+| [propertyname]#disabled-text-color# | #b3b3b3 or gray
+| [propertyname]#divider-color# |  #666 or #e0e0e0
 |======================
 
-=== Custom CSS properties
+=== Custom CSS Properties
 
 The following custom properties are available for styling the component.
 
@@ -57,44 +57,44 @@ The following custom properties are available for styling the component.
 [width="100%", options="header"]
 |======================
 |Property name | Description
-| --vaadin-upload-buttons | Styles for the buttons container
-| --vaadin-upload-button | Styles for the upload button
-| --vaadin-upload-file-list | Styles for the file list
-| --vaadin-upload-drop-label | Styles for the drop label
-| --vaadin-upload-drop-label-dragover | Styles for the drop label when overing the component with files
-| --vaadin-upload-drop-label-icon | Styles for the drop icon
-| --vaadin-upload-drag-ripple | Styles for the ripple animation in the drop area
+| [propertyname]#--vaadin-upload-buttons# | Styles for the buttons container
+| [propertyname]#--vaadin-upload-button# | Styles for the upload button
+| [propertyname]#--vaadin-upload-file-list# | Styles for the file list
+| [propertyname]#--vaadin-upload-drop-label# | Styles for the drop label
+| [propertyname]#--vaadin-upload-drop-label-dragover# | Styles for the drop label when hovering the component with files
+| [propertyname]#--vaadin-upload-drop-label-icon# | Styles for the drop icon
+| [propertyname]#--vaadin-upload-drag-ripple# | Styles for the ripple animation in the drop area
 |======================
 
 
-==== Styles for the [elementname]#vaadin-upload-file# element
+==== Styles for the [elementname]#vaadin-upload-file# Element
 
 [width="100%", options="header"]
 |======================
 |Property name | Description
-| --vaadin-upload-file | Styles for the entire host element
-| --vaadin-upload-file-row | Styles for the file row
-| --vaadin-upload-file-meta | Styles for the info container
-| --vaadin-upload-file-name | Styles for the file name
-| --vaadin-upload-file-status | Styles for the file status label
-| --vaadin-upload-file-error | Styles for the file error label
-| --vaadin-upload-file-commands | Styles for the buttons container
-| --vaadin-upload-file-progress | Styles for the included paper-progress
-| --vaadin-upload-file-progress-error | Styles for the progress bar when error is set
-| --vaadin-upload-file-progress-indeterminate | Styles for the progress bar when indeterminate
-| --vaadin-upload-file-progress-uploading-indeterminate | Styles for the progress bar when uploading and indeterminate
-| --vaadin-upload-file-progress-complete | Styles for the progress when file is complete
+| [propertyname]#--vaadin-upload-file# | Styles for the entire host element
+| [propertyname]#--vaadin-upload-file-row# | Styles for the file row
+| [propertyname]#--vaadin-upload-file-meta# | Styles for the info container
+| [propertyname]#--vaadin-upload-file-name# | Styles for the file name
+| [propertyname]#--vaadin-upload-file-status# | Styles for the file status label
+| [propertyname]#--vaadin-upload-file-error# | Styles for the file error label
+| [propertyname]#--vaadin-upload-file-commands# | Styles for the buttons container
+| [propertyname]#--vaadin-upload-file-progress# | Styles for the included paper-progress
+| [propertyname]#--vaadin-upload-file-progress-error# | Styles for the progress bar when error is set
+| [propertyname]#--vaadin-upload-file-progress-indeterminate# | Styles for the progress bar when indeterminate
+| [propertyname]#--vaadin-upload-file-progress-uploading-indeterminate# | Styles for the progress bar when uploading and indeterminate
+| [propertyname]#--vaadin-upload-file-progress-complete# | Styles for the progress bar when uploading the file is complete
 |======================
 
-== Modifying the content
+== Modifying the Content
 
-[elementname]#vaadin-upload# provides content composition through the element's light DOM.
+The [elementname]#vaadin-upload# provides content composition through the element's light DOM.
 
-There are two modifiable parts, the content with the drop label placed before the file list, and the part after the file list.
-The first part must be marked with the class name `drop-label`, whereas the second one is composed with the remaining element content.
-Right now it's not possible to customize the file list using templates, but will be possible soon.
+There are two modifiable parts: the drop label content and the section after the file list.
+The first part must be marked with the class name `drop-label`, whereas the second one is composed of the remaining element content.
+Right now, it is not possible to customize the file list using templates, but it will be possible soon.
 
-Here you have an example of how to modify them:
+The following example shows how to modify them:
 
 [source,html]
 ----
@@ -111,5 +111,5 @@ Here you have an example of how to modify them:
 ----
 
 [[figure.vaadin-upload.custom2]]
-.A Custom content
+.Custom content
 image::img/vaadin-upload-custom-content-2.png[]
