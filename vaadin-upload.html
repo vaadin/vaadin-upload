@@ -57,6 +57,7 @@ Custom property | Description | Default
 <link rel="import" href="../paper-styles/typography.html">
 <link rel="import" href="../paper-ripple/paper-ripple.html">
 <link rel="import" href="../paper-button/paper-button.html">
+
 <link rel="import" href="vaadin-upload-file.html">
 
 <dom-module id="vaadin-upload">
@@ -258,9 +259,29 @@ Custom property | Description | Default
         value: false
       },
 
-      // TODO: make this private in a separate PR, we dont want users modifying the array.
+      /**
+       * The array of files being or already uploaded.
+       * Bind to this property if you want to show some custom info in your UI.
+       *
+       * Each element is an HTML `File` object, but `vaadin-upload` adds some
+       * useful extra properties:
+       *
+       * `file.uploadTarget` The target URL used to upload this file.
+       * `file.ellapsed` Elapsed time since the upload started.
+       * `file.elapsedStr` Human-readable elapsed time.
+       * `file.remaining` Number of seconds remaining for the upload to finish.
+       * `file.remainingStr` Human-readable remaining time for the upload to finish.
+       * `file.speed` Upload speed in kB/s.
+       * `file.size` File size in bytes.
+       * `file.totalStr` Human-readable total size of the file.
+       * `file.loaded` Bytes transferred so far.
+       * `file.loadedStr` Human-readable uploaded size at the moment.
+       * `file.status` Status of the upload process.
+       * `file.error` Error message in case the upload failed.
+       */
       files: {
         type: Array,
+        notify: true,
         value: function() {
           return [];
         }
