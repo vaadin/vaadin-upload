@@ -180,7 +180,7 @@ Custom property | Description | Default
     <template id="defaultFileTemplate">
       <vaadin-upload-file file="[[file]]"></vaadin-upload-file>
     </template>
-    <div id="fileList" on-file-remove="_onFileRemove">
+    <div id="fileList">
       <template id="fileListRepeater" is="dom-repeat" items="[[files]]" as="file"></template>
     </div>
     <content></content>
@@ -383,7 +383,8 @@ Custom property | Description | Default
       dragleave: '_onDragleave',
       drop: '_onDrop',
       'file-retry': '_onFileRetry',
-      'file-abort': '_onFileAbort'
+      'file-abort': '_onFileAbort',
+      'file-remove': '_onFileRemove',
     },
 
     attached: function() {
@@ -719,10 +720,7 @@ Custom property | Description | Default
      * @param {File} file File to remove
      */
     _removeFile: function(file) {
-      var evt = this.fire('file-remove', {file: file}, {cancelable: true});
-      if (!evt.defaultPrevented) {
-        this.splice('files', this.files.indexOf(file), 1);
-      }
+      this.splice('files', this.files.indexOf(file), 1);
     },
 
     _onAddFilesClick: function(event) {
@@ -752,7 +750,6 @@ Custom property | Description | Default
     },
 
     _onFileRemove: function(event) {
-      event.stopPropagation();
       this._removeFile(event.detail.file);
     },
 
@@ -795,16 +792,6 @@ Custom property | Description | Default
    * @event file-add
    * @param {Object} detail
    *  @param {Object} detail.file the file added
-   */
-
-  /**
-   * Fired when a file is removed from the file list, e. g. when the file
-   * upload is aborted. If the default is prevented, then the file would not be
-   * removed from the list.
-   *
-   * @event file-remove
-   * @param {Object} detail
-   *  @param {Object} detail.file the file to be removed
    */
 
   /**
