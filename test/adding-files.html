@@ -75,18 +75,7 @@
 
         });
 
-        it('should fire `file-add` event after dialog', function() {
-          var fileAddSpy = sinon.spy();
-
-          upload.addEventListener('file-add', function(event) {
-            expect(event.detail.file).to.be.an.instanceof(Blob);
-            expect(event.detail.file.name).to.be.a('string');
-            expect(event.detail.file.name).to.be.ok;
-            expect(event.detail.file.size).to.be.a('number');
-            expect(event.detail.file.size).to.be.ok;
-            fileAddSpy();
-          });
-
+        it('should add files from dialog', function() {
           // We can't simply assign `files` property of input[type="file"].
           // Tweaking __proto__ to make it assignable below.
           /* jshint ignore:start */
@@ -101,7 +90,16 @@
           e.initEvent('change', false, true);
           upload.$.fileInput.dispatchEvent(e);
 
-          fileAddSpy.should.have.been.calledTwice;
+          expect(upload.files[0]).to.equal(files[1]);
+          expect(upload.files[1]).to.equal(files[0]);
+        });
+
+        it('should notify files', function() {
+          var spy = sinon.spy();
+          // when setting arrays Polymer mutation observer works differently
+          upload.addEventListener('files-changed', spy);
+          upload.files = files;
+          spy.should.have.been.calledOnce;
         });
 
         it('should disable add button when max files added', function() {
@@ -158,17 +156,17 @@
           var fileAddSpy, dropEvent;
           beforeEach(function() {
             fileAddSpy = sinon.spy();
-            upload.addEventListener('file-add', fileAddSpy);
+            upload.addEventListener('files-changed', fileAddSpy);
             dropEvent = createDndEvent('drop');
           });
 
-          it('should fire `file-add` event when dropping files and drop is enabled', function() {
+          it('should fire `files-changed` event when dropping files and drop is enabled', function() {
             upload.nodrop = false;
             upload.dispatchEvent(dropEvent);
-            fileAddSpy.should.have.been.calledTwice;
+            fileAddSpy.should.have.been.called;
           });
 
-          it('should not fire `file-add` event when dropping files and drop is disabled', function() {
+          it('should not fire `files-changed` event when dropping files and drop is disabled', function() {
             upload.nodrop = true;
             upload.dispatchEvent(dropEvent);
             fileAddSpy.should.not.have.been.called;
