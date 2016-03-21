@@ -77,6 +77,8 @@ The following custom properties are available for styling the component.
 |Property name | Description
 | [propertyname]#--vaadin-upload-file# | A mixin that is applied to the host element
 | [propertyname]#--vaadin-upload-file-row# | A mixin that is applied to the file row
+| [propertyname]#--vaadin-upload-file-icon# | A mixin that is applied to the file icon. The file icon is invisible by default and when the file upload is in progress
+| [propertyname]#--vaadin-upload-file-icon-visible# | A mixin that is applied to the file icon when it's visible. The file icon is visible when file upload is complete or failed
 | [propertyname]#--vaadin-upload-file-meta# | A mixin that is applied to the info container
 | [propertyname]#--vaadin-upload-file-name# | A mixin that is applied to the file name
 | [propertyname]#--vaadin-upload-file-status# | A mixin that is applied to the file status label
