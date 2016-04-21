@@ -210,6 +210,15 @@ Custom property | Description | Default
       },
 
       /**
+       * Mode used to send the files. If DEFAULT the file is wrapped in FormData.
+       * If RAW mode is set, the file is sent as a raw Blob without wrapping.
+       */
+      mode: {
+        type: String,
+        value: 'DEFAULT'
+      },
+
+      /**
        * Key-Value map to send to the server. If you set this property as an
        * attribute, use a valid JSON string, for example:
        * ```
@@ -651,8 +660,11 @@ Custom property | Description | Default
         }
       }.bind(this);
 
-      var formData = new FormData();
-      formData.append('file', file, file.name);
+      var formData;
+      if (this.mode.toUpperCase() !== 'RAW') {
+       formData = new FormData();
+       formData.append('file', file, file.name);
+      }
 
       file.uploadTarget = this.target || '';
       var evt = this.fire('upload-before', {file: file, xhr: xhr}, {cancelable: true});
@@ -675,7 +687,12 @@ Custom property | Description | Default
       file.complete = file.abort = file.error = false;
       this.fire('upload-start', {file: file, xhr: xhr});
       this._notifyFileChanges(file);
-      xhr.send(formData);
+
+      if (this.mode.toUpperCase() === 'RAW') {
+        xhr.send(file);
+      } else {
+        xhr.send(formData);
+      }
     },
 
     _retryFileUpload: function(file) {
