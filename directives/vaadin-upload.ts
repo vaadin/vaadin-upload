@@ -55,5 +55,51 @@ export class VaadinUpload extends DefaultValueAccessor {
     this._element.$$('paper-button').addEventListener('blur', () => {
       this.onTouched();
     });
+
+    if (!Polymer.Settings.useShadow) {
+      this._element.async(this._observeMutations.bind(this));
+    }
   }
+
+  _observeMutations() {
+    const lightDom = Polymer.dom(this._element);
+    const observerConfig = { childList: true, subtree: true };
+
+    // Move all the misplaced nodes to light dom
+    [].forEach.call([].slice.call(this._element.childNodes, 0), (child) => {
+      if (this._isLightDomChild(child)) {
+        lightDom.appendChild(child);
+      }
+    });
+
+    // Add a mutation observer for further additions / removals
+    var observer = new MutationObserver((mutations) => {
+      observer.disconnect();
+
+      mutations.forEach((mutation) => {
+        [].forEach.call(mutation.addedNodes, (added) => {
+          if (this._isLightDomChild(added) && added.parentElement === this._element) {
+            lightDom.appendChild(added);
+          }
+        });
+
+        [].forEach.call(mutation.removedNodes, (removed) => {
+          if (this._isLightDomChild(removed)) {
+            lightDom.removeChild(removed);
+          }
+        });
+      });
+
+      setTimeout(() => {
+        observer.observe(this._element, observerConfig);
+      }, 0);
+    });
+
+    observer.observe(this._element, observerConfig);
+  }
+
+  _isLightDomChild(node) {
+    return !node.tagName || !node.classList.contains('vaadin-upload');
+  }
+
 }
