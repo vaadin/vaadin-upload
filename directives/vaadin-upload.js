@@ -1,6 +1,4 @@
-System.register(['angular2/core', 'angular2/common', 'angular2/src/facade/lang'], function(exports_1, context_1) {
-    "use strict";
-    var __moduleName = context_1 && context_1.id;
+System.register(['angular2/core', 'angular2/common', 'angular2/src/facade/lang'], function(exports_1) {
     var __extends = (this && this.__extends) || function (d, b) {
         for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
         function __() { this.constructor = d; }
@@ -49,6 +47,9 @@ System.register(['angular2/core', 'angular2/common', 'angular2/src/facade/lang']
                     this._element.$$('paper-button').addEventListener('blur', function () {
                         _this.onTouched();
                     });
+                    if (!Polymer.Settings.useShadow) {
+                        this._element.async(this._observeMutations.bind(this));
+                    }
                 }
                 VaadinUpload.prototype.fileschanged = function () {
                     if (!this._initialValueSet) {
@@ -60,6 +61,44 @@ System.register(['angular2/core', 'angular2/common', 'angular2/src/facade/lang']
                     var value = this._element.files;
                     this.filesChange.emit(value);
                     this.onChange(value);
+                };
+                VaadinUpload.prototype._observeMutations = function () {
+                    var _this = this;
+                    var lightDom = Polymer.dom(this._element);
+                    var addedId = '_vaadin_upload_light_child';
+                    var removableId = '_vaadin_upload_light_child_removable';
+                    // Move all the misplaced nodes to light dom
+                    [].forEach.call([].slice.call(this._element.childNodes, 0), function (child) {
+                        if (_this._isLightDomChild(child)) {
+                            Polymer.dom(_this._element).appendChild(child);
+                            child[removableId] = child[addedId] = true;
+                        }
+                    });
+                    // Add a mutation observer for further additions / removals
+                    new MutationObserver(function (mutations) {
+                        mutations.forEach(function (mutation) {
+                            [].forEach.call(mutation.addedNodes, function (added) {
+                                if (_this._isLightDomChild(added) && !added[addedId] && added.parentElement === _this._element) {
+                                    lightDom.appendChild(added);
+                                    added[addedId] = true;
+                                    setTimeout(function () {
+                                        added[removableId] = true;
+                                    }, 0);
+                                }
+                            });
+                            [].forEach.call(mutation.removedNodes, function (removed) {
+                                if (_this._isLightDomChild(removed) && removed[addedId] && removed[removableId]) {
+                                    lightDom.removeChild(removed);
+                                    setTimeout(function () {
+                                        removed[removableId] = removed[addedId] = false;
+                                    }, 0);
+                                }
+                            });
+                        });
+                    }).observe(this._element, { childList: true, subtree: true });
+                };
+                VaadinUpload.prototype._isLightDomChild = function (node) {
+                    return !node.tagName || !node.classList.contains('vaadin-upload');
                 };
                 __decorate([
                     core_1.Output(), 
@@ -79,10 +118,9 @@ System.register(['angular2/core', 'angular2/common', 'angular2/src/facade/lang']
                     __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef, core_1.Injector])
                 ], VaadinUpload);
                 return VaadinUpload;
-            }(common_1.DefaultValueAccessor));
+            })(common_1.DefaultValueAccessor);
             exports_1("VaadinUpload", VaadinUpload);
         }
     }
 });
-
 //# sourceMappingURL=vaadin-upload.js.map
