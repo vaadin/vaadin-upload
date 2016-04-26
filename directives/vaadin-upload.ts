@@ -55,5 +55,51 @@ export class VaadinUpload extends DefaultValueAccessor {
     this._element.$$('paper-button').addEventListener('blur', () => {
       this.onTouched();
     });
+
+    this._element.async(this._observeMutations.bind(this));
   }
+
+  _observeMutations() {
+    const lightDom = Polymer.dom(this._element);
+    const addedId = '_vaadin_upload_light_child';
+    const removableId = '_vaadin_upload_light_child_removable';
+
+    // Move all the misplaced nodes to light dom
+    [].forEach.call([].slice.call(this._element.childNodes, 0), (child) => {
+      if (this._isLightDomChild(child) && child.parentElement === this._element) {
+        Polymer.dom(this._element).appendChild(child);
+        child[removableId] = child[addedId] = true;
+      }
+    });
+
+    // Add a mutation observer for further additions / removals
+    new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+
+        [].forEach.call(mutation.addedNodes, (added) => {
+          if (this._isLightDomChild(added) && !added[addedId] && added.parentElement === this._element) {
+            lightDom.appendChild(added);
+            added[addedId] = true;
+            setTimeout(() => {
+              added[removableId] = true;
+            }, 0);
+          }
+        });
+
+        [].forEach.call(mutation.removedNodes, (removed) => {
+          if (this._isLightDomChild(removed) && removed[addedId] && removed[removableId]) {
+            lightDom.removeChild(removed);
+            setTimeout(() => {
+              removed[removableId] = removed[addedId] = false;
+            }, 0);
+          }
+        });
+      });
+    }).observe(this._element, { childList: true, subtree: true});
+  }
+
+  _isLightDomChild(node) {
+    return !node.tagName || !node.classList.contains('vaadin-upload');
+  }
+
 }
