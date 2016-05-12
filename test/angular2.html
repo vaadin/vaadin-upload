@@ -30,14 +30,13 @@
         defaultExtension: 'js'
       };
 
-      packages['vaadin-upload'] = {
-        defaultExtension: 'js',
-        main: 'vaadin-upload.js'
+      packages['@vaadin/angular2-polymer'] = {
+        main: 'index.js'
       };
 
       System.config({
         map: {
-          'vaadin-upload': '../directives',
+          '@vaadin': '../node_modules/@vaadin',
           '@angular': '../node_modules/@angular'
         },
         packages: packages
