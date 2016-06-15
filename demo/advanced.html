@@ -79,6 +79,10 @@ This program is available under Apache License Version 2.0, available at https:/
 
             event.detail.xhr.setRequestHeader('X-File-Name', event.detail.file.name);
             event.detail.formData.append('documentId', 1234);
+
+            // Send the file without the FormData wrapper:
+            // event.preventDefault();
+            // xhr.send(event.detail.file);
           });
 
           upload.addEventListener('upload-start', function(event) {
