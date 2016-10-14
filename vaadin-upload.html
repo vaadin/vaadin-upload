@@ -311,6 +311,14 @@ Custom property | Description | Default
       },
 
       /**
+       * Specifies the 'name' property at Content-Disposition
+       */
+      formDataFilename: {
+        type: String,
+        value: 'file'
+      },
+
+      /**
        * The object used to localize this component.
        * For changing the default localization, change the entire
        * _i18n_ object or just the property you want to modify.
@@ -652,7 +660,7 @@ Custom property | Description | Default
       }.bind(this);
 
       var formData = new FormData();
-      formData.append('file', file, file.name);
+      formData.append(this.formDataFilename, file, file.name);
 
       file.uploadTarget = this.target || '';
       var evt = this.fire('upload-before', {file: file, xhr: xhr}, {cancelable: true});
