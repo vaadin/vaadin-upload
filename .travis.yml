@@ -9,7 +9,7 @@ install: travis_retry npm install
 script:
   - gulp lint:js
   - gulp lint:html
-  - travis_retry gulp test:mobile
-  - travis_retry gulp test:desktop
-  - travis_retry gulp test:mobile:shadow
-  - travis_retry gulp test:desktop:shadow
+  - travis_wait gulp test:mobile
+  - travis_wait gulp test:desktop
+  - travis_wait gulp test:mobile:shadow
+  - travis_wait gulp test:desktop:shadow
