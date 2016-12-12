@@ -5,7 +5,7 @@
 
 # &lt;vaadin-upload&gt;
 
-+### [Live demo](https://cdn.vaadin.com/vaadin-core-elements/master/vaadin-upload/demo/)
+### [Live demo](https://cdn.vaadin.com/vaadin-core-elements/master/vaadin-upload/demo/)
 
 [&lt;vaadin-upload&gt;](https://vaadin.com/elements/-/element/vaadin-upload) is a  [Polymer](http://polymer-project.org) element for uploading multiple files, part of the [vaadin-core-elements](https://vaadin.com/elements) element bundle.
 
