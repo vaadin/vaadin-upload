@@ -13,6 +13,7 @@ addons:
   google-chrome: latest
 
 script:
+  - echo $TRAVIS_EVENT_TYPE
   - gulp lint
   - travis_retry xvfb-run wct
   - travis_retry xvfb-run wct --dom=shadow
