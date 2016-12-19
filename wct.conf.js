@@ -3,8 +3,13 @@ var args = require('yargs').argv;
 module.exports = {
   extraScripts: args.dom === 'shadow' ? ['test/enable-shadow-dom.js'] : [],
   registerHooks: function(context) {
-    // do not run Saucelabs tests for external PRs or if PR branch containt 'quick/'
-    if (process.env.TRAVIS_EVENT_TYPE === 'push' && process.env.TRAVIS_BRANCH.indexOf('quick/') === -1) {
+    // run Saucelabs tests for
+    //  - internal PRs, except cases when branch contains 'quick/'
+    //  - daily biulds, triggered by cron
+    if (
+      (process.env.TRAVIS_EVENT_TYPE === 'push' && process.env.TRAVIS_BRANCH.indexOf('quick/') === -1) ||
+      process.env.TRAVIS_EVENT_TYPE === 'cron'
+    ) {
       context.options.plugins.sauce.browsers = [
         // desktop
         'Windows 10/chrome@54',
