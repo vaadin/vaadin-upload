@@ -144,7 +144,11 @@ Custom property | Description | Default
 
     <div id="buttons">
       <div id="buttonsPrimary">
-        <paper-button id="addFiles" on-tap="_onAddFilesClick" disabled="[[_maxFilesAdded(maxFiles, files.length)]]">[[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]</paper-button>
+        <paper-button id="addFiles" on-tap="_onAddFilesClick" disabled="[[_maxFilesAdded(maxFiles, files.length)]]">
+          <content select=".add-label">
+            [[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]
+          </content>
+        </paper-button>
         <div id="dropLabel" hidden$="[[nodrop]]">
           <content select=".drop-label">
             <iron-icon icon="vaadin-upload:file-upload"></iron-icon>
