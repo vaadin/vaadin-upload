@@ -145,7 +145,7 @@ Custom property | Description | Default
     <div id="buttons">
       <div id="buttonsPrimary">
         <content select=".add-files">
-          <paper-button id="addFiles" on-tap="addFilesClick" disabled$="[[hasMaxFiles]]">
+          <paper-button id="addFiles" on-tap="openFileDialog" disabled$="[[hasMaxFiles]]">
             <content select=".add-label">
               [[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]
             </content>
@@ -774,9 +774,9 @@ Custom property | Description | Default
     },
 
     /**
-     * Triggers the add file functionality
+     * Triggers the file input dialog
      */
-    addFilesClick: function() {
+    openFileDialog: function() {
       if (Polymer.Gestures.resetMouseCanceller) {
         /*
           With Polymer v1.7.1, the ghost-click prevention cancels the synthetic
