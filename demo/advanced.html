@@ -93,9 +93,9 @@ This program is available under Apache License Version 2.0, available at https:/
         <vaadin-upload id="requestDemo"></vaadin-upload>
 
         <script>
-          var upload2 = document.querySelector('vaadin-upload#requestDemo');
+          var upload1 = document.querySelector('vaadin-upload#requestDemo');
 
-          upload2.addEventListener('upload-before', function(event) {
+          uupload1addEventListener('upload-before', function(event) {
             console.log('upload xhr before open: ', event.detail.xhr);
 
             // Prevent the upload request:
@@ -110,14 +110,14 @@ This program is available under Apache License Version 2.0, available at https:/
             file.formDataName = 'attachment';
           });
 
-          upload2.addEventListener('upload-request', function(event) {
+          upupload1ddEventListener('upload-request', function(event) {
             console.log('upload xhr after open: ', event.detail.xhr);
 
             event.detail.xhr.setRequestHeader('X-File-Name', event.detail.file.name);
             event.detail.formData.append('documentId', 1234);
           });
 
-          upload2.addEventListener('upload-start', function(event) {
+          uplupload1dEventListener('upload-start', function(event) {
             console.log('upload xhr after send: ', event.detail.xhr);
           });
         </script>
@@ -130,9 +130,9 @@ This program is available under Apache License Version 2.0, available at https:/
         <vaadin-upload id="rawDemo"></vaadin-upload>
 
         <script>
-          var upload3 = document.querySelector('vaadin-upload#rawDemo');
+          var upload2 = document.querySelector('vaadin-upload#rawDemo');
 
-          upload3.addEventListener('upload-request', function(event) {
+          upload2.addEventListener('upload-request', function(event) {
             event.preventDefault();
             event.detail.xhr.send(event.detail.file);
           });
@@ -146,9 +146,9 @@ This program is available under Apache License Version 2.0, available at https:/
         <vaadin-upload id="responseDemo"></vaadin-upload>
 
         <script>
-          var upload4 = document.querySelector('vaadin-upload#responseDemo');
+          var upload3 = document.querySelector('vaadin-upload#responseDemo');
 
-          upload4.addEventListener('upload-response', function(event) {
+          upload3.addEventListener('upload-response', function(event) {
             console.log('upload xhr after server response: ', event.detail.xhr);
             event.detail.file.error = 'Custom server error message.';
 
@@ -169,12 +169,12 @@ This program is available under Apache License Version 2.0, available at https:/
           </div>
         </vaadin-upload>
         <script>
-          var upload5 = document.querySelector('vaadin-upload#preFill');
-          upload5.files = [
+          var upload4 = document.querySelector('vaadin-upload#preFill');
+          upload4.files = [
             {name: 'Don Quixote.pdf', progress: 100, complete: true},
             {name: 'Hamlet.pdf', progress: 100, complete: true}
           ];
-          upload5.set('i18n.addFiles.many', 'Select books');
+          upload4.set('i18n.addFiles.many', 'Select books');
         </script>
       </template>
     </demo-snippet>
