@@ -62,10 +62,10 @@ This program is available under Apache License Version 2.0, available at https:/
 
         <dom-module id="button-events-demo">
           <template>
-            <vaadin-upload id="upload" files="{{files}}" max-files="1" is-max-files="{{hasMaxFiles}}">
+            <vaadin-upload id="upload" files="{{files}}" max-files="1" has-max-files="{{hasMaxFiles}}">
               <div class="add-files">
-                <button on-click="add" disabled$="[[ihasMaxFiles]">
-                  <iron-icon icon="vaadin-upload:file-upload"></iron-icon>
+                <button on-click="add" disabled$="[[hasMaxFiles]]">
+                  <iron-icon icon="icons:cloud-upload"></iron-icon>
                   UPLOAD
                 </button>
               </div>
@@ -76,7 +76,7 @@ This program is available under Apache License Version 2.0, available at https:/
               is: 'button-events-demo',
               properties: {
                 files: Array,
-                ishasMaxFilesBoolean
+                hasMaxFiles: Boolean
               },
               add: function() {
                 this.$.upload.addFilesClick();
