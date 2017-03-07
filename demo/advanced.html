@@ -62,10 +62,15 @@ This program is available under Apache License Version 2.0, available at https:/
 
         <dom-module id="button-events-demo">
           <template>
+            <style>
+              .add-files {
+                display: flex;
+                height: 100%;
+              }
+            </style>
             <vaadin-upload id="upload" files="{{files}}" max-files="1" has-max-files="{{hasMaxFiles}}">
               <div class="add-files">
                 <button on-click="add" disabled$="[[hasMaxFiles]]">
-                  <iron-icon icon="icons:cloud-upload"></iron-icon>
                   UPLOAD
                 </button>
               </div>
