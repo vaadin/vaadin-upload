@@ -285,7 +285,7 @@ Custom property | Description | Default
       /**
        * Specifies if the maximum number of files have been uploaded
        */
-      ihasMaxFiles {
+      hasMaxFiles: {
         type: Boolean,
         value: false,
         notify: true,
@@ -543,7 +543,8 @@ Custom property | Description | Default
     _onDragover: function(event) {
       event.preventDefault();
       if (!this.nodrop && !this._dragover) {
-        this._dragoverValid = !this.ishasMaxFiles        if (this._dragoverValid) {
+        this._dragoverValid = !this.hasMaxFiles;
+        if (this._dragoverValid) {
           this._dragRippleAction('down', event);
         }
         this._dragover = true;
@@ -743,7 +744,7 @@ Custom property | Description | Default
      * @param {File} file File being added
      */
     _addFile: function(file) {
-      if (this.isMhasMaxFiles{
+      if (this.hasMaxFiles) {
         this.fire('file-reject', {file: file, error: this.i18n.error.tooManyFiles});
         return;
       }
