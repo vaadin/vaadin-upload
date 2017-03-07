@@ -491,8 +491,6 @@ Custom property | Description | Default
     },
 
     _maxFilesAdded: function(maxFiles, files) {
-      maxFiles = maxFiles || this.maxFiles;
-      files = files || this.files;
       return maxFiles >= 0 && files.length >= maxFiles;
     },
 
@@ -545,7 +543,7 @@ Custom property | Description | Default
     _onDragover: function(event) {
       event.preventDefault();
       if (!this.nodrop && !this._dragover) {
-        this._dragoverValid = !this._maxFilesAdded();
+        this._dragoverValid = !this.isMaxFiles;
         if (this._dragoverValid) {
           this._dragRippleAction('down', event);
         }
@@ -746,7 +744,7 @@ Custom property | Description | Default
      * @param {File} file File being added
      */
     _addFile: function(file) {
-      if (this._maxFilesAdded()) {
+      if (this.isMaxFiles)) {
         this.fire('file-reject', {file: file, error: this.i18n.error.tooManyFiles});
         return;
       }
