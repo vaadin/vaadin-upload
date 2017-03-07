@@ -62,9 +62,9 @@ This program is available under Apache License Version 2.0, available at https:/
 
         <dom-module id="button-events-demo">
           <template>
-            <vaadin-upload id="upload" files="{{files}}" max-files="1" is-max-files="{{isMaxFiles}}">
+            <vaadin-upload id="upload" files="{{files}}" max-files="1" is-max-files="{{hasMaxFiles}}">
               <div class="add-files">
-                <button on-click="add" disabled$="[[isMaxFiles]]">
+                <button on-click="add" disabled$="[[ihasMaxFiles]">
                   <iron-icon icon="vaadin-upload:file-upload"></iron-icon>
                   UPLOAD
                 </button>
@@ -76,7 +76,7 @@ This program is available under Apache License Version 2.0, available at https:/
               is: 'button-events-demo',
               properties: {
                 files: Array,
-                isMaxFiles: Boolean
+                ishasMaxFilesBoolean
               },
               add: function() {
                 this.$.upload.addFilesClick();
