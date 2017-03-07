@@ -10,15 +10,15 @@
 
 <body>
   <script>
-    var shadow = document.location.search.indexOf('dom=shadow') > -1;
-    WCT._config.environmentScripts.push(shadow ? 'webcomponentsjs/webcomponents.js' : 'webcomponentsjs/webcomponents-lite.js');
+    WCT._config.environmentScripts.push('webcomponentsjs/webcomponents.js');
 
     WCT.loadSuites([
       'upload.html',
       'adding-files.html',
-      'file-list.html',
-      'angular2.html'
-    ]);
+      'file-list.html'
+    ].reduce(function(suites, suite) {
+      return suites.concat([suite, suite + '?dom=shadow']);
+    }, []));
   </script>
 </body>
 
