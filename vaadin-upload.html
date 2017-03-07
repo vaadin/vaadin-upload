@@ -145,8 +145,10 @@ Custom property | Description | Default
     <div id="buttons">
       <div id="buttonsPrimary">
         <content select=".add-files">
-          <paper-button id="addFiles" on-tap="addFilesClick" disabled="[[hasMaxFiles]]">
+          <paper-button id="addFiles" on-tap="addFilesClick" disabled$="[[hasMaxFiles]]">
+            <content select=".add-label">
               [[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]
+            </content>
           </paper-button>
         </content>
         <div id="dropLabel" hidden$="[[nodrop]]">
@@ -290,7 +292,7 @@ Custom property | Description | Default
         value: false,
         notify: true,
         readOnly: true,
-        computed: '_maxFilesAdded(maxFiles, files, files.*)'
+        computed: '_maxFilesAdded(maxFiles, files.length)'
       },
 
       /**
@@ -490,8 +492,8 @@ Custom property | Description | Default
           ')';
     },
 
-    _maxFilesAdded: function(maxFiles, files) {
-      return maxFiles >= 0 && files.length >= maxFiles;
+    _maxFilesAdded: function(maxFiles, numFiles) {
+      return maxFiles >= 0 && numFiles >= maxFiles;
     },
 
     _dragRippleAction: function(action, event) {
