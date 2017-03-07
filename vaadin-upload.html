@@ -144,11 +144,11 @@ Custom property | Description | Default
 
     <div id="buttons">
       <div id="buttonsPrimary">
-        <paper-button id="addFiles" on-tap="_onAddFilesClick" disabled="[[_maxFilesAdded(maxFiles, files.length)]]">
-          <content select=".add-label">
-            [[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]
-          </content>
-        </paper-button>
+        <content select=".add-file">
+          <paper-button id="addFiles" on-tap="addFilesClick" disabled="[[isMaxFiles]]">
+              [[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]
+          </paper-button>
+        </content>
         <div id="dropLabel" hidden$="[[nodrop]]">
           <content select=".drop-label">
             <iron-icon icon="vaadin-upload:file-upload"></iron-icon>
@@ -280,6 +280,17 @@ Custom property | Description | Default
       maxFiles: {
         type: Number,
         value: Infinity
+      },
+
+      /**
+       * Specifies if the maximum number of files have been uploaded
+       */
+      isMaxFiles: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        readOnly: true,
+        computed: '_maxFilesAdded(maxFiles, files, files.*)'
       },
 
       /**
@@ -479,8 +490,10 @@ Custom property | Description | Default
           ')';
     },
 
-    _maxFilesAdded: function() {
-      return this.maxFiles >= 0 && this.files.length >= this.maxFiles;
+    _maxFilesAdded: function(maxFiles, files) {
+      maxFiles = maxFiles || this.maxFiles;
+      files = files || this.files;
+      return maxFiles >= 0 && files.length >= maxFiles;
     },
 
     _dragRippleAction: function(action, event) {
@@ -760,7 +773,10 @@ Custom property | Description | Default
       this.splice('files', this.files.indexOf(file), 1);
     },
 
-    _onAddFilesClick: function() {
+    /**
+     * Triggers the add file functionality
+     */
+    addFilesClick: function() {
       if (Polymer.Gestures.resetMouseCanceller) {
         /*
           With Polymer v1.7.1, the ghost-click prevention cancels the synthetic
