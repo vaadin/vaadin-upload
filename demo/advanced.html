@@ -95,7 +95,7 @@ This program is available under Apache License Version 2.0, available at https:/
         <script>
           var upload1 = document.querySelector('vaadin-upload#requestDemo');
 
-          uupload1addEventListener('upload-before', function(event) {
+          upload1.addEventListener('upload-before', function(event) {
             console.log('upload xhr before open: ', event.detail.xhr);
 
             // Prevent the upload request:
@@ -110,7 +110,7 @@ This program is available under Apache License Version 2.0, available at https:/
             file.formDataName = 'attachment';
           });
 
-          upupload1ddEventListener('upload-request', function(event) {
+          upload1.addEventListener('upload-request', function(event) {
             console.log('upload xhr after open: ', event.detail.xhr);
 
             event.detail.xhr.setRequestHeader('X-File-Name', event.detail.file.name);
