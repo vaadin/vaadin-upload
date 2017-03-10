@@ -204,7 +204,7 @@ Custom property | Description | Default
       },
 
       /**
-       * HTTP Method used to send the files. Only POST and PUT are allowed.
+       * HTTP Method used to send the files. Only POST PUT and LOCAL are allowed.
        */
       method: {
         type: String,
@@ -690,14 +690,14 @@ Custom property | Description | Default
 
       if (!this.method.toLowerCase() == "local") {
         clearTimeout(stalledId);
-        this._handleFile(file);
+        this._loadLocalFile(file);
         xhr.abort();
       } else if (!evt.defaultPrevented) {
         xhr.send(formData);
       }
     },
 
-    _handleFile: function (file) {
+    _loadLocalFile: function (file) {
 
       var reader = new FileReader();
 
