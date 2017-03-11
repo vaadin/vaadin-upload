@@ -688,7 +688,7 @@ Custom property | Description | Default
       // preventing default
       evt = this.fire('upload-request', {file: file, xhr: xhr, formData: formData}, {cancelable: true});
 
-      if (!this.method.toLowerCase() == 'local') {
+      if (this.method.toLowerCase() == 'local') {
         clearTimeout(stalledId);
         this._loadLocalFile(file);
         xhr.abort();
