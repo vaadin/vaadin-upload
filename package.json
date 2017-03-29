@@ -1,6 +1,6 @@
 {
   "name": "vaadin-upload",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "Polymer Element for uploading files",
   "main": "vaadin-upload.html",
   "repository": "vaadin/vaadin-upload",
@@ -27,6 +27,7 @@
     "gulp-html-extract": "^0.0.3",
     "gulp-eslint": "^3.0.1",
     "gulp-stylelint": "^3.7.0",
+    "polymer-cli": "next",
     "stylelint-config-vaadin": "^0.1.0",
     "web-component-tester": "^5.0.0"
   }
