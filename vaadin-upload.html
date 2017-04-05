@@ -102,7 +102,7 @@ Custom property | Description | Default
         @apply(--vaadin-upload-drop-label-dragover);
       }
 
-      #dropLabel ::slotted(iron-icon) {
+      #dropLabel ::slotted(iron-icon), #dropLabelIcon {
         margin-right: .25em;
         @apply(--vaadin-upload-drop-label-icon);
       }
@@ -145,8 +145,10 @@ Custom property | Description | Default
       <div id="buttonsPrimary">
         <paper-button id="addFiles" on-tap="_onAddFilesClick" disabled="[[_maxFilesAdded(maxFiles, files.length)]]">[[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]</paper-button>
         <div id="dropLabel" hidden$="[[nodrop]]">
+          <slot name="drop-label-icon">
+            <iron-icon id="dropLabelIcon" icon="vaadin-upload:file-upload"></iron-icon>
+          </slot>
           <slot name="drop-label">
-            <iron-icon icon="vaadin-upload:file-upload"></iron-icon>
             [[_i18nPlural(maxFiles, i18n.dropFiles, i18n.dropFiles.*)]]
           </slot>
         </div>
