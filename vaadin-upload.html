@@ -320,6 +320,11 @@ Custom property | Description | Default
         value: 'file'
       },
 
+      auto: {
+        type: Boolean,
+        value: false
+      },
+
       /**
        * The object used to localize this component.
        * For changing the default localization, change the entire
@@ -591,6 +596,14 @@ Custom property | Description | Default
       file.status = this._formatFileProgress(file);
     },
 
+    uploadFiles: function (files) {
+      files = files || this.files;
+      file = files.filter(function (file) {
+        return !file.complete;
+      });
+      Array.prototype.forEach.call(files, this._uploadFile.bind(this));
+    },
+
     _uploadFile: function(file) {
       if (file.uploading) {
         return;
@@ -745,7 +758,8 @@ Custom property | Description | Default
       }
       file.loaded = 0;
       this.unshift('files', file);
-      this._uploadFile(file);
+      if (this.auto)
+        this._uploadFile(file);
     },
 
     /**
