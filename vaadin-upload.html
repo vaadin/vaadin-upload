@@ -596,9 +596,9 @@ Custom property | Description | Default
       file.status = this._formatFileProgress(file);
     },
 
-    uploadFiles: function (files) {
+    uploadFiles: function(files) {
       files = files || this.files;
-      files = files.filter(function (file) {
+      files = files.filter(function(file) {
         return !file.complete;
       });
       Array.prototype.forEach.call(files, this.uploadFile.bind(this));
