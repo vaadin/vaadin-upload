@@ -598,7 +598,7 @@ Custom property | Description | Default
 
     uploadFiles: function (files) {
       files = files || this.files;
-      file = files.filter(function (file) {
+      files = files.filter(function (file) {
         return !file.complete;
       });
       Array.prototype.forEach.call(files, this.uploadFile.bind(this));
@@ -758,8 +758,9 @@ Custom property | Description | Default
       }
       file.loaded = 0;
       this.unshift('files', file);
-      if (this.auto)
-        this._uploadFile(file);
+      if (this.auto) {
+        this.uploadFile(file);
+      }
     },
 
     /**
