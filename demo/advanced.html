@@ -152,7 +152,7 @@ This program is available under Apache License Version 2.0, available at https:/
       <template>
         <vaadin-upload id="manualUpload"></vaadin-upload>
         <br>
-        <button onclick="uploadFiles()">Start Uploads</button>
+        <button onclick="uploadFiles()">Start Upload(s)</button>
 
         <script>
           var upload5 = document.querySelector('vaadin-upload#manualUpload');
@@ -162,41 +162,12 @@ This program is available under Apache License Version 2.0, available at https:/
           }
 
           // Change text on button
-          upload5.i18n = {
-            dropFiles: {
-              one: 'Drop file here...',
-              many: 'Drop files here...'
-            },
+          upload5.i18n = Object.assign({}, upload5.i18n, {
             addFiles: {
               one: 'Add File',
               many: 'Add Files'
-            },
-            cancel: 'Cancel',
-            error: {
-              tooManyFiles: 'Too Many Files.',
-              fileIsTooBig: 'File is Too Big.',
-              incorrectFileType: 'Incorrect File Type.'
-            },
-            uploading: {
-              status: {
-                connecting: 'Connecting...',
-                stalled: 'Stalled.',
-                processing: 'Processing File...'
-              },
-              remainingTime: {
-                prefix: 'remaining time: ',
-                unknown: 'unknown remaining time'
-              },
-              error: {
-                serverUnavailable: 'Server Unavailable',
-                unexpectedServerError: 'Unexpected Server Error',
-                forbidden: 'Forbidden'
-              }
-            },
-            units: {
-              size: ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
             }
-          };
+          });
         </script>
       </template>
     </demo-snippet>
