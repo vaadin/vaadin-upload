@@ -320,6 +320,10 @@ Custom property | Description | Default
         value: 'file'
       },
 
+      /**
+       * Triggers upload(s) immediately upon adding file(s). Without this, you must manually trigger uploads
+       * using `uploadFiles` or `uploadFile`
+       */
       auto: {
         type: Boolean,
         value: false
@@ -596,6 +600,11 @@ Custom property | Description | Default
       file.status = this._formatFileProgress(file);
     },
 
+    /**
+     * Triggers the upload of any files that have not been uploaded
+     *
+     * @param {Array} [files] - Files being uploaded. Defaults to all outstanding files
+     */
     uploadFiles: function(files) {
       files = files || this.files;
       files = files.filter(function(file) {
@@ -604,6 +613,11 @@ Custom property | Description | Default
       Array.prototype.forEach.call(files, this.uploadFile.bind(this));
     },
 
+    /**
+     * Triggers the upload of a specific file
+     *
+     * @param {File} file - File being uploaded
+     */
     uploadFile: function(file) {
       if (file.uploading) {
         return;
