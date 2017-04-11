@@ -55,43 +55,6 @@ This program is available under Apache License Version 2.0, available at https:/
       </template>
     </demo-snippet>
 
-    <h3>Custom Upload Button</h3>
-    <demo-snippet>
-      <template>
-        <button-events-demo></button-events-demo>
-
-        <dom-module id="button-events-demo">
-          <template>
-            <style>
-              .add-files {
-                display: flex;
-                height: 100%;
-              }
-            </style>
-            <vaadin-upload id="upload" files="{{files}}" max-files="1" has-max-files="{{hasMaxFiles}}">
-              <div class="add-files">
-                <button on-click="add" disabled$="[[hasMaxFiles]]">
-                  UPLOAD
-                </button>
-              </div>
-            </vaadin-upload>
-          </template>
-          <script>
-            Polymer({
-              is: 'button-events-demo',
-              properties: {
-                files: Array,
-                hasMaxFiles: Boolean
-              },
-              add: function() {
-                this.$.upload.openFileDialog();
-              }
-            });
-          </script>
-        </dom-module>
-      </template>
-    </demo-snippet>
-
     <h3>Customizing the Upload Request</h3>
     <demo-snippet>
       <template>
@@ -181,6 +144,82 @@ This program is available under Apache License Version 2.0, available at https:/
           ];
           upload4.set('i18n.addFiles.many', 'Select books');
         </script>
+      </template>
+    </demo-snippet>
+
+    <h3>Custom Upload Button</h3>
+    <demo-snippet>
+      <template>
+        <button-events-demo></button-events-demo>
+
+        <dom-module id="button-events-demo">
+          <template>
+            <style>
+              vaadin-upload {
+                --vaadin-upload-buttons-primary: {
+                  align-items: center;
+                };
+              }
+            </style>
+            <vaadin-upload id="upload" max-files="1" max-files-reached="{{maxFilesReached}}">
+              <button slot="add-button" disabled$="[[maxFilesReached]]">
+                UPLOAD
+              </button>
+            </vaadin-upload>
+          </template>
+          <script>
+            Polymer({
+              is: 'button-events-demo',
+              properties: {
+                maxFilesReached: Boolean
+              }
+            });
+          </script>
+        </dom-module>
+      </template>
+    </demo-snippet>
+
+    <h3>Custom Upload Button w/ Custom Click Handler</h3>
+    <demo-snippet>
+      <template>
+        <button-custom-event-demo></button-custom-event-demo>
+
+        <dom-module id="button-custom-event-demo">
+          <template>
+            <style>
+              vaadin-upload {
+                --vaadin-upload-buttons-primary: {
+                  align-items: center;
+                };
+              }
+            </style>
+            <vaadin-upload id="upload" max-files="1" max-files-reached="{{maxFilesReached}}">
+              <div slot="add-button" id="addButton">
+                <button on-tap="_customAction" disabled$="[[maxFilesReached]]">
+                  UPLOAD
+                </button>
+              </div>
+            </vaadin-upload>
+          </template>
+          <script>
+            Polymer({
+              is: 'button-custom-event-demo',
+              properties: {
+                maxFilesReached: Boolean
+              },
+              _customAction: function(e) {
+                // Stop Default listener
+                e.stopPropagation();
+
+                // Do something here
+                console.log(e);
+
+                // Trigger upload
+                this.$.addButton.click();
+              }
+            });
+          </script>
+        </dom-module>
       </template>
     </demo-snippet>
   </div>

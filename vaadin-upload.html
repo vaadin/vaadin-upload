@@ -27,6 +27,7 @@ Custom property | Description | Default
 `--vaadin-upload-buttons`|A mixin that is applied to the buttons container|`{}`
 `--vaadin-upload-buttons-primary`|A mixin that is applied to the primary buttons container (left side)|`{}`
 `--vaadin-upload-buttons-secondary`|A mixin that is applied to the secondary buttons container (right side)|`{}`
+`--vaadin-upload-button-add-wrapper`|A mixin that is applied to the div wrapping the upload button|`{}`
 `--vaadin-upload-button-add`|A mixin that is applied to the upload button|`{}`
 `--vaadin-upload-button-add-disabled`|A mixin that is applied to the upload button when `maxFiles` limit is reached|`{}`
 
@@ -128,6 +129,10 @@ Custom property | Description | Default
       }
 
       #addFiles {
+        @apply(--vaadin-upload-button-add-wrapper);
+      }
+
+      #addButton {
         @apply(--paper-font-button);
         padding: .43em .57em;
         background: var(--primary-color, #00B4F0);
@@ -135,7 +140,7 @@ Custom property | Description | Default
         @apply(--vaadin-upload-button-add);
       }
 
-      #addFiles[disabled] {
+      #addButton[disabled] {
         background: var(--divider-color, #e0e0e0);
         color: var(--disabled-text-color, gray);
         @apply(--vaadin-upload-button-add-disabled);
@@ -144,13 +149,13 @@ Custom property | Description | Default
 
     <div id="buttons">
       <div id="buttonsPrimary">
-        <content select=".add-files">
-          <paper-button id="addFiles" on-tap="openFileDialog" disabled$="[[hasMaxFiles]]">
-            <content select=".add-label">
+        <div id="addFiles" on-tap="_onAddFilesClick">
+          <slot name="add-button">
+            <paper-button id="addButton" disabled$="[[maxFilesReached]]">
               [[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]
-            </content>
-          </paper-button>
-        </content>
+            </paper-button>
+          </content>
+        </div>
         <div id="dropLabel" hidden$="[[nodrop]]">
           <content select=".drop-label">
             <iron-icon icon="vaadin-upload:file-upload"></iron-icon>
@@ -287,7 +292,7 @@ Custom property | Description | Default
       /**
        * Specifies if the maximum number of files have been uploaded
        */
-      hasMaxFiles: {
+      maxFilesReached: {
         type: Boolean,
         value: false,
         notify: true,
@@ -545,7 +550,7 @@ Custom property | Description | Default
     _onDragover: function(event) {
       event.preventDefault();
       if (!this.nodrop && !this._dragover) {
-        this._dragoverValid = !this.hasMaxFiles;
+        this._dragoverValid = !this.maxFilesReached;
         if (this._dragoverValid) {
           this._dragRippleAction('down', event);
         }
@@ -746,7 +751,7 @@ Custom property | Description | Default
      * @param {File} file File being added
      */
     _addFile: function(file) {
-      if (this.hasMaxFiles) {
+      if (this.maxFilesReached) {
         this.fire('file-reject', {file: file, error: this.i18n.error.tooManyFiles});
         return;
       }
@@ -773,10 +778,7 @@ Custom property | Description | Default
       this.splice('files', this.files.indexOf(file), 1);
     },
 
-    /**
-     * Triggers the file input dialog
-     */
-    openFileDialog: function() {
+    _onAddFilesClick: function() {
       if (Polymer.Gestures.resetMouseCanceller) {
         /*
           With Polymer v1.7.1, the ghost-click prevention cancels the synthetic
