@@ -152,14 +152,15 @@ This program is available under Apache License Version 2.0, available at https:/
       <template>
         <vaadin-upload id="manualUpload" no-auto></vaadin-upload>
         <br>
-        <button onclick="uploadFiles()">Start Upload(s)</button>
+        <button id="uploadButton">Start Upload(s)</button>
 
         <script>
           var upload5 = document.querySelector('vaadin-upload#manualUpload');
+          var uploadButton = document.getElementById('uploadButton');
 
-          var uploadFiles = function() {
+          uploadButton.addEventListener('click', function () {
             upload5.uploadFiles();
-          }
+          });
 
           // Change upload button text
           upload5.set('i18n.addFiles', {
