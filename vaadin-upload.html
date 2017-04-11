@@ -322,7 +322,7 @@ Custom property | Description | Default
 
       /**
        * Prevents upload(s) from immediately uploading upon adding file(s). With this, you must manually trigger uploads
-       * using `uploadFiles` or `uploadFile`
+       * using `uploadFiles`
        */
       noAuto: {
         type: Boolean,
@@ -610,15 +610,10 @@ Custom property | Description | Default
       files = files.filter(function(file) {
         return !file.complete;
       });
-      Array.prototype.forEach.call(files, this.uploadFile.bind(this));
+      Array.prototype.forEach.call(files, this._uploadFile.bind(this));
     },
 
-    /**
-     * Triggers the upload of a specific file
-     *
-     * @param {File} file - File being uploaded
-     */
-    uploadFile: function(file) {
+    _uploadFile: function(file) {
       if (file.uploading) {
         return;
       }
@@ -773,7 +768,7 @@ Custom property | Description | Default
       file.loaded = 0;
       this.unshift('files', file);
       if (!this.noAuto) {
-        this.uploadFile(file);
+        this._uploadFile(file);
       }
     },
 
