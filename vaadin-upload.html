@@ -321,10 +321,10 @@ Custom property | Description | Default
       },
 
       /**
-       * Triggers upload(s) immediately upon adding file(s). Without this, you must manually trigger uploads
+       * Prevents upload(s) from immediately uploading upon adding file(s). With this, you must manually trigger uploads
        * using `uploadFiles` or `uploadFile`
        */
-      auto: {
+      noAuto: {
         type: Boolean,
         value: false
       },
@@ -772,7 +772,7 @@ Custom property | Description | Default
       }
       file.loaded = 0;
       this.unshift('files', file);
-      if (this.auto) {
+      if (!this.noAuto) {
         this.uploadFile(file);
       }
     },

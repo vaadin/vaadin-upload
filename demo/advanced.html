@@ -150,7 +150,7 @@ This program is available under Apache License Version 2.0, available at https:/
     <h3>Manual Upload Trigger</h3>
     <demo-snippet>
       <template>
-        <vaadin-upload id="manualUpload"></vaadin-upload>
+        <vaadin-upload id="manualUpload" no-auto></vaadin-upload>
         <br>
         <button onclick="uploadFiles()">Start Upload(s)</button>
 
@@ -161,12 +161,10 @@ This program is available under Apache License Version 2.0, available at https:/
             upload5.uploadFiles();
           }
 
-          // Change text on button
-          upload5.i18n = Object.assign({}, upload5.i18n, {
-            addFiles: {
-              one: 'Add File',
-              many: 'Add Files'
-            }
+          // Change upload button text
+          upload5.set('i18n.addFiles', {
+            one: 'Add File',
+            many: 'Add Files'
           });
         </script>
       </template>
