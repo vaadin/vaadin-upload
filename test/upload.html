@@ -276,10 +276,20 @@
           });
         });
 
+        it('should be held when noAuto is set', function(done) {
+          upload.noAuto = true;
+          upload._addFile(file);
+          flush(function() {
+            expect(file.uploaded).not.to.be.ok;
+            expect(file.status).to.be.equal(upload.i18n.uploading.status.held);
+            done();
+          });
+        });
+
         it('should be indeterminate when connecting', function(done) {
           Polymer.Base.async(function() {
             expect(file.indeterminate).to.be.ok;
-            expect(file.status).to.be.equal('Connecting...');
+            expect(file.status).to.be.equal(upload.i18n.uploading.status.connecting);
             done();
           }, 200);
           upload._uploadFile(file);
@@ -317,7 +327,7 @@
 
         it('should be stalled when progress is not updated for more than 2 sec.', function(done) {
           Polymer.Base.async(function() {
-            expect(file.status).to.be.equal('Stalled.');
+            expect(file.status).to.be.equal(upload.i18n.uploading.status.stalled);
             done();
           }, 2200);
           upload._uploadFile(file);

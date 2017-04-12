@@ -322,7 +322,7 @@ Custom property | Description | Default
 
       /**
        * Prevents upload(s) from immediately uploading upon adding file(s).
-       * With this, you must manually trigger uploads using the `uploadFiles` method
+       * With set, you must manually trigger uploads using the `uploadFiles` method
        */
       noAuto: {
         type: Boolean,
@@ -355,7 +355,8 @@ Custom property | Description | Default
        status: {
          connecting: 'Connecting...',
          stalled: 'Stalled.',
-         processing: 'Processing File...'
+         processing: 'Processing File...',
+         held: 'Queued'
        },
        remainingTime: {
          prefix: 'remaining time: ',
@@ -403,7 +404,8 @@ Custom property | Description | Default
               status: {
                 connecting: 'Connecting...',
                 stalled: 'Stalled.',
-                processing: 'Processing File...'
+                processing: 'Processing File...',
+                held: 'Queued'
               },
               remainingTime: {
                 prefix: 'remaining time: ',
@@ -766,7 +768,9 @@ Custom property | Description | Default
         return;
       }
       file.loaded = 0;
+      file.status = this.i18n.uploading.status.held;
       this.unshift('files', file);
+
       if (!this.noAuto) {
         this._uploadFile(file);
       }
