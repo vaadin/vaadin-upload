@@ -178,50 +178,6 @@ This program is available under Apache License Version 2.0, available at https:/
         </dom-module>
       </template>
     </demo-snippet>
-
-    <h3>Custom Upload Button w/ Custom Click Handler</h3>
-    <demo-snippet>
-      <template>
-        <button-custom-event-demo></button-custom-event-demo>
-
-        <dom-module id="button-custom-event-demo">
-          <template>
-            <style>
-              vaadin-upload {
-                --vaadin-upload-buttons-primary: {
-                  align-items: center;
-                };
-              }
-            </style>
-            <vaadin-upload id="upload" max-files="1" max-files-reached="{{maxFilesReached}}">
-              <div slot="add-button" id="addButton">
-                <button on-tap="_customAction" disabled$="[[maxFilesReached]]">
-                  UPLOAD
-                </button>
-              </div>
-            </vaadin-upload>
-          </template>
-          <script>
-            Polymer({
-              is: 'button-custom-event-demo',
-              properties: {
-                maxFilesReached: Boolean
-              },
-              _customAction: function(e) {
-                // Stop Default listener
-                e.stopPropagation();
-
-                // Do something here
-                console.log(e);
-
-                // Trigger upload
-                this.$.addButton.click();
-              }
-            });
-          </script>
-        </dom-module>
-      </template>
-    </demo-snippet>
   </div>
 </body>
 </html>
