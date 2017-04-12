@@ -172,7 +172,7 @@ Custom property | Description | Default
       </div>
     </content>
     <content></content>
-    <input type="file" id="fileInput" on-change="_onFileInputChange" hidden accept$="{{accept}}" multiple$="[[_isMultiple(maxFiles)]]">
+    <input type="file" id="fileInput" on-change="_onFileInputChange" hidden accept$="{{accept}}" multiple$="[[multiple]]">
     <paper-ripple id="dragRipple" noink></paper-ripple>
   </template>
 </dom-module>
@@ -340,6 +340,15 @@ Custom property | Description | Default
       formDataName: {
         type: String,
         value: 'file'
+      },
+      
+      /**
+       * Specifies if the input should be allowed to accept multiple
+       * files
+       */
+      multiple: {
+        type: Boolean,
+        value: false
       },
 
       /**
@@ -848,10 +857,6 @@ Custom property | Description | Default
 
     _i18nPlural: function(value, plural) {
       return value == 1 ? plural.one : plural.many;
-    },
-
-    _isMultiple: function() {
-      return this.maxFiles != 1;
     }
   });
 
