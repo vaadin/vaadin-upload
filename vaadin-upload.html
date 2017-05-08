@@ -632,7 +632,8 @@ Custom property | Description | Default
      * @param {Array} [files] - Files being uploaded. Defaults to all outstanding files
      */
     uploadFiles: function(files) {
-      files = files || this.files;
+      // if files is not an array, put it in an array
+      files = (typeof files === Array)?(files || this.files):[files];
       files = files.filter(function(file) {
         return !file.complete;
       });
@@ -712,7 +713,7 @@ Custom property | Description | Default
 
       var formData = new FormData();
 
-      file.uploadTarget = this.target || '';
+      file.uploadTarget = file.uploadTarget || this.target || '';
       file.formDataName = this.formDataName;
       var evt = this.fire('upload-before', {file: file, xhr: xhr}, {cancelable: true});
       if (evt.defaultPrevented) {
