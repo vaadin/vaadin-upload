@@ -50,23 +50,10 @@
   "variants": {
     "1.x": {
       "dependencies": {
-        "iron-icon": "#2.0-preview",
-        "iron-iconset-svg": "#2.0-preview",
-        "paper-button": "#2.0-preview",
-        "paper-icon-button": "#2.0-preview",
-        "paper-progress": "#2.0-preview",
-        "paper-ripple": "PolymerElements/paper-ripple#2.0-preview",
-        "paper-styles": "#2.0-preview",
         "polymer": "^1.7.0"
       },
       "devDependencies": {
-        "elements-demo-resources": "vaadin/elements-demo-resources#2.0-preview",
-        "iron-component-page": "#2.0-preview",
-        "iron-demo-helpers": "#2.0-preview",
-        "iron-test-helpers": "#2.0-preview",
-        "mock-http-request": "philikon/MockHttpRequest#master",
-        "paper-toast": "#2.0-preview",
-        "web-component-tester": "^6.0.0"
+        "webcomponentsjs": "^0.7.24"
       },
       "resolutions": {
         "polymer": "^1.7.0",
