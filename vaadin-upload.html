@@ -150,11 +150,11 @@ Custom property | Description | Default
     <div id="buttons">
       <div id="buttonsPrimary">
         <div id="addFiles" on-tap="_onAddFilesClick">
-          <slot name="add-button">
+          <content select=".add-button">
             <paper-button id="addButton" disabled$="[[maxFilesReached]]">
               [[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]
             </paper-button>
-          </slot>
+          </content>
         </div>
         <div id="dropLabel" hidden$="[[nodrop]]">
           <slot name="drop-label-icon">
