@@ -217,7 +217,7 @@ Custom property | Description | Default
       },
 
       /**
-       * HTTP Method used to send the files. Only POST and PUT are allowed.
+       * HTTP Method used to send the files. Only POST PUT and LOCAL are allowed.
        */
       method: {
         type: String,
@@ -736,9 +736,33 @@ Custom property | Description | Default
       // Custom listener could modify the xhr just before sending it
       // preventing default
       evt = this.fire('upload-request', {file: file, xhr: xhr, formData: formData}, {cancelable: true});
-      if (!evt.defaultPrevented) {
+
+      if (this.method.toLowerCase() == 'local') {
+        clearTimeout(stalledId);
+        this._loadLocalFile(file);
+        xhr.abort();
+      } else if (!evt.defaultPrevented) {
         xhr.send(formData);
       }
+    },
+
+    _loadLocalFile: function(file) {
+
+      var reader = new FileReader();
+
+      reader.fileName = file.name;
+      reader.readAsText(file);
+
+      reader.onload = function(e) {
+
+        file.indeterminate = file.uploading = false;
+        file.status = '';
+        file.complete = true;
+        file.text = e.target.result;
+        file.response = e.target.result;
+        this.fire('upload-' + (file.error ? 'error' : 'success'), {file: file, xhr: null});
+        this._notifyFileChanges(file);
+      }.bind(this);
     },
 
     _retryFileUpload: function(file) {
