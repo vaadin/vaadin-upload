@@ -278,6 +278,22 @@
             });
             upload._addFiles([file, file]);
           });
+
+          it('should clear the files array when new files are added and noAuto flag is not set', function() {
+            upload.files = [file, file];
+            upload.allowReupload = true;
+
+            upload._addFiles([file]);
+            expect(upload.files.length).to.equal(1);
+          });
+          it('should not clear the files array when new files are added and noAuto flag is set', function() {
+            upload.files = [file, file];
+            upload.allowReupload = true;
+            upload.noAuto = true;
+
+            upload._addFiles([file]);
+            expect(upload.files.length).to.equal(3);
+          });
         });
 
         it('should reject files when maxFiles is reached', function(done) {
