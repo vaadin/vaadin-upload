@@ -777,6 +777,9 @@ Custom property | Description | Default
     },
 
     _addFiles: function(files) {
+      if (this.allowReupload && !this.noAuto) {
+        this.files = [];
+      }
       Array.prototype.forEach.call(files, this._addFile.bind(this));
     },
 
