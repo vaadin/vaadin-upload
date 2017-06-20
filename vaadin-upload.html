@@ -665,7 +665,7 @@ Custom property | Description | Default
           file.indeterminate = file.status = undefined;
         } else if (!file.abort) {
           if (progress < 100) {
-            this._setStatus(file, total, loaded, elapsed, progress);
+            this._setStatus(file, total, loaded, elapsed);
             stalledId = setTimeout(function() {
               file.status = this.i18n.uploading.status.stalled;
               this._notifyFileChanges(file);
@@ -812,6 +812,10 @@ Custom property | Description | Default
     },
 
     _onAddFilesClick: function() {
+      if (this.maxFilesReached) {
+        return;
+      }
+
       if (Polymer.Gestures.resetMouseCanceller) {
         /*
           With Polymer v1.7.1, the ghost-click prevention cancels the synthetic
