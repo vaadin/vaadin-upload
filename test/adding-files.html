@@ -279,6 +279,13 @@
           expect(upload.files.length).to.equal(1);
         });
 
+        it('should not reject files with empty type', function() {
+          upload.accept = 'application/zip,application/java-archive';
+          var unknownFile = createFile(testFileSize, '');
+          upload._addFiles([unknownFile]);
+          expect(upload.files.length).to.equal(1);
+        });
+
         it('should allow wildcards', function() {
           upload.accept = 'application/*';
           upload._addFiles([file]);
