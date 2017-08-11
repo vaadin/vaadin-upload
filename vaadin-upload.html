@@ -139,6 +139,10 @@ Custom property | Description | Default
         color: var(--primary-font-color, #FFF);
         @apply(--vaadin-upload-button-add);
       }
+      
+      #addFiles:hover {
+        @apply(--vaadin-upload-button-add-hover);
+      }
 
       #addButton[disabled] {
         background: var(--divider-color, #e0e0e0);
