@@ -28,7 +28,7 @@
     "wct.conf.js"
   ],
   "dependencies": {
-    "polymer": "^2.0.0",
+    "polymer": "1.7 - 2.0.0",
     "iron-icon": "^2.0.0",
     "iron-iconset-svg": "^2.0.0",
     "paper-button": "^2.0.0",
