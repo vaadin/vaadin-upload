@@ -238,6 +238,76 @@
       });
 
       describe('validate files', function() {
+        describe('allowReupload flag', function() {
+          it('should not reject files when uploading within maxFiles', function(done) {
+            upload.maxFiles = 1;
+            upload.allowReupload = true;
+
+            var rejectSpy = sinon.spy();
+            upload.addEventListener('file-reject', rejectSpy);
+            upload.addEventListener('upload-success', function(e) {
+              expect(e.detail.file.complete).to.be.ok;
+              expect(rejectSpy).not.to.be.called;
+              done();
+            });
+            upload._addFiles([file]);
+          });
+
+          it('should reject files when uploading greater than maxFiles', function(done) {
+            upload.maxFiles = 1;
+            upload.allowReupload = true;
+
+            upload.addEventListener('file-reject', function(e) {
+              expect(e.detail.error).to.be.ok;
+              done();
+            });
+            upload._addFiles([file, file]);
+          });
+
+          it('should not reject files when uploading within maxFiles and maxFiles has been reached', function(done) {
+            upload.maxFiles = 1;
+            upload.allowReupload = true;
+            upload.files = [file];
+
+            var rejectSpy = sinon.spy();
+            upload.addEventListener('file-reject', rejectSpy);
+            upload.addEventListener('upload-success', function(e) {
+              expect(e.detail.file.complete).to.be.ok;
+              expect(rejectSpy).not.to.be.called;
+              done();
+            });
+            upload._addFiles([file]);
+          });
+
+          it('should reject files when uploading greater than maxFiles and maxFiles has been reached', function(done) {
+            upload.maxFiles = 1;
+            upload.allowReupload = true;
+            upload.files = [file];
+
+            upload.addEventListener('file-reject', function(e) {
+              expect(e.detail.error).to.be.ok;
+              done();
+            });
+            upload._addFiles([file, file]);
+          });
+
+          it('should clear the files array when new files are added and noAuto flag is not set', function() {
+            upload.files = [file, file];
+            upload.allowReupload = true;
+
+            upload._addFiles([file]);
+            expect(upload.files.length).to.equal(1);
+          });
+          it('should not clear the files array when new files are added and noAuto flag is set', function() {
+            upload.files = [file, file];
+            upload.allowReupload = true;
+            upload.noAuto = true;
+
+            upload._addFiles([file]);
+            expect(upload.files.length).to.equal(3);
+          });
+        });
+
         it('should reject files when maxFiles is reached', function(done) {
           upload.maxFiles = 1;
           upload.addEventListener('file-reject', function(e) {

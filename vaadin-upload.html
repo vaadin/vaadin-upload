@@ -292,6 +292,14 @@ Custom property | Description | Default
       },
 
       /**
+       * Allows to re-upload files
+       */
+      allowReupload: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
        * Specifies if the maximum number of files have been uploaded
        */
       maxFilesReached: {
@@ -299,7 +307,7 @@ Custom property | Description | Default
         value: false,
         notify: true,
         readOnly: true,
-        computed: '_maxFilesAdded(maxFiles, files.length)'
+        computed: '_maxFilesAdded(allowReupload, maxFiles, files.length)'
       },
 
       /**
@@ -511,8 +519,8 @@ Custom property | Description | Default
         ')';
     },
 
-    _maxFilesAdded: function(maxFiles, numFiles) {
-      return maxFiles >= 0 && numFiles >= maxFiles;
+    _maxFilesAdded: function(allowReupload, maxFiles, numFiles) {
+      return (maxFiles >= 0 && numFiles >= maxFiles) && !allowReupload;
     },
 
     _dragRippleAction: function(action, event) {
@@ -770,6 +778,9 @@ Custom property | Description | Default
     },
 
     _addFiles: function(files) {
+      if (this.allowReupload && !this.noAuto) {
+        this.files = [];
+      }
       Array.prototype.forEach.call(files, this._addFile.bind(this));
     },
 
@@ -778,8 +789,8 @@ Custom property | Description | Default
      *
      * @param {File} file File being added
      */
-    _addFile: function(file) {
-      if (this.maxFilesReached) {
+    _addFile: function(file, numAddedFiles) {
+      if ((this.allowReupload ? numAddedFiles : this.files.length) >= this.maxFiles) {
         this.fire('file-reject', {file: file, error: this.i18n.error.tooManyFiles});
         return;
       }
