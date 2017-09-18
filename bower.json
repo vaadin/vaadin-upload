@@ -73,7 +73,11 @@
         "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
       },
       "resolutions": {
-        "webcomponentsjs": "^0.7"
+        "webcomponentsjs": "^0.7",
+        "polymer": "^1.9",
+        "marked-element": "^1",
+        "prism-element": "^1",
+        "iron-selector": "^1"
       }
     }
   },
