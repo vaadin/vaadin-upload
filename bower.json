@@ -39,6 +39,7 @@
     "vaadin-themable-mixin": "^1.2.0"
   },
   "devDependencies": {
+    "elements-demo-resources": "vaadin/elements-demo-resources#^2.0.0",
     "iron-component-page": "PolymerElements/iron-component-page#1 - 2",
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
     "iron-test-helpers": "PolymerElements/iron-test-helpers#1 - 2",
