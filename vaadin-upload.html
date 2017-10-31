@@ -420,6 +420,7 @@ This program is available under Apache License Version 2.0, available at https:/
           this.addEventListener('file-abort', this._onFileAbort.bind(this));
           this.addEventListener('file-remove', this._onFileRemove.bind(this));
           this.addEventListener('file-start', this._onFileStart.bind(this));
+          this.addEventListener('upload-success', this._onUploadSuccess.bind(this));
         }
 
         _formatSize(bytes) {
@@ -439,7 +440,7 @@ This program is available under Apache License Version 2.0, available at https:/
           const unitSizes = [60, 60, 24, Infinity];
           const timeValues = [0];
 
-          for (var i = 0; i < unitSizes.length && time > 0; i++) {
+          for (let i = 0; i < unitSizes.length && time > 0; i++) {
             timeValues[i] = time % unitSizes[i];
             time = Math.floor(time / unitSizes[i]);
           }
@@ -502,6 +503,18 @@ This program is available under Apache License Version 2.0, available at https:/
           }
         }
 
+        _onUploadSuccess() {
+          const complete = this.files.every((file) => file.complete);
+
+          if (complete) {
+            this.dispatchEvent(
+              new CustomEvent('uploads-complete', {
+                detail: {files: this.files}
+              })
+            );
+          }
+        }
+
         // Override for tests
         _createXhr() {
           return new XMLHttpRequest();
@@ -515,7 +528,7 @@ This program is available under Apache License Version 2.0, available at https:/
               this.headers = undefined;
             }
           }
-          for (var key in this.headers) {
+          for (const key in this.headers) {
             xhr.setRequestHeader(key, this.headers[key]);
           }
           if (this.timeout) {
@@ -702,8 +715,8 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _notifyFileChanges(file) {
-          var p = 'files.' + this.files.indexOf(file) + '.';
-          for (var i in file) {
+          const p = 'files.' + this.files.indexOf(file) + '.';
+          for (const i in file) {
             if (file.hasOwnProperty(i)) {
               this.notifyPath(p + i, file[i]);
             }
@@ -915,6 +928,14 @@ This program is available under Apache License Version 2.0, available at https:/
         * @param {Object} detail.xhr the xhr
         * @param {Object} detail.file the file being uploaded
         */
+
+        /**
+         * Fired in case all upload processes succeed.
+         *
+         * @event uploads-complete
+         * @param {Object} detail
+         * @param {Object} detail.files the files being uploaded with loaded info
+         */
       }
 
       customElements.define(UploadElement.is, UploadElement);
