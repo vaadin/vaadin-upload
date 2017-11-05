@@ -1,0 +1,85 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="vaadin-upload-mixin.html">
+
+<dom-module id="vaadin-upload-single">
+  <template>
+    <input id="fileInput"
+      type="file"
+      accept$="[[accept]]"
+      capture$="[[capture]]"
+      required$="[[required]]"
+      on-change="_onFileInputChange"
+      disabled="[[disabled]]"
+      hidden>
+
+    <slot name="uploader"></slot>
+    <span on-click="openFileDialog">
+      <slot name="button">
+        <vaadin-button disabled="[[disabled]]">
+          [[i18n.addFile]]
+        </vaadin-button>
+      </slot>
+    </span>
+  </template>
+
+  <script>
+    /**
+     * `vaadin-upload-single`
+     *
+     *
+     * @memberof Vaadin
+     * @mixes Vaadin.Upload.UploadMixin
+     */
+    class UploadSingleElement extends
+      Vaadin.Upload.UploadMixin(
+      Polymer.Element) {
+
+      static get is() {
+        return 'vaadin-upload-single';
+      }
+
+      ready() {
+        super.ready();
+
+        // Add i18n keys
+        this.set('i18n.addFile', 'Select File');
+      }
+
+      /**
+       * Overrides the default validation logic. Ensuring that only one file exists
+       * @private
+       *
+       * @param {File[]} files
+       * @return {Boolean} True if only one file exists
+       */
+      __getValidity(files) {
+        return files.length === 1;
+      }
+      /**
+       * Overrides the default addition logic. Allows only one file to exist at any give time.
+       * NOTE: If the previous file was in-flight, the request will be aborted.
+       * @private
+       *
+       * @param {File} file
+       */
+      __addFile(file) {
+        this.files[0].remove();
+        this.unshift('files', file);
+      }
+    }
+
+    customElements.define(UploadSingleElement.is, UploadSingleElement);
+
+    /**
+     * @namespace Vaadin
+     */
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.UploadSingleElement = UploadSingleElement;
+  </script>
+</dom-module>

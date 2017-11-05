@@ -1,0 +1,436 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<script>
+  window.Vaadin = window.Vaadin || {};
+  Vaadin.Upload = Vaadin.Upload || {};
+
+  /**
+   * @polymerMixin
+   */
+  Vaadin.Upload.UploadMixin = (baseClass) => {
+    return class extends baseClass {
+      static get properties() {
+        return {
+          // Files to upload
+          files: {
+            type: Array,
+            value() {
+              return [];
+            },
+            notify: true,
+          },
+          // A comma-separated list of allowed file extensions or MIME types
+          accept: String,
+          // Maximum file size specified in `unit` size
+          maxFileSize: {
+            type: Number,
+            value: Infinity,
+          },
+          // Unit to specify `maxFileSize` in. Must be one of `_units`
+          unit: {
+            type: String,
+            value: 'kB',
+          },
+          // Base file size. Must be either 1024 or 1000
+          baseFileSize: {
+            type: Number,
+            value: 1e3,
+          },
+          // Capture attribute for input
+          capture: String,
+          // Prevents reload of page while uploads are in progress
+          preventReload: {
+            type: Boolean,
+            value: false,
+          },
+          // Disables the file input and button, can override any default disabled state
+          disabled: {
+            type: Boolean,
+            value: false,
+          },
+          // True if component must be valid
+          required: {
+            type: Boolean,
+            value: false,
+          },
+          // The invalid state of component
+          invalid: {
+            type: Boolean,
+            value: false,
+            notify: true,
+            reflectToAttribute: true,
+            observer: '_invalidChanged',
+          },
+          i18n: {
+            type: Object,
+            value() {
+              return {
+                beforeUnload: 'Are you sure you want to leave while upload(s) are in progress?',
+                error: {
+                  fileIsTooBig: 'File is Too Big.',
+                  incorrectFileType: 'Incorrect File Type.'
+                },
+                state: {
+                  queued: 'Queued',
+                },
+              };
+            },
+          },
+          // Units available for specifiying `unit` in
+          _units: {
+            type: Array,
+            value() {
+              return ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+            },
+          },
+        };
+      }
+
+      static get observers() {
+        return [
+          'validate(files, files.*)',
+        ];
+      }
+
+      ready() {
+        super.ready();
+
+        // Listen for page unload to prevent navigation during upload
+        window.addEventListener('beforeunload', this._onBeforeUnload.bind(this));
+      }
+
+      /**
+       * Triggers the file input dialog
+       */
+      openFileDialog() {
+        // Clears the input FileList and value
+        this.$.fileInput.value = '';
+        this.$.fileInput.click();
+      }
+      /**
+       * Removes specified file from the list and aborts associated request if it exists
+       *
+       * @param {File} file
+       */
+      remove(file) {
+        if (file.state.uploading && file.abort) {
+          file.abort();
+        }
+        this.splice('files', this.files.indexOf(file), 1);
+      }
+      /**
+       * Returns true if valid. Fires a `file-reject` event and returns false if invalid
+       * @fires file-reject
+       * @fires file-validate
+       *
+       * @param {File} file
+       * @return {Boolean} - True if valid
+       */
+      validateFile(file) {
+        const validationEvent =  new CustomEvent('file-validate', {
+          cancelable: true,
+          detail: {file},
+        });
+        const cancelled = !this.dispatchEvent(validationEvent);
+        // Allows user to supply own file validation
+        const error = validationEvent.detail.error;
+        if (error) {
+          this.dispatchEvent(
+            new CustomEvent('file-reject', {
+              detail: {
+                file,
+                error,
+              },
+            })
+          );
+          return false;
+        }
+        // If prevented and no error, consider valid
+        if (cancelled) {
+          return true;
+        }
+
+        // Validate type
+        if (file.type) {
+          const MIMEtype = new RegExp(this.$.fileInput.accept.replace('*', '[^\\/,]+'));
+          if (!MIMEtype.test(file.type)) {
+            this.dispatchEvent(
+              new CustomEvent('file-reject', {
+                detail: {
+                  file,
+                  error: this.i18n.error.incorrectFileType,
+                },
+              })
+            );
+            return false;
+          }
+        }
+        // Validate size
+        if (file.size) {
+          const fileSize = this._calculateSizeIn(file.size, this.unit);
+          if (this.maxFileSize > 0 && fileSize > this.maxFileSize) {
+            this.dispatchEvent(
+              new CustomEvent('file-reject', {
+                detail: {
+                  file,
+                  error: this.i18n.error.fileIsTooBig,
+                },
+              })
+            );
+            return false;
+          }
+        }
+
+        return true;
+      }
+      /**
+       * Triggers validation and sets invalid property
+       *
+       * @param {File[]} files
+       * @return {Boolean} True if valid
+       */
+      validate(files) {
+        this.invalid = !this._getValidity(files);
+        return !this.invalid;
+      }
+      /**
+       * Handles ability to override validation and core validation logic
+       * @private
+       * @fires upload-validate
+       *
+       * @param {File[]} files
+       * @return {Boolean} True if valid
+       */
+      _getValidity(files) {
+        const validationEvent = new CustomEvent('upload-validate', {
+          detail: {
+            required: this.required,
+            files,
+          },
+        });
+        const cancelled = !this.dispatchEvent(validationEvent);
+        if (cancelled) {
+          return validationEvent.detail.valid;
+        }
+
+        return !this.required || !this.__getValidity(files);
+      }
+      /**
+       * Upload logic for validation.
+       * NOTE: Must be implemented for any validation outside of required
+       * @protected
+       *
+       * @param {File[]} files
+       * @return {Boolean} True if valid list of files
+       */
+      __getValidity(files) {
+        return true;
+      }
+      /**
+       * Handles setting `aria-invalid` based on invalid property
+       * @private
+       *
+       * @param {Boolean} invalid
+       */
+      _invalidChanged(invalid) {
+        if (invalid) {
+          this.setAttribute('aria-invalid', 'true');
+        } else {
+          this.removeAttribute('aria-invalid');
+        }
+      }
+      /**
+       * Convert the size in bytes to specified unit
+       * @private
+       *
+       * @param {Number} [bytes=0]
+       * @param {String} [unit=this.unit]
+       * @param {Number} [baseSize=this.baseFileSize]
+       * @return {Number}
+       */
+       _calculateSizeIn(bytes = 0, unit = this.unit, baseSize = this.baseFileSize) {
+        let pos = this._units.indexOf(unit);
+        if (pos === -1 || pos === 0) {
+          return bytes.toFixed(2);
+        }
+        for (; pos > 0; pos--) {
+          bytes /= baseSize;
+        }
+        return bytes.toFixed(2);
+      }
+      /**
+       * Sets the default states of a file
+       * @private
+       *
+       * @return {Object}
+       */
+      _resetFileState() {
+        return {
+          queued: true,
+          uploading: false,
+          aborted: false,
+          errored: false,
+          completed: false,
+        };
+      }
+      /**
+       * Handles adding of files
+       *
+       * @param {File[]|File} [files=[]]
+       */
+      addFiles(files = []) {
+        files = this._ensureArray(files).filter(file => !file.state || !file.state.completed);
+        files.forEach(this._addFile, this);
+      }
+      /**
+       * Adds file if valid and initializes file state
+       * @private
+       *
+       * @param {File} file
+       */
+      _addFile(file) {
+        const valid = this.validateFile(file);
+        if (!valid) {
+          return;
+        }
+
+        file.remove = this.remove.bind(this, file);
+        file.state = this._resetFileState(file);
+        file.status = this.i18n.state.queued;
+        this.__addFile(file);
+      }
+      /**
+       * Handles file addition logic. May be overwritten
+       * @protected
+       *
+       * @param {File} file
+       */
+      __addFile(file) {
+        this.unshift('files', file);
+      }
+
+      /**
+       * Listens for the `change` event on the input
+       * @private
+       * @listens change
+       *
+       * @param {Event} event
+       */
+      _onFileInputChange({target}) {
+        this.addFiles(target.files);
+      }
+      /**
+       * Prevents navigating away from current page if uploads are in progress
+       * NOTE: Some browsers, such as Chrome, may have disabled the custom message ability
+       * @private
+       * @listens beforeunload
+       *
+       * @param {Event} event
+       * @return {String}
+       */
+      _onBeforeUnload(event) {
+        const files = this.files.filter((file) => file.state && file.state.uploading);
+        if (files.length === 0 || !this.preventReload) {
+          return;
+        }
+
+        const dialogText = this.i18n.beforeUnload;
+        event.returnValue = dialogText;
+        return dialogText;
+      }
+      /**
+       * Ensures the passed parameter is an Array
+       * @private
+       *
+       * @param {FileList|File[]|File} files
+       * @return {File[]}
+       */
+      _ensureArray(files) {
+        if (!Number.isInteger(files.length)) {
+          return [files];
+        }
+        return [...files];
+      }
+      /**
+       * Notifies subproperties of change
+       * @private
+       *
+       * @param {File} file
+       */
+       _notifyFileChanges(file) {
+        const p = `files.${this.files.indexOf(file)}.`;
+        for (const i in file) {
+          if (file.hasOwnProperty(i)) {
+            this.notifyPath(p + i, file[i]);
+          }
+        }
+      }
+      /**
+       * Determines whether to use singular or plural version of i18n key
+       * @private
+       *
+       * @param {Number} count
+       * @param {Object} i18nKey - Must have properties `one` and `many`
+       * @return {String} Proper pluralization of specified i18n key
+       */
+      _i18nPlural(count, i18nKey) {
+        if (Number.isNaN(count) || !i18nKey) {
+          return '';
+        }
+        return count === 1 ? i18nKey.one : i18nKey.many;
+      }
+
+      /**
+       * A [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File)
+       * object with a number of extra properties:
+       *
+       * @typedef {Object} File
+       * @property {Number} lastModified - the last modified time
+       * @property {Date} lastModifiedDate -  the last modified Date
+       * @property {String} name - the name of the file
+       * @property {Number} size - the size of the file
+       * @property {Number} type - the MIME type of the file
+       * @property {Function} remove
+       * @property {String} status
+       * @property {Object} state
+       * @property {Boolean} state.queued
+       * @property {Boolean} state.uploading
+       * @property {Boolean} state.aborted
+       * @property {Boolean} state.errored
+       * @property {Boolean} state.completed
+       */
+      /**
+       * Fired when validation is triggered. Provides the ability to override default validation
+       * NOTE: Listeners must `preventDefault` to override
+       *
+       * @event upload-validate
+       * @type {Object}
+       * @property {Boolean} required
+       * @property {File[]} files
+       */
+      /**
+       * Fired when file validation is triggered. Provides the ability to override default validation
+       * NOTE: Listeners must `preventDefault` or return an `error` to override. If default is
+       *       prevented and no `error` property is returned, the file is considered valid.
+       *
+       * @event file-validate
+       * @type {Object}
+       * @property {File} file
+       * @property {String} error - the cause for rejection
+       */
+      /**
+       * Fired when a file cannot be added to the queue due to a constrain:
+       *  file-size, file-type or custom reason from implementation
+       *
+       * @event file-reject
+       * @type {Object}
+       * @property {File} file the file added
+       * @property {String} error - the cause for rejection
+       */
+    };
+  };
+</script>

@@ -3,61 +3,17 @@
 [![Build Status](https://travis-ci.org/vaadin/vaadin-upload.svg?branch=master)](https://travis-ci.org/vaadin/vaadin-upload)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vaadin/vaadin-core-elements?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-# &lt;vaadin-upload&gt;
 
 [Live Demo ↗](https://vaadin.com/elements/vaadin-upload/html-examples/upload-basic-demos)
 
 [&lt;vaadin-upload&gt;](https://vaadin.com/elements/vaadin-upload) is a  [Polymer](http://polymer-project.org) element for uploading files, part of the [vaadin-core-elements](https://vaadin.com/elements) element bundle.
 
-<!---
-```
-<custom-element-demo>
-  <template>
-    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="https://cdn.vaadin.com/vaadin-elements/master/mock-http-request/lib/mock.js"></script>
-    <link rel="import" href="vaadin-upload.html">
-    <script>
-      function mockXhrGenerator(file) {
-        var xhr = new MockHttpRequest();
-        xhr.upload = {};
-        xhr.onsend = function() {
-          var total = file && file.size || 1024, done = 0;
-          function start() {
-            setTimeout(progress, 1000);
-          }
-          function progress() {
-            xhr.upload.onprogress({total: total, loaded: done});
-            if (done < total) {
-              setTimeout(progress, 200);
-              done = Math.min(total, done + 254000);
-            } else if (!file.abort) {
-              setTimeout(finish, 1000);
-            }
-          }
-          function finish() {
-            xhr.receive(200, '{"message":"OK"}');
-          }
-          start();
-        };
-        return xhr;
-      }
+First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your element locally.
 
-      window.addEventListener('WebComponentsReady', function() {
-        // Monkey-patch vaadin-upload prototype to use MockHttpRequest
-        Object.getPrototypeOf(document.createElement('vaadin-upload'))._createXhr = mockXhrGenerator;
-      });
-    </script>
+## Viewing Your Element
 
-    <next-code-block></next-code-block>
-  </template>
-</custom-element-demo>
 ```
--->
-```html
-<vaadin-upload accept=".pdf">
-  <iron-icon slot="drop-label-icon" icon="description"></iron-icon>
-  <span slot="drop-label">Drop your favourite Novels here (PDF files only)</span>
-</vaadin-upload>
+$ polymer serve
 ```
 
 [<img src="https://raw.githubusercontent.com/vaadin/vaadin-upload/master/screenshot.png" alt="Screenshot of vaadin-upload" width="723" />](https://vaadin.com/elements/-/element/vaadin-upload)
@@ -98,4 +54,4 @@ We are using [ESLint](http://eslint.org/) for linting JavaScript code. You can c
 
 ## License
 
-Apache License 2.0
+Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.

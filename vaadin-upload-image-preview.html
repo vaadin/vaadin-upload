@@ -1,0 +1,96 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../vaadin-themable-mixin/vaadin-themable-mixin.html">
+
+<dom-module id="vaadin-upload-image-preview">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      :host([hidden]),
+      :host(:not([supported])) {
+        display: none !important;
+      }
+
+      [part="file-preview"] {
+        height: auto;
+        width: 100%;
+      }
+    </style>
+
+    <img part="file-preview" id="preview">
+  </template>
+
+  <script>
+    /**
+     * `vaadin-upload-image-preview`
+     *
+     *
+     * @memberof Vaadin
+     * @mixes Vaadin.ThemableMixin
+     */
+    class UploadImagePreviewElement extends
+      Vaadin.ThemableMixin(
+      Polymer.Element) {
+
+      static get is() {
+        return 'vaadin-upload-image-preview';
+      }
+
+      static get properties() {
+        return {
+          // File to attempt render of
+          file: {
+            type: Object,
+            observer: '_renderFile',
+          },
+          // Alt for the image preview
+          alt: String,
+          supported: {
+            type: Boolean,
+            reflectToAttribute: true,
+            value() {
+              return Boolean(window.File && window.FileList && window.FileReader);
+            },
+          },
+        };
+      }
+      /**
+       * Renders image file for immediate preview
+       * @private
+       *
+       * @param {File} file
+       */
+      _renderFile(file) {
+        // Only attempt to render image files or supported
+        if (!file.type.match(/image.*/) || !this.supported) {
+          return;
+        }
+
+        // TODO: Handle resizing image preview
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          this.$.preview.src = file.dataUrl = event.target.result;
+          this.$.preview.alt = this.alt || file.name;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    customElements.define(UploadImagePreviewElement.is, UploadImagePreviewElement);
+
+    /**
+     * @namespace Vaadin
+     */
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.UploadImagePreviewElement = UploadImagePreviewElement;
+  </script>
+</dom-module>

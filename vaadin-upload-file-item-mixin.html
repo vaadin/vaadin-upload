@@ -1,0 +1,166 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<script>
+  window.Vaadin = window.Vaadin || {};
+  Vaadin.Upload = Vaadin.Upload || {};
+
+  /**
+   * @polymerMixin
+   */
+  Vaadin.Upload.FileItemMixin = (baseClass) => {
+    return class extends baseClass {
+      static get properties() {
+        return {
+          file: Object,
+          // Base file size to use. Can be 1024 or 1000
+          baseFileSize: {
+            type: Number,
+            value: 1e3,
+          },
+          i18n: {
+            type: Object,
+            value() {
+              return {
+                remainingTime: {
+                  prefix: 'remaining time: ',
+                  unknown: 'unknown remaining time',
+                },
+                units: {
+                  size: ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+                },
+              };
+            },
+          },
+        };
+      }
+      /**
+       * Handles file item actions
+       * @private
+       * @fires file-start
+       * @fires file-retry
+       * @fires file-remove
+       *
+       * @param {ClickEvent} event
+       */
+      _fireFileEvent(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        const actionEvent = event.target.getAttribute('file-event');
+        const cancelled = !this.dispatchEvent(
+          new CustomEvent(`file-${actionEvent}`, {
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+            detail: {file: this.file},
+          })
+        );
+        if (cancelled) {
+          return;
+        }
+
+        const action = this.file[actionEvent];
+        if (action) {
+          action();
+        }
+      }
+      /**
+       * Formats the size into a human readable string with the closest match for units
+       * @private
+       *
+       * @param {Number} bytes
+       * @return {String}
+       */
+       _formatSize(bytes) {
+        if (typeof this.i18n.formatSize === 'function') {
+          return this.i18n.formatSize(bytes);
+        }
+
+        // https://wiki.ubuntu.com/UnitsPolicy
+        const base = this.baseFileSize;
+        const unit = ~~(Math.log(bytes) / Math.log(base));
+        const dec = Math.max(0, Math.min(3, unit - 1));
+        const size = parseFloat((bytes / Math.pow(base, unit)).toFixed(dec));
+        return `${size} ${this.i18n.units.size[unit]}`;
+      }
+      /**
+       * Splits an interval of time into its appropriate seconds, minutes, and hours
+       * @private
+       *
+       * @param {Number} time
+       * @return {Array}
+       */
+      _splitTimeByUnits(time) {
+        const unitSizes = [60, 60, 24, Infinity];
+        const timeValues = [0];
+        for (var i = 0; i < unitSizes.length && time > 0; i++) {
+          timeValues[i] = time % unitSizes[i];
+          time = Math.floor(time / unitSizes[i]);
+        }
+        return timeValues;
+      }
+      /**
+       * Formats seconds into a human readable time
+       * @private
+       *
+       * @param {Number} seconds
+       * @return {String}
+       */
+      _formatTime(seconds) {
+        const split = this._splitTimeByUnits(seconds);
+        if (typeof this.i18n.formatTime === 'function') {
+          return this.i18n.formatTime(seconds, split);
+        }
+        // Fill HH:MM:SS with leading zeros
+        while (split.length < 3) {
+          split.push(0);
+        }
+        return split
+          .reverse()
+          .map((number) => (number < 10 ? '0' : '') + number)
+          .join(':');
+      }
+      /**
+       * Formats the upload progress string for display
+       * @private
+
+       * @param {Number} total - Total transfer size in bytes
+       * @param {Number} loaded - Total transfered so far in bytes
+       * @param {Number} progress - Percentage transfered
+       * @param {Number} remaining - Time remaining until transfer is complete
+       * @return {String}
+       */
+      _formatFileProgress(total, loaded, progress, remaining) {
+        return `${this._formatSize(total)}: ${progress}% (` +
+          `${loaded > 0 ?
+            `${this.i18n.remainingTime.prefix}${this._formatTime(remaining)}` :
+            this.i18n.remainingTime.prefix})`;
+      }
+
+      /**
+       * Fired when the start button is pressed.
+       *
+       * @event file-start
+       * @param {Object} detail
+       * @param {Object} detail.file - file to start upload of
+       */
+      /**
+       * Fired when the retry button is pressed.
+       *
+       * @event file-retry
+       * @param {Object} detail
+       * @param {Object} detail.file - file to retry upload of
+       */
+      /**
+       * Fired when the remove button is pressed. Will abort the in-flight request if it exists
+       *
+       * @event file-retry
+       * @param {Object} detail
+       * @param {Object} detail.file - file to remove
+       */
+    };
+  };
+</script>

@@ -1,0 +1,155 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../vaadin-themable-mixin/vaadin-themable-mixin.html">
+
+<dom-module id="vaadin-upload-video-preview">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      :host([hidden]),
+      :host(:not([supported])) {
+        display: none !important;
+      }
+
+      [part="file-preview"] {
+        height: auto;
+        width: 100%;
+      }
+    </style>
+
+    <img part="file-preview" id="preview">
+  </template>
+
+  <script>
+    /**
+     * `vaadin-upload-video-preview`
+     *
+     *
+     * @memberof Vaadin
+     * @mixes Vaadin.ThemableMixin
+     */
+    class UploadVideoPreviewElement extends
+      Vaadin.ThemableMixin(
+      Polymer.Element) {
+
+      static get is() {
+        return 'vaadin-upload-video-preview';
+      }
+
+      static get properties() {
+        return {
+          // File to attempt render of
+          file: {
+            type: Object,
+            observer: '_renderFile',
+          },
+          // Alt string associated with the preview
+          alt: String,
+          // Determines if the element is supported
+          supported: {
+            type: Boolean,
+            reflectToAttribute: true,
+            value() {
+              let supported = true;
+              // Check Blob
+              try {
+                supported = Boolean(new Blob());
+              } catch (e) {
+                supported = false;
+              }
+              // Check URL
+              const url = window['URL']
+              supported = supported && url && 'revokeObjectURL' in url && 'createObjectURL' in url;
+              // Check Canvas
+              supported = supported && document.createElement('canvas').toDataURL('image/png').startsWith('data:image/png');
+              // Check Video Preload
+              supported = supported && 'preload' in document.createElement('video');
+              // Check FileReader
+              return supported && Boolean(window.File && window.FileList && window.FileReader);
+            }
+          }
+        };
+      }
+
+      /**
+       * Attempts to render a preview of a video file
+       * @private
+       *
+       * @param {File} file
+       */
+      _renderFile(file) {
+        // Only attempt to render image files if supported
+        if (!file.type.match(/video.*/) || !this.supported) {
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const blob = new Blob([event.target.result], {type: file.type});
+          const url = URL.createObjectURL(blob);
+          const video = document.createElement('video');
+
+          const timeupdate = () => {
+            if (this._snapImage(file, video, url)) {
+              video.removeEventListener('timeupdate', timeupdate);
+              video.pause();
+            }
+          };
+          video.addEventListener('loadeddata', () => {
+            if (this._snapImage(file, video, url)) {
+              video.removeEventListener('timeupdate', timeupdate);
+            }
+          });
+
+          video.addEventListener('timeupdate', timeupdate);
+          video.preload = 'metadata';
+          video.src = url;
+          // Load video in Safari / IE11
+          video.muted = true;
+          video.playsInline = true;
+          video.play();
+        };
+        reader.readAsArrayBuffer(file);
+      }
+      /**
+       * Draws video data to canvas and renders a preview of it
+       * @private
+       *
+       * @param {File} file
+       * @param {HTMLElement} video - video element
+       * @param {String} url - Object Url
+       * @return {Boolean} - True if rendered successfully
+       */
+      _snapImage(file, video, url) {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        const image = canvas.toDataURL('image/png');
+        const success = image.length > 100000;
+        if (success) {
+          this.$.preview.src = image;
+          this.$.preview.alt = this.alt || file.name;
+          URL.revokeObjectURL(url);
+        }
+        return success;
+      }
+    }
+
+    customElements.define(UploadVideoPreviewElement.is, UploadVideoPreviewElement);
+
+    /**
+     * @namespace Vaadin
+     */
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.UploadVideoPreviewElement = UploadVideoPreviewElement;
+  </script>
+</dom-module>

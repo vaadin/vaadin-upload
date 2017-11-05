@@ -1,0 +1,164 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="vaadin-upload-uploader-mixin.html">
+
+<dom-module id="vaadin-upload-localstorage-uploader">
+  <template>
+    <slot id="fallback"></slot>
+  </template>
+  <script>
+    /**
+     * `vaadin-upload-localstorage-uploader`
+     *
+     *
+     * @memberof Vaadin
+     * @mixes Vaadin.Upload.UploaderMixin
+     */
+    class UploadLocalstorageUploaderElement extends
+      Vaadin.Upload.UploaderMixin(
+      Polymer.Element) {
+
+      static get is() {
+        return 'vaadin-upload-localstorage-uploader';
+      }
+
+      static get properties() {
+        return {
+          // Path to store the file data at
+          path: {
+            type: String,
+            value: 'files',
+            observer: '_initializeStorage',
+          },
+          // True if uploader is supported
+          supported: {
+            type: Boolean,
+            reflectToAttribute: true,
+            value() {
+              try {
+                const str = 'vaadin';
+                localStorage.setItem(str, str);
+                localStorage.removeItem(str);
+                return Boolean(window.File && window.FileList && window.FileReader);
+              } catch (e) {
+                return false;
+              }
+            },
+          },
+          // Interal reference mirroring localstorage
+          _storageFiles: {
+            type: Object,
+            value() {
+              return {};
+            },
+            readOnly: true,
+          },
+        };
+      }
+
+      static get observers() {
+        return [
+          '_updateStorage(_storageFiles, _storageFiles.length, _storageFiles.splices)',
+        ];
+      }
+
+      /**
+       * Initializes the localstorage internal reference
+       * @private
+       *
+       * @param {String} path
+       */
+      _initializeStorage(path) {
+        this._storageFiles = JSON.parse(localStorage.getItem(path)) || {};
+      }
+      /**
+       * Updates the storage when the internal reference updates
+       * @private
+       *
+       * @param {Object} files
+       */
+      _updateStorage(files) {
+        localStorage.setItem(this.path, JSON.stringify(files));
+      }
+      /**
+       * Implements the upload logic
+       * @private
+       *
+       * @param {File} file
+       * @return {Promise}
+       */
+      __uploadFile(file) {
+        file.state.uploading = true;
+        file.upload = {
+          indeterminate: true,
+          progress: 0,
+          loaded: 0,
+          total: file.size,
+        };
+
+        this._notifyFileChanges(file);
+
+        if (file.dataUrl) {
+          return Promise.resolve(this._completeUpload(file));
+        }
+
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        }).then((dataUrl) => {
+          file.dataUrl = dataUrl;
+          return this._completeUpload(file);
+        });
+      }
+      /**
+       * Handles the completion of the upload
+       * @private
+       *
+       * @param {File} file
+       * @param {String} [dataUrl=file.dataUrl]
+       * @return {File}
+       */
+      _completeUpload(file, dataUrl = file.dataUrl) {
+        file.state.uploading = false;
+        file.state.completed = true;
+        file.upload = {
+          indeterminate: false,
+          progress: 100,
+          loaded: file.size,
+          total: file.size,
+        };
+        this._notifyFileChanges(file);
+        this._storageFiles = Object.assign({}, this._storageFiles, {[file.name]: dataUrl});
+
+        return file;
+      }
+      /**
+       * Implements the event detail getter
+       * @private
+       *
+       * @param {File} file
+       * @return {Object}
+       */
+      _getEventDetail(file) {
+        return {
+          file,
+        };
+      }
+    }
+
+    customElements.define(UploadLocalstorageUploaderElement.is, UploadLocalstorageUploaderElement);
+
+    /**
+     * @namespace Vaadin
+     */
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.UploadLocalstorageUploaderElement = UploadLocalstorageUploaderElement;
+  </script>
+</dom-module>

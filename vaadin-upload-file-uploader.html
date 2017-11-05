@@ -1,0 +1,57 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="vaadin-upload-uploader-mixin.html">
+<link rel="import" href="vaadin-upload-utils-mixin.html">
+
+<dom-module id="vaadin-upload-file-uploader">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+  </template>
+
+  <script>
+    /**
+     * `vaadin-upload-file-uploader`
+     *
+     *
+     * @memberof Vaadin
+     * @mixes Vaadin.Upload.UploaderMixin
+     * @mixes Vaadin.Upload.UtilsMixin
+     */
+    class UploadFileUploaderElement extends
+      Vaadin.Upload.UploaderMixin(
+      Vaadin.Upload.UtilsMixin(
+      Polymer.Element)) {
+
+      static get is() {
+        return 'vaadin-upload-file-uploader';
+      }
+
+      static get properties() {
+        return {
+        };
+      }
+
+      // ---------------
+      // TODO: Implement
+      // ---------------
+    }
+
+    customElements.define(UploadFileUploaderElement.is, UploadFileUploaderElement);
+
+    /**
+     * @namespace Vaadin
+     */
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.UploadFileUploaderElement = UploadFileUploaderElement;
+  </script>
+</dom-module>
