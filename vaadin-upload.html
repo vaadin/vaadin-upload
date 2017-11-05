@@ -160,6 +160,12 @@ This program is available under Apache License Version 2.0, available at https:/
               }
             },
 
+            filenamePrefix : {
+              type: String,
+              reflectToAttribute: true,
+              value: ""
+            },
+
             /**
              * The server URL. The default value is an empty string, which means that
              * _window.location_ will be used.
@@ -641,7 +647,8 @@ This program is available under Apache License Version 2.0, available at https:/
             return;
           }
 
-          formData.append(file.formDataName, file, file.name);
+          formData.append(file.formDataName, file,
+            ((this.filenamePrefix !== "") ? this.filenamePrefix + "_" : "") + file.name);
 
           xhr.open(this.method, file.uploadTarget, true);
           this._configureXhr(xhr);
