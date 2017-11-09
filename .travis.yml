@@ -30,3 +30,4 @@ script:
   - if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
       xvfb-run -s '-screen 0 1024x768x24' polymer test --env saucelabs-cron;
     fi
+  - tools/checkVersionGetter.sh

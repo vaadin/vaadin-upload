@@ -18,7 +18,8 @@
   },
   "homepage": "https://vaadin.com/elements",
   "scripts": {
-    "test": "wct"
+    "test": "wct",
+    "preversion": "./updateElementVersions.sh"
   },
   "devDependencies": {
     "bower": "latest",
@@ -30,6 +31,8 @@
     "gulp-html-extract": "^0.3.0",
     "gulp-stylelint": "^5.0.0",
     "polymer-cli": "^1.2.0",
+    "replace-in-file": "^3.0.0",
+    "simple-git": "^1.81.1",
     "stylelint": "^8.0.0",
     "stylelint-config-vaadin": "latest",
     "web-component-tester": "^6.1.5",
