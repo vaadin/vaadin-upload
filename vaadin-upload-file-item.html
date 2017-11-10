@@ -1,0 +1,139 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../vaadin-progress-bar/vaadin-progress-bar.html">
+<link rel="import" href="../vaadin-themable-mixin/vaadin-themable-mixin.html">
+<link rel="import" href="vaadin-upload-file-item-mixin.html">
+<link rel="import" href="vaadin-upload-icons.html">
+
+<dom-module id="vaadin-upload-file-item">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      div[hidden] {
+        display: none;
+      }
+
+      [part="row"] {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      [part="row"][errored] > [part="info"],
+      [part="row"][errored] > [part="progress"] {
+        color: red;
+      }
+      [part="info"] {
+        display: flex;
+      }
+      [part="commands"] {
+        display: flex;
+      }
+
+      [part="done-icon"],
+      [part="warning-icon"],
+      [part="start-button"],
+      [part="retry-button"],
+      [part="remove-button"] {
+        font-family: 'vaadin-upload-icons';
+      }
+
+      [part="done-icon"]::before {
+        content: "\e903";
+      }
+
+      [part="warning-icon"]::before {
+        content: "\e902";
+      }
+
+      [part="start-button"]::before {
+        content: "\e901";
+      }
+
+      [part="retry-button"]::before {
+        content: "\e900";
+      }
+
+      [part="remove-button"]::before {
+        content: "\e904";
+      }
+    </style>
+    <div part="row" errored$="[[file.state.errored]]">
+      <div part="info">
+        <div part="done-icon" hidden$="[[!file.state.completed]]"></div>
+        <div part="warning-icon" hidden$="[[!file.state.errored]]"></div>
+
+        <div part="meta">
+          <div part="name" id="name">[[file.name]]</div>
+          <div part="status" hidden$="[[!_displayProgress(file.state.completed, file.status)]]">[[_formatFileProgress(file.upload.total, file.upload.loaded, file.upload.progress, file.timings.remaining)]]</div>
+          <div part="status" hidden$="[[!file.status]]">[[file.status]]</div>
+        </div>
+      </div>
+      <div part="commands">
+        <div part="start-button" file-event="start" on-click="_fireFileEvent" hidden$="[[!file.state.queued]]"></div>
+        <div part="retry-button" file-event="retry" on-click="_fireFileEvent" hidden$="[[!file.state.errored]]"></div>
+        <div part="remove-button" file-event="remove" on-click="_fireFileEvent"></div>
+      </div>
+    </div>
+
+    <vaadin-progress-bar
+      part="progress"
+      value$="[[file.upload.progress]]"
+      max="100"
+      error$="[[file.state.errored]]"
+      indeterminate$="[[file.upload.indeterminate]]"
+      uploading$="[[file.state.uploading]]"
+      complete$="[[file.state.completed]]"
+    ></vaadin-progress-bar>
+  </template>
+
+  <script>
+    /**
+     * `<vaadin-upload-file>` element represents a file in the file list.
+     *
+     * @memberof Vaadin
+     * @mixes Vaadin.ThemableMixin
+     * @mixes Vaadin.Upload.FileItemMixin
+     */
+    class UploadFileItemElement extends
+      Vaadin.ThemableMixin(
+      Vaadin.Upload.FileItemMixin(
+      Polymer.Element)) {
+
+      static get is() {
+        return 'vaadin-upload-file-item';
+      }
+
+      /**
+       * Determines if the file upload progress should display
+       * @private
+       *
+       * @param {Boolean} completed
+       * @param {String} status
+       * @return {Boolean} - True if the upload progress should display
+       */
+      _displayProgress(completed, status) {
+        return !status && !completed;
+      }
+    }
+
+    customElements.define(UploadFileItemElement.is, UploadFileItemElement);
+
+    /**
+     * @namespace Vaadin
+     */
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.UploadFileItemElement = UploadFileItemElement;
+  </script>
+</dom-module>

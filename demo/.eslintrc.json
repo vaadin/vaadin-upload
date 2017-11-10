@@ -1,10 +1,15 @@
 {
-  "rules": {
-    "no-console": 0
+  "extends": "vaadin",
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
   },
+  "plugins": [
+    "html"
+  ],
   "globals": {
-    "UploadDemo": false,
-    "DemoReadyEventEmitter":false,
-    "MockHttpRequest": false
+    "Polymer": false,
+    "Vaadin": false
   }
 }
