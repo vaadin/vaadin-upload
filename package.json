@@ -19,7 +19,7 @@
   "homepage": "https://vaadin.com/elements",
   "scripts": {
     "test": "wct",
-    "preversion": "./updateElementVersions.sh"
+    "preversion": "tools/updateElementVersions.js"
   },
   "devDependencies": {
     "bower": "latest",
