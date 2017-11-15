@@ -35,6 +35,13 @@
         chai.should();
       });
 
+      it('should apply the capture attribute to the input', function() {
+        var input = upload.$.fileInput;
+        var captureType = 'camera';
+        upload.capture = captureType;
+        expect(input.getAttribute('capture')).to.equal(captureType);
+      });
+
       describe('with add button', function() {
         // Skip the file dialog open test for MSIE and MSEdge. It pops out and
         // stops the JS execution until closed by user.
