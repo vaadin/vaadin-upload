@@ -174,7 +174,7 @@ Custom property | Description | Default
       </div>
     </slot>
     <slot></slot>
-    <input type="file" id="fileInput" on-change="_onFileInputChange" hidden accept$="{{accept}}" multiple$="[[_isMultiple(maxFiles)]]">
+    <input type="file" id="fileInput" on-change="_onFileInputChange" hidden accept$="{{accept}}" multiple$="[[_isMultiple(maxFiles)]]" capture$="[[capture]]">
     <paper-ripple id="dragRipple" noink></paper-ripple>
   </template>
 </dom-module>
@@ -352,6 +352,12 @@ Custom property | Description | Default
         type: Boolean,
         value: false
       },
+
+      /**
+       * Pass-through to input's capture attribute. Allows user to trigger device inputs
+       * such as camera or microphone immediately.
+       */
+      capture: String,
 
       /**
        * The object used to localize this component.
