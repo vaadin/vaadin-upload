@@ -54,6 +54,7 @@ This program is available under Apache License Version 2.0, available at https:/
             value() {
               return {
                 unsupported: 'Unsupported',
+                aborted: 'Aborted',
               };
             },
           },
@@ -138,7 +139,7 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         file.state.aborted = true;
-        file.status = 'Aborted';
+        file.status = this.i18n.aborted;;
         return this.__abortFileUpload(file);
       }
       /**

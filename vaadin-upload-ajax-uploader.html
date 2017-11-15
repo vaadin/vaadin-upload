@@ -28,6 +28,7 @@ This program is available under Apache License Version 2.0, available at https:/
       }
 
       static get properties() {
+        const superI18n = super.properties.i18n.value();
         return {
           // Method to use on the request
           method: {
@@ -78,6 +79,18 @@ This program is available under Apache License Version 2.0, available at https:/
             value() {
               const xhr = this._createXhr();
               return !!(xhr && ('upload' in xhr) && ('onprogress' in xhr.upload));
+            },
+          },
+          i18n: {
+            type: Object,
+            value() {
+              return Object.assign(superI18n, {
+                error: {
+                  serverUnavailable: 'Server Unavailable',
+                  unexpectedServerError: 'Unexpected Server Error',
+                  forbidden: 'Forbidden',
+                },
+              });
             },
           },
         };
@@ -249,15 +262,14 @@ This program is available under Apache License Version 2.0, available at https:/
         );
 
         if (xhr.status < 200 || xhr.status >= 300) {
-          // TODO: Accept custom messages
-          if (this.i18n.uploading.error[xhr.status]) {
-            file.status = this.i18n.uploading.error[xhr.status];
+          if (this.i18n.error[xhr.status]) {
+            file.status = this.i18n.error[xhr.status];
           } else if (xhr.status === 0) {
-            file.status = 'Server Unavailable'; //this.i18n.uploading.error.serverUnavailable;
+            file.status = this.i18n.error.serverUnavailable;
           } else if (xhr.status >= 500) {
-            file.status = 'Unexpected Server Error'; //this.i18n.uploading.error.unexpectedServerError;
+            file.status = this.i18n.error.unexpectedServerError;
           } else if (xhr.status >= 400) {
-            file.status = 'Forbidden'; //this.i18n.uploading.error.forbidden;
+            file.status = this.i18n.error.forbidden;
           }
           file.state.errored = true;
         } else {

@@ -15,6 +15,9 @@ This program is available under Apache License Version 2.0, available at https:/
         display: block;
         padding: .5em;
       }
+      :host([hidden]) {
+        display: none !important;
+      }
 
       :host(:not([disabled])) {
         border: 1px dashed;
@@ -92,6 +95,12 @@ This program is available under Apache License Version 2.0, available at https:/
             type: Boolean,
             value: false,
           },
+          // Prevents any drag and drop events outside of the dropzone target
+          preventDocumentDrop: {
+            type: Boolean,
+            value: false,
+            observer: '_toggleDocumentListener'
+          },
           // True if the files being dragged over do not meet criteria
           invalid: {
             type: Boolean,
@@ -158,18 +167,31 @@ This program is available under Apache License Version 2.0, available at https:/
       connectedCallback() {
         super.connectedCallback();
         this._set_isAttached(true);
-        this._document.addEventListener('dragover', this._preventDocumentDrop);
       }
 
       disconnectedCallback() {
         super.disconnectedCallback();
         this._set_isAttached(false);
-        this._document.removeEventListener('dragover', this._preventDocumentDrop);
+      }
+
+      /**
+       * Toggles the document event listener that prevents dropping on the document.
+       * @private
+       *
+       * @param {Boolean} preventDrop
+       */
+      _toggleDocumentListener(preventDrop) {
+        if (preventDrop) {
+          this._document.addEventListener('dragover', this._preventDocumentDrop);
+        } else {
+          this._document.removeEventListener('dragover', this._preventDocumentDrop);
+        }
       }
 
       /**
        * Toggles aria-invalid attribute based on the invalid state of the dropzone
        * @private
+       *
        * @param {Boolean} invalid
        */
       _invalidChanged(invalid) {
@@ -319,6 +341,7 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         if (dropTarget === 'document') {
+          this.preventDocumentDrop = false;
           this.dropTarget = this._document;
         } else if (typeof dropTarget === 'string' || dropTarget instanceof String) {
           const id = `#${dropTarget}`;

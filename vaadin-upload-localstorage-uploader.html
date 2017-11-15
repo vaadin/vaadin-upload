@@ -56,14 +56,13 @@ This program is available under Apache License Version 2.0, available at https:/
             value() {
               return {};
             },
-            readOnly: true,
           },
         };
       }
 
       static get observers() {
         return [
-          '_updateStorage(_storageFiles, _storageFiles.length, _storageFiles.splices)',
+          '_updateStorage(_storageFiles, _storageFiles.*)',
         ];
       }
 
@@ -93,7 +92,6 @@ This program is available under Apache License Version 2.0, available at https:/
        * @return {Promise}
        */
       __uploadFile(file) {
-        file.state.uploading = true;
         file.upload = {
           indeterminate: true,
           progress: 0,
@@ -128,6 +126,7 @@ This program is available under Apache License Version 2.0, available at https:/
       _completeUpload(file, dataUrl = file.dataUrl) {
         file.state.uploading = false;
         file.state.completed = true;
+        file.status = null;
         file.upload = {
           indeterminate: false,
           progress: 100,

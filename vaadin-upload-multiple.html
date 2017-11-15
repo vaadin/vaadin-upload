@@ -47,6 +47,7 @@ This program is available under Apache License Version 2.0, available at https:/
       }
 
       static get properties() {
+        const superI18n = super.properties.i18n.value();
         return {
           // Minimum number of files required
           minFiles: {
@@ -66,22 +67,26 @@ This program is available under Apache License Version 2.0, available at https:/
             notify: true,
             computed: '_computeMaxFilesReached(files.length, maxFiles)',
           },
+          i18n: {
+            type: Object,
+            value() {
+              return Object.assign(superI18n, {
+                error: {
+                  tooManyFiles: 'Too Many Files',
+                },
+                addFiles: {
+                  one: 'Select File',
+                  many: 'Upload Files'
+                },
+              });
+            },
+          },
         };
       }
 
+
       ready() {
         super.ready();
-
-        // Add additional i18n keys
-        this.i18n = Object.assign({}, this.i18n, {
-          error: {
-            tooManyFiles: 'Too Many Files',
-          },
-          addFiles: {
-            one: 'Select File',
-            many: 'Upload Files'
-          },
-        });
 
         // Add maxFiles validation logic to addFiles
         this.addEventListener('file-validate', (event) => {
