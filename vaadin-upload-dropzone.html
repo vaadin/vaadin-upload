@@ -95,12 +95,11 @@ This program is available under Apache License Version 2.0, available at https:/
             type: Boolean,
             value: false,
           },
-          // Prevents any drag and drop events outside of the dropzone target
-          preventDocumentDrop: {
-            type: Boolean,
-            value: false,
-            observer: '_toggleDocumentListener'
-          },
+          // Allow drag and drop events outside of the dropzone target
+          // allowDocumentDrop: {
+          //   type: Boolean,
+          //   value: false,
+          // },
           // True if the files being dragged over do not meet criteria
           invalid: {
             type: Boolean,
@@ -150,7 +149,7 @@ This program is available under Apache License Version 2.0, available at https:/
       ready() {
         super.ready();
 
-        this._preventDocumentDrop = this._preventDocumentDrop.bind(this);
+        // this._preventDocumentDrop = this._preventDocumentDrop.bind(this);
         this._onDrop = this._onDrop.bind(this);
         this._onDragenter = this._onDragenter.bind(this);
         this._onDragover = this._onDragover.bind(this);
@@ -167,25 +166,13 @@ This program is available under Apache License Version 2.0, available at https:/
       connectedCallback() {
         super.connectedCallback();
         this._set_isAttached(true);
+        // this._document.addEventListener('dragover', this._preventDocumentDrop);
       }
 
       disconnectedCallback() {
         super.disconnectedCallback();
         this._set_isAttached(false);
-      }
-
-      /**
-       * Toggles the document event listener that prevents dropping on the document.
-       * @private
-       *
-       * @param {Boolean} preventDrop
-       */
-      _toggleDocumentListener(preventDrop) {
-        if (preventDrop) {
-          this._document.addEventListener('dragover', this._preventDocumentDrop);
-        } else {
-          this._document.removeEventListener('dragover', this._preventDocumentDrop);
-        }
+        // this._document.removeEventListener('dragover', this._preventDocumentDrop);
       }
 
       /**
@@ -224,13 +211,19 @@ This program is available under Apache License Version 2.0, available at https:/
        *
        * @param {DragEvent} event
        * @return {Boolean} - Always return false. This is considered best practice
+       * FIXME: Fix document drag-n-drop event toggle
        */
-      _preventDocumentDrop(event) {
-        event.stopPropagation();
-        event.preventDefault();
-        event.dataTransfer.dropEffect = 'none';
-        return false;
-      }
+      // _preventDocumentDrop(event) {
+      //   if (!this.allowDocumentDrop) {
+      //     event.dataTransfer.dropEffect = 'none';
+      //   } else {
+      //     event.stopImmediatePropagation();
+      //     event.dataTransfer.dropEffect = 'copy';
+      //   }
+      //   event.preventDefault();
+
+      //   return false;
+      // }
       /**
        * Triggers the addition of the file(s)
        * @private
@@ -341,11 +334,11 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         if (dropTarget === 'document') {
-          this.preventDocumentDrop = false;
+          // this.allowDocumentDrop = true;
           this.dropTarget = this._document;
         } else if (typeof dropTarget === 'string' || dropTarget instanceof String) {
           const id = `#${dropTarget}`;
-          this.dropTarget = this.$[dropTarget] || this.querySelector(id) || this._document.querySelector(id);
+          this.dropTarget = this.$[dropTarget] || this.parentElement.querySelector(id) || this._document.querySelector(id);
         } else if (dropTarget instanceof HTMLElement) {
           this._oldDropTarget = dropTarget;
           this._toggleDropListeners(false, dropTarget);

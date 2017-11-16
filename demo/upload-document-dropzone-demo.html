@@ -1,0 +1,60 @@
+<dom-module id="upload-document-dropzone-demo">
+  <template>
+    <style>
+       :host {
+        display: block;
+      }
+
+    </style>
+
+    <h3>Document Dropzone Basic Usage</h3>
+    <p>
+      The reserved keyword `document` can be used to target the entire page as a dropzone.
+    </p>
+    <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
+      <template preserve-content>
+        <dom-bind>
+          <template>
+
+            Drop Files anywhere on the page and they will appear below.
+
+            <hr>
+
+            <vaadin-upload-dropzone drop-target="document" hidden>
+              <vaadin-upload-multiple id="upload"
+                slot="upload"
+                files="{{files}}"
+                accept="image/*"
+                hidden
+              ></vaadin-upload-multiple>
+              <vaadin-upload-ajax-uploader
+                files="{{files}}"
+                url="https://httpbin.org/post"
+                hidden
+              ></vaadin-upload-ajax-uploader>
+            </vaadin-upload-dropzone>
+
+            <dom-repeat items="[[files]]" as="file">
+              <template>
+                <div style="display:flex;align-items:center;">
+                  <vaadin-upload-image-preview file="[[file]]" style="width: 100px;"></vaadin-upload-image-preview>
+                  <vaadin-upload-file-item file="[[file]]" style="flex: 1 0 auto; margin-left: 16px;"></vaadin-upload-file-item>
+                </div>
+              </template>
+            </dom-repeat>
+
+          </template>
+        </dom-bind>
+      </template>
+    </vaadin-demo-snippet>
+
+  </template>
+  <script>
+    class UploadDocumentDropzoneDemo extends DemoReadyEventEmitter(UploadDemo(Polymer.Element)) {
+      static get is() {
+        return 'upload-document-dropzone-demo';
+      }
+    }
+    customElements.define(UploadDocumentDropzoneDemo.is, UploadDocumentDropzoneDemo);
+  </script>
+</dom-module>

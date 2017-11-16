@@ -9,81 +9,17 @@
 
 
     <h3>Backwards Compatible Upload Usage</h3>
+    <p>
+      Wrapper around the new components that recreates the previous `vaadin-upload` version
+      to create an easy migration path.
+    </p>
+    <p>
+      <strong>NOTE:</strong> Please note this element has been deprecated in favor of the
+      smaller, more modular upload components.
+    </p>
     <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
       <template preserve-content>
         <vaadin-upload target="https://httpbin.org/post"></vaadin-upload>
-      </template>
-    </vaadin-demo-snippet>
-
-    <h3>Dropzone Basic Usage</h3>
-    <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
-      <template preserve-content>
-        <dom-bind>
-          <template>
-
-            <vaadin-upload-dropzone clickable>
-              <vaadin-upload-multiple id="upload"
-                slot="upload"
-                files="{{files}}"
-                accept="image/*"
-                hidden
-              ></vaadin-upload-multiple>
-              <vaadin-upload-ajax-uploader
-                files="{{files}}"
-                url="https://httpbin.org/post"
-                hidden
-              ></vaadin-upload-ajax-uploader>
-
-              Click or Drop Files here...
-            </vaadin-upload-dropzone>
-
-            <br>
-
-            <dom-repeat items="[[files]]" as="file">
-              <template>
-                <div style="display:flex;align-items:center;">
-                  <vaadin-upload-image-preview file="[[file]]" style="width: 100px;"></vaadin-upload-image-preview>
-                  <vaadin-upload-file-item file="[[file]]" style="flex: 1 0 auto; margin-left: 16px;"></vaadin-upload-file-item>
-                </div>
-              </template>
-            </dom-repeat>
-
-          </template>
-        </dom-bind>
-      </template>
-    </vaadin-demo-snippet>
-
-    <h3>Document Dropzone Basic Usage</h3>
-    <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
-      <template preserve-content>
-        <dom-bind>
-          <template>
-
-            <vaadin-upload-dropzone drop-target="document" hidden>
-              <vaadin-upload-multiple id="upload"
-                slot="upload"
-                files="{{files}}"
-                accept="image/*"
-                hidden
-              ></vaadin-upload-multiple>
-              <vaadin-upload-ajax-uploader
-                files="{{files}}"
-                url="https://httpbin.org/post"
-                hidden
-              ></vaadin-upload-ajax-uploader>
-            </vaadin-upload-dropzone>
-
-            <dom-repeat items="[[files]]" as="file">
-              <template>
-                <div style="display:flex;align-items:center;">
-                  <vaadin-upload-image-preview file="[[file]]" style="width: 100px;"></vaadin-upload-image-preview>
-                  <vaadin-upload-file-item file="[[file]]" style="flex: 1 0 auto; margin-left: 16px;"></vaadin-upload-file-item>
-                </div>
-              </template>
-            </dom-repeat>
-
-          </template>
-        </dom-bind>
       </template>
     </vaadin-demo-snippet>
 
@@ -244,7 +180,7 @@
     <h3>Setting Restrictions on Files to Upload</h3>
     <vaadin-demo-snippet id='upload-basic-demos-setting-restrictions-on-files-to-upload'>
       <template preserve-content>
-        <vaadin-upload id="rejectEventDemo" max-files="3" accept="application/pdf" max-file-size="1000000">
+        <vaadin-upload id="rejectEventDemo" target="https://httpbin.org/post" max-files="3" accept="application/pdf" max-file-size="1000000">
           <span slot="drop-label">Up to 3 PDF files, 1 MB each</span>
         </vaadin-upload>
 
@@ -252,11 +188,11 @@
 
         <script>
           window.addDemoReadyListener('#upload-basic-demos-setting-restrictions-on-files-to-upload', document => {
-            var upload = document.querySelector('vaadin-upload#rejectEventDemo');
-            var toast = document.querySelector('paper-toast#rejectToast');
+            const upload = document.querySelector('vaadin-upload#rejectEventDemo');
+            const toast = document.querySelector('paper-toast#rejectToast');
 
-            upload.addEventListener('file-reject', event => {
-              toast.text = event.detail.file.name + ' error: ' + event.detail.error;
+            upload.addEventListener('file-reject', ({detail}) => {
+              toast.text = `${detail.file.name} Error: ${detail.error}`;
               toast.open();
             });
           });

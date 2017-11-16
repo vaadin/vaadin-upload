@@ -1,37 +1,37 @@
 {
   "name": "Vaadin Upload",
   "pages": [
-  {
-    "name": "Basic Examples",
-    "url": "upload-basic-demos",
-    "src": "upload-basic-demos.html",
-    "meta": {
-      "title": "vaadin-upload Basic Examples",
-      "description": "",
-      "image": ""
-     }
-  }
-  ,
-  {
-    "name": "Advanced Usage",
-    "url": "upload-advanced-demos",
-    "src": "upload-advanced-demos.html",
-    "meta": {
-      "title": "vaadin-upload Advanced Examples",
-      "description": "",
-      "image": ""
-     }
-  }
-  ,
-  {
-    "name": "I18N",
-    "url": "upload-i18n-demos",
-    "src": "upload-i18n-demos.html",
-    "meta": {
-      "title": "vaadin-upload I18n Examples",
-      "description": "",
-      "image": ""
-     }
-  }
+    {
+      "name": "Basic Examples",
+      "url": "upload-basic-demos",
+      "src": "upload-basic-demos.html",
+      "meta": {
+        "title": "vaadin-upload Basic Examples",
+        "description": "",
+        "image": ""
+      }
+    }
+    ,
+    {
+      "name": "Dropzone",
+      "url": "upload-dropzone-demos",
+      "src": "upload-dropzone-demos.html",
+      "meta": {
+        "title": "vaadin-upload-dropzone Examples",
+        "description": "",
+        "image": ""
+      }
+    }
+    ,
+    {
+      "name": "Document Dropzone",
+      "url": "upload-document-dropzone-demo",
+      "src": "upload-document-dropzone-demo.html",
+      "meta": {
+        "title": "vaadin-upload-dropzone Document Example",
+        "description": "",
+        "image": ""
+      }
+    }
   ]
 }

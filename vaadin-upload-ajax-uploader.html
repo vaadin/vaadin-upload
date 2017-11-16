@@ -28,7 +28,6 @@ This program is available under Apache License Version 2.0, available at https:/
       }
 
       static get properties() {
-        const superI18n = super.properties.i18n.value();
         return {
           // Method to use on the request
           method: {
@@ -81,19 +80,18 @@ This program is available under Apache License Version 2.0, available at https:/
               return !!(xhr && ('upload' in xhr) && ('onprogress' in xhr.upload));
             },
           },
-          i18n: {
-            type: Object,
-            value() {
-              return Object.assign(superI18n, {
-                error: {
-                  serverUnavailable: 'Server Unavailable',
-                  unexpectedServerError: 'Unexpected Server Error',
-                  forbidden: 'Forbidden',
-                },
-              });
-            },
-          },
         };
+      }
+
+      ready() {
+        super.ready();
+
+        // Add additional i18n keys
+        this.set('i18n.error', Object.assign(this.i18n.error || {}, {
+          serverUnavailable: 'Server Unavailable',
+          unexpectedServerError: 'Unexpected Server Error',
+          forbidden: 'Forbidden',
+        }));
       }
 
       /**

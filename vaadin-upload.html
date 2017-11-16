@@ -43,6 +43,7 @@ This program is available under Apache License Version 2.0, available at https:/
         accept="[[accept]]"
         max-files="[[maxFiles]]"
         max-file-size="[[maxFileSize]]"
+        unit="[[unit]]"
         max-files-reached="{{maxFilesReached}}">
         <vaadin-upload-ajax-uploader
           slot="uploader"
@@ -146,7 +147,23 @@ This program is available under Apache License Version 2.0, available at https:/
               }
             },
           },
+          unit: {
+            type: String,
+            value: 'B',
+          }
         };
+      }
+
+      ready() {
+        super.ready();
+
+        this.$.upload.addEventListener('file-reject', (e) => {
+          console.log(e)
+          this.dispatchEvent(new CustomEvent('file-reject', {
+            composed: true,
+            detail: e.detail,
+          }));
+        })
       }
     }
 
