@@ -17,13 +17,21 @@
       <strong>NOTE:</strong> Please note this element has been deprecated in favor of the
       smaller, more modular upload components.
     </p>
+    <p>
+      <strong>TODO:</strong> Fix event bubbling to this element.
+    </p>
     <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
       <template preserve-content>
         <vaadin-upload target="https://httpbin.org/post"></vaadin-upload>
       </template>
     </vaadin-demo-snippet>
 
-    <h3>Video Preview Basic Usage</h3>
+
+    <h3>New Components Basic Usage</h3>
+    <p>
+      Recreates the previous `vaadin-upload` element using the new components. This approach allows
+      for more customization and control of your implementation.
+    </p>
     <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
       <template preserve-content>
         <dom-bind>
@@ -33,26 +41,90 @@
               <vaadin-upload-multiple id="upload"
                 slot="upload"
                 files="{{files}}"
-                accept="video/*"
-                hidden
               ></vaadin-upload-multiple>
               <vaadin-upload-ajax-uploader
                 files="{{files}}"
                 url="https://httpbin.org/post"
+                auto
                 hidden
               ></vaadin-upload-ajax-uploader>
 
-              Drop Files here...
+              Drop Files here...<br>
+
+              <dom-repeat items="[[files]]" as="file">
+                <template>
+                  <vaadin-upload-file-item file="[[file]]"></vaadin-upload-file-item>
+                </template>
+              </dom-repeat>
             </vaadin-upload-dropzone>
 
-            <br>
+          </template>
+        </dom-bind>
+      </template>
+    </vaadin-demo-snippet>
+
+    <h3>Upload Request Properties</h3>
+    <p>
+      Customize the uploader request easily.
+    </p>
+    <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
+      <template preserve-content>
+        <dom-bind>
+          <template>
+
+            <vaadin-upload-dropzone>
+              <vaadin-upload-multiple id="upload"
+                slot="upload"
+                files="{{files}}"
+              ></vaadin-upload-multiple>
+              <vaadin-upload-ajax-uploader
+                files="{{files}}"
+                method="PUT"
+                url="https://httpbin.org/put"
+                headers="{'X-Custom-Header': 'value'}"
+                form-data-name="my-attachment"
+                timeout="300000"
+                hidden
+              ></vaadin-upload-ajax-uploader>
+
+              Drop Files here...<br>
+
+              <dom-repeat items="[[files]]" as="file">
+                <template>
+                  <vaadin-upload-file-item file="[[file]]"></vaadin-upload-file-item>
+                </template>
+              </dom-repeat>
+            </vaadin-upload-dropzone>
+
+          </template>
+        </dom-bind>
+      </template>
+    </vaadin-demo-snippet>
+
+    <h3>Disabling Multiple File Selection</h3>
+    <p>
+      Prevent mutliple file selection and disable upon reaching the max number of files
+    </p>
+    <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
+      <template preserve-content>
+        <dom-bind>
+          <template>
+
+            <vaadin-upload-multiple id="upload"
+              slot="upload"
+              files="{{files}}"
+              max-files="1"
+            ></vaadin-upload-multiple>
+            <vaadin-upload-ajax-uploader
+              files="{{files}}"
+              url="https://httpbin.org/post"
+              auto
+              hidden
+            ></vaadin-upload-ajax-uploader>
 
             <dom-repeat items="[[files]]" as="file">
               <template>
-                <div style="display:flex;align-items:center;">
-                  <vaadin-upload-video-preview file="[[file]]" style="width: 100px;"></vaadin-upload-video-preview>
-                  <vaadin-upload-file-item file="[[file]]" style="flex: 1 0 auto; margin-left: 16px;"></vaadin-upload-file-item>
-                </div>
+                <vaadin-upload-file-item file="[[file]]"></vaadin-upload-file-item>
               </template>
             </dom-repeat>
 
@@ -61,7 +133,38 @@
       </template>
     </vaadin-demo-snippet>
 
-    <h3>LocalStorage Uploader Basic Usage</h3>
+    <h3>Single File Upload</h3>
+    <p>
+      Allows for only one file upload and replacing previous upload
+    </p>
+    <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
+      <template preserve-content>
+        <dom-bind>
+          <template>
+
+            <vaadin-upload-single id="upload"
+              slot="upload"
+              files="{{files}}"
+            ></vaadin-upload-single>
+            <vaadin-upload-ajax-uploader
+              files="{{files}}"
+              url="https://httpbin.org/post"
+              auto
+              hidden
+            ></vaadin-upload-ajax-uploader>
+
+            <dom-if if="[[files.length]]">
+              <template>
+                <vaadin-upload-file-item file="[[files.0]]"></vaadin-upload-file-item>
+              </template>
+            </dom-if>
+
+          </template>
+        </dom-bind>
+      </template>
+    </vaadin-demo-snippet>
+
+    <h3>LocalStorage Uploader Usage</h3>
     <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
       <template preserve-content>
         <dom-bind>
@@ -94,7 +197,7 @@
     </vaadin-demo-snippet>
 
 
-    <h3>Single Upload with Auto Basic Usage</h3>
+    <h3>Single Upload with Auto Usage</h3>
     <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
       <template preserve-content>
         <dom-bind>
@@ -128,67 +231,40 @@
       </template>
     </vaadin-demo-snippet>
 
-
-
-
-    <h3>Upload Request Properties</h3>
-    <vaadin-demo-snippet id='upload-basic-demos-upload-request-properties'>
-      <template preserve-content>
-        <vaadin-upload
-            target="https://httpbin.org/post"
-            method="POST"
-            timeout="300000"
-            headers="{'X-Custom-Header': 'value'}"
-            form-data-name="my-attachment">
-        </vaadin-upload>
-      </template>
-    </vaadin-demo-snippet>
-
-
-    <h3>Disabling Drag & Drop and Picking Multiple Files in the File Dialog</h3>
-    <vaadin-demo-snippet id='upload-basic-demos-disabling-drag--drop-and-picking-multiple-files-in-the-file-dialog'>
-      <template preserve-content>
-        <vaadin-upload nodrop max-files="1"></vaadin-upload>
-      </template>
-    </vaadin-demo-snippet>
-
-    <h3>Custom Drop Label</h3>
-    <vaadin-demo-snippet id='upload-basic-demos-custom-drop-label'>
-      <template preserve-content>
-        <style>
-          [slot="drop-label-icon"] {
-            margin: 0 1em;
-            width: 20px;
-          }
-        </style>
-        <vaadin-upload>
-          <iron-icon slot="drop-label-icon" icon="cloud-upload"></iron-icon>
-          <span slot="drop-label">Drop files to the cloud...</span>
-        </vaadin-upload>
-      </template>
-    </vaadin-demo-snippet>
-
-
-    <h3>Single File Upload</h3>
-    <vaadin-demo-snippet id='upload-basic-demos-single-file-upload'>
-      <template preserve-content>
-        <vaadin-upload max-files="1"></vaadin-upload>
-      </template>
-    </vaadin-demo-snippet>
-
-
     <h3>Setting Restrictions on Files to Upload</h3>
     <vaadin-demo-snippet id='upload-basic-demos-setting-restrictions-on-files-to-upload'>
       <template preserve-content>
-        <vaadin-upload id="rejectEventDemo" target="https://httpbin.org/post" max-files="3" accept="application/pdf" max-file-size="1000000">
-          <span slot="drop-label">Up to 3 PDF files, 1 MB each</span>
-        </vaadin-upload>
+
+        <vaadin-upload-dropzone>
+          <vaadin-upload-multiple id="rejectEventDemo"
+            slot="upload"
+            files="{{files}}"
+            accept="application/pdf"
+            max-files="3"
+            max-file-size="1"
+            unit="MB"
+          ></vaadin-upload-multiple>
+          <vaadin-upload-ajax-uploader
+            files="{{files}}"
+            url="https://httpbin.org/post"
+            auto
+            hidden
+          ></vaadin-upload-ajax-uploader>
+
+          Up to 3 PDF files, 1 MB each
+        </vaadin-upload-dropzone>
+        <br>
+        <dom-repeat items="[[files]]" as="file">
+          <template>
+            <vaadin-upload-file-item file="[[file]]"></vaadin-upload-file-item>
+          </template>
+        </dom-repeat>
 
         <paper-toast id="rejectToast"></paper-toast>
 
         <script>
-          window.addDemoReadyListener('#upload-basic-demos-setting-restrictions-on-files-to-upload', document => {
-            const upload = document.querySelector('vaadin-upload#rejectEventDemo');
+          window.addDemoReadyListener('#upload-basic-demos-setting-restrictions-on-files-to-upload', (document) => {
+            const upload = document.querySelector('vaadin-upload-multiple#rejectEventDemo');
             const toast = document.querySelector('paper-toast#rejectToast');
 
             upload.addEventListener('file-reject', ({detail}) => {

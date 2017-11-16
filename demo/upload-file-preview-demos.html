@@ -1,0 +1,100 @@
+<dom-module id="upload-file-preview-demos">
+    <template>
+      <style>
+         :host {
+          display: block;
+        }
+
+      </style>
+
+      <h3>Image Preview Usage</h3>
+      <p>
+        Displays a preview of the image file uploaded
+      </p>
+      <p>
+        <strong>NOTE:</strong> It will only attempt to render MIME types that match `image/`
+      </p>
+      <p>
+        <strong>TODO:</strong> Look into creating a mixin for image and video preview for more custom implementations<br>
+      </p>
+      <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
+        <template preserve-content>
+          <dom-bind>
+            <template>
+
+              <vaadin-upload-dropzone clickable>
+                <vaadin-upload-multiple id="upload"
+                  slot="upload"
+                  files="{{files}}"
+                  accept="image/*"
+                ></vaadin-upload-multiple>
+                <vaadin-upload-localstorage-uploader
+                  hidden
+                ></vaadin-upload-localstorage-uploader>
+
+                Drop Files here...<br>
+
+                <dom-repeat items="[[files]]" as="file">
+                  <template>
+                    <vaadin-upload-image-preview file="[[file]]" style="width: 100px;"></vaadin-upload-image-preview>
+                  </template>
+                </dom-repeat>
+              </vaadin-upload-dropzone>
+
+            </template>
+          </dom-bind>
+        </template>
+      </vaadin-demo-snippet>
+
+      <h3>Video Preview Usage</h3>
+      <p>
+        Displays a preview of the video file uploaded.
+      </p>
+      <p>
+        <strong>NOTE:</strong> It will only attempt to render MIME types that match `video/`<br>
+        <strong>NOTE:</strong> The thumbnail is generated from the first scene of the video.<br>
+        <strong>NOTE:</strong> Video file support depends on the browser and OS.
+      </p>
+      <p>
+        <strong>TODO:</strong> Look into checking video file type support<br>
+        <strong>TODO:</strong> Look into adding a loading indicator while rendering<br>
+      </p>
+      <vaadin-demo-snippet id='upload-basic-demos-basic-usage'>
+        <template preserve-content>
+          <dom-bind>
+            <template>
+
+              <vaadin-upload-dropzone clickable>
+                <vaadin-upload-multiple id="upload"
+                  slot="upload"
+                  files="{{files}}"
+                  accept="video/*"
+                ></vaadin-upload-multiple>
+                <vaadin-upload-localstorage-uploader
+                  hidden
+                ></vaadin-upload-localstorage-uploader>
+
+                Drop Files here...<br>
+
+                <dom-repeat items="[[files]]" as="file">
+                  <template>
+                    <vaadin-upload-video-preview file="[[file]]" style="width: 100px;"></vaadin-upload-video-preview>
+                  </template>
+                </dom-repeat>
+              </vaadin-upload-dropzone>
+
+            </template>
+          </dom-bind>
+        </template>
+      </vaadin-demo-snippet>
+
+    </template>
+    <script>
+      class UploadFilePreviewDemos extends DemoReadyEventEmitter(UploadDemo(Polymer.Element)) {
+        static get is() {
+          return 'upload-file-preview-demos';
+        }
+      }
+      customElements.define(UploadFilePreviewDemos.is, UploadFilePreviewDemos);
+    </script>
+  </dom-module>

@@ -6,7 +6,7 @@
       "url": "upload-basic-demos",
       "src": "upload-basic-demos.html",
       "meta": {
-        "title": "vaadin-upload Basic Examples",
+        "title": "Basic Examples",
         "description": "",
         "image": ""
       }
@@ -29,6 +29,17 @@
       "src": "upload-document-dropzone-demo.html",
       "meta": {
         "title": "vaadin-upload-dropzone Document Example",
+        "description": "",
+        "image": ""
+      }
+    }
+    ,
+    {
+      "name": "File Preview Examples",
+      "url": "upload-file-preview-demos",
+      "src": "upload-file-preview-demos.html",
+      "meta": {
+        "title": "vaadin-upload-*-preview Examples",
         "description": "",
         "image": ""
       }

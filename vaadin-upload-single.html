@@ -69,10 +69,11 @@ This program is available under Apache License Version 2.0, available at https:/
        * @param {File} file
        */
       __addFile(file) {
-        if (this.files[0]) {
-          this.files[0].remove();
-        }
         this.unshift('files', file);
+
+        if (this.files[1]) {
+          this.files[1].remove();
+        }
       }
     }
 
