@@ -1,0 +1,318 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="vaadin-upload-uploader-mixin.html">
+
+<dom-module id="vaadin-upload-ajax-uploader">
+  <template>
+    <slot id="fallback"></slot>
+  </template>
+  <script>
+    /**
+     * `vaadin-upload-ajax-uploader`
+     *
+     *
+     * @memberof Vaadin
+     * @mixes Vaadin.Upload.UploaderMixin
+     */
+    class UploadAjaxUploaderElement extends
+      Vaadin.Upload.UploaderMixin(
+      Polymer.Element) {
+      static get is() {
+        return 'vaadin-upload-ajax-uploader';
+      }
+      static get properties() {
+        return {
+          // Method to use on the request
+          method: {
+            type: String,
+            value: 'POST',
+          },
+          // URL to upload to
+          url: {
+            type: String,
+            value: '',
+          },
+          // Query params for the request
+          params: {
+            type: Object,
+            value() {
+              return {};
+            },
+          },
+          // Headers for the request
+          headers: {
+            type: Object,
+            value: {},
+          },
+          // Timeout associated with the request
+          timeout: {
+            type: Number,
+            value: 0,
+          },
+          // request should send credentials
+          withCredentials: {
+            type: Boolean,
+            value: false,
+          },
+          // Name for the file in the form data
+          formDataName: {
+            type: String,
+            value: 'file',
+          },
+          // Amount of time for determing if it stalled out
+          stallTime: {
+            type: Number,
+            value: 2000,
+          },
+          // True if uploader is supported
+          supported: {
+            type: Boolean,
+            reflectToAttribute: true,
+            value() {
+              const xhr = this._createXhr();
+              return !!(xhr && ('upload' in xhr) && ('onprogress' in xhr.upload));
+            },
+          },
+        };
+      }
+      ready() {
+        super.ready();
+        // Add additional i18n keys
+        this.set('i18n.error', Object.assign(this.i18n.error || {}, {
+          serverUnavailable: 'Server Unavailable',
+          unexpectedServerError: 'Unexpected Server Error',
+          forbidden: 'Forbidden',
+        }));
+      }
+      /**
+       * Creates a new XHR
+       * @private
+       *
+       * @return {XMLHttpRequest}
+       */
+      _createXhr() {
+        return new XMLHttpRequest();
+      }
+      /**
+       * Configures the XHR properties
+       * @private
+       *
+       * @param {XMLHttpRequest} xhr
+       */
+      _configureXhr(xhr) {
+        if (typeof this.headers === 'string') {
+          try {
+            this.headers = JSON.parse(this.headers);
+          } catch (ex) {
+            this.headers = undefined;
+          }
+        }
+        for (const key in this.headers) {
+          xhr.setRquestHeader(key, this.headers[key]);
+        }
+        if (this.timeout) {
+          xhr.timeout = this.timeout;
+        }
+        xhr.withCredentials = this.withCredentials;
+      }
+      /**
+       * Implements the upload logic
+       * @private
+       * @fires upload-preopen
+       * @fires upload-preflight
+       *
+       * @param {File} file
+       * @return {Promise}
+       */
+      __uploadFile(file) {
+        const xhr = file.xhr = this._createXhr();
+        file.timings = {
+          initial: Date.now(),
+        };
+        file.uploadTarget = this.url || '';
+        file.formDataName = this.formDataName;
+        const cancelled = !this.dispatchEvent(
+          new CustomEvent('upload-preopen', {
+            detail: {file, xhr},
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+          })
+        );
+        if (cancelled) {
+          return;
+        }
+        file.state.stalled = false;
+        file.status = 'Connecting...';
+        this._notifyFileChanges(file);
+        xhr.open(this.method, file.uploadTarget);
+        this._configureXhr(xhr);
+        xhr.upload.onprogress = (event) => this._onProgress(event, file, xhr);
+        xhr.upload.onloadstart = (event) => this._onLoadstart(event, file, xhr);
+        xhr.onreadystatechange = (event) => {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            this._onLoad(event, file, xhr);
+          }
+        };
+        const formData = new FormData();
+        formData.append(file.formDataName, file, file.name);
+        const allowUpload = this.dispatchEvent(
+          new CustomEvent('upload-preflight', {
+            detail: {file, xhr, formData},
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+          })
+        );
+        if (allowUpload) {
+          xhr.send(formData);
+        }
+      }
+      /**
+       * Handles progress updates from the upload request
+       * @private
+       * @listens progress
+       *
+       * @param {ProgressEvent} event
+       * @param {File} file
+       * @param {XMLHttpRequest} xhr
+       */
+      _onProgress(event, file, xhr) {
+        if (file.upload && file.upload.stallTimerId) {
+          clearTimeout(file.upload.stallTimerId);
+        }
+        file.timings.lastUpdate = Date.now();
+        file.timings.elapsed = (file.timings.lastUpdate - file.timings.initial) / 1000;
+        const loaded = event.loaded;
+        const total = event.total;
+        const progress = ~~(loaded / total * 100);
+        file.upload = {
+          loaded,
+          total,
+          progress,
+          indeterminate: loaded <= 0 || loaded >= total,
+          stallTimerId: null,
+        };
+        file.timings.remaining = Math.ceil(file.timings.elapsed * (file.upload.total / file.upload.loaded -1));
+        file.status = null;
+        this._notifyFileChanges(file);
+        if (file.state.errored) {
+          file.upload.indeterminate = false;
+        } else if (progress < 100) {
+          file.upload.stallTimerId = setTimeout(() => {
+            file.state.stalled = true;
+            file.status = 'Stalled.';
+            this._notifyFileChanges(file);
+          }, this.stallTime);
+        } else {
+          file.status = 'Processing File...';
+        }
+        this._notifyFileChanges(file);
+      }
+      /**
+       * Handles the response of the request
+       * @private
+       * @listens readystatechange
+       * @fires upload-response
+       * @fires upload-error
+       * @fires upload-success
+       *
+       * @param {Event} event
+       * @param {File} file
+       * @param {XMLHttpRequest} xhr
+       */
+      _onLoad(event, file, xhr) {
+        if (!file.upload) {
+          file.upload = {};
+        }
+        file.upload.stallTimerId = null;
+        file.upload.indeterminate = false;
+        file.state.uploading = false;
+        if (file.state.aborted) {
+          this._notifyFileChanges(file);
+          return;
+        }
+        const cancelled = !this.dispatchEvent(
+          new CustomEvent('upload-response', {
+            cancelable: true,
+            detail: {file, xhr},
+          })
+        );
+        if (cancelled) {
+          return;
+        }
+        if (xhr.status < 200 || xhr.status >= 300) {
+          if (this.i18n.error[xhr.status]) {
+            file.status = this.i18n.error[xhr.status];
+          } else if (xhr.status === 0) {
+            file.status = this.i18n.error.serverUnavailable;
+          } else if (xhr.status >= 500) {
+            file.status = this.i18n.error.unexpectedServerError;
+          } else if (xhr.status >= 400) {
+            file.status = this.i18n.error.forbidden;
+          }
+          file.state.errored = true;
+        } else {
+          file.state.completed = true;
+          file.status = null;
+        }
+        this.dispatchEvent(
+          new CustomEvent(`upload-${file.state.errored ? 'error' : 'success'}`, {
+            detail: {file, xhr}
+          })
+        );
+        this._notifyFileChanges(file);
+      }
+      /**
+       * Provides hook for start of the request
+       * @private
+       *
+       * @param {ProgressEvent} event
+       * @param {File} file
+       * @param {XMLHttpRequest} xhr
+       */
+      _onLoadstart(event, file, xhr) {
+        this.dispatchEvent(
+          new CustomEvent('upload-start', {
+            detail: {file, xhr}
+          })
+        );
+      }
+      /**
+       * Implements abort logic
+       * @private
+       *
+       * @param {File} file
+       */
+      _abortFileUpload(file) {
+        if (file.xhr) {
+          file.xhr.abort();
+        }
+      }
+      /**
+       * Implements logic for getting event details
+       * @private
+       *
+       * @param {File} file
+       * @return {Object}
+       */
+      _getEventDetail(file) {
+        return {
+          file,
+          xhr: file.xhr
+        };
+      }
+    }
+    customElements.define(UploadAjaxUploaderElement.is, UploadAjaxUploaderElement);
+    /**
+     * @namespace Vaadin
+     */
+    window.Vaadin = Vaadin || {};
+    Vaadin.UploadAjaxUploaderElement = UploadAjaxUploaderElement;
+  </script>
+</dom-module>

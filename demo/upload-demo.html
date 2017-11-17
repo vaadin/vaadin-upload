@@ -13,12 +13,15 @@
   // Use MockHttpRequest in demos
   function mockXhrGenerator(file) {
     var xhr = new MockHttpRequest();
-    xhr.upload = {};
-    xhr.onsend = function() {
+    xhr.upload = {
+      onprogress(){},
+    };
+    xhr.onsend = () => {
       if (xhr.upload.onloadstart) {
         xhr.upload.onloadstart();
       }
-      var total = file && file.size || 1024, done = 0;
+      const total = file && file.size || 1024;
+      let done = 0;
       function start() {
         setTimeout(progress, 1000);
       }
@@ -41,6 +44,6 @@
 
   window.addEventListener('WebComponentsReady', () => {
     // Monkey-patch vaadin-upload prototype to use MockHttpRequest
-    Object.getPrototypeOf(document.createElement('vaadin-upload'))._createXhr = mockXhrGenerator;
+    Object.getPrototypeOf(document.createElement('vaadin-upload-ajax-uploader'))._createXhr = mockXhrGenerator;
   });
 </script>
