@@ -243,6 +243,9 @@ This program is available under Apache License Version 2.0, available at https:/
        * @param {XMLHttpRequest} xhr
        */
       _onLoad(event, file, xhr) {
+        if (!file.upload) {
+          file.upload = {};
+        }
         file.upload.stallTimerId = null;
         file.upload.indeterminate = false;
         file.state.uploading = false;
@@ -258,6 +261,9 @@ This program is available under Apache License Version 2.0, available at https:/
             detail: {file, xhr},
           })
         );
+        if (cancelled) {
+          return;
+        }
 
         if (xhr.status < 200 || xhr.status >= 300) {
           if (this.i18n.error[xhr.status]) {

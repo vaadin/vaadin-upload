@@ -13,6 +13,17 @@
     }
     ,
     {
+      "name": "Advanced Examples",
+      "url": "upload-advanced-demos",
+      "src": "upload-advanced-demos.html",
+      "meta": {
+        "title": "Advanced Examples",
+        "description": "",
+        "image": ""
+      }
+    }
+    ,
+    {
       "name": "Dropzone",
       "url": "upload-dropzone-demos",
       "src": "upload-dropzone-demos.html",
