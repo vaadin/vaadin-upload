@@ -1,0 +1,359 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../vaadin-themable-mixin/vaadin-themable-mixin.html">
+
+<dom-module id="vaadin-upload-dropzone">
+  <template>
+    <style>
+      :host {
+        box-sizing: border-box;
+        display: block;
+        padding: .5em;
+      }
+      :host([hidden]) {
+        display: none !important;
+      }
+      :host(:not([disabled])) {
+        border: 1px dashed;
+        border-radius: 3px;
+      }
+      :host([active]:not([invalid])) {
+        border-color: blue;
+      }
+      :host([invalid]) {
+        border-color: red;
+      }
+    </style>
+    <slot id="upload" name="upload"></slot>
+    <slot></slot>
+  </template>
+
+  <script>
+    /**
+     * `vaadin-upload-dropzone`
+     *
+     * @memberof Vaadin
+     * @mixes Vaadin.ThemableMixin
+     */
+    class UploadDropzoneElement extends
+      Vaadin.ThemableMixin(
+      Polymer.Element) {
+      static get is() {
+        return 'vaadin-upload-dropzone';
+      }
+      static get properties() {
+        return {
+          // Allows the dropzone area to be clickable for triggering the file dialog
+          clickable: {
+            type: Boolean,
+            value: false,
+          },
+          /**
+           * Specifies the element that will handle drag-n-drop events. The
+           * possibilities include:
+           *
+           * ### Element id
+           *
+           * ```html
+           * <div id="dropzone"></div>
+           * <vaadin-upload-dropzone target="dropzone"></vaadin-upload-dropzone>
+           * ```
+           *
+           * ### Document
+           *
+           * ```html
+           * <vaadin-upload-dropzone target="document"></vaadin-upload-dropzone>
+           * ```
+           *
+           * ### Element Refrence
+           *
+           * ```js
+           * vaadinDropzone.dropTarget = document.querySelector('#dropZone');
+           * ```
+           *
+           * ### Wrapping
+           *
+           * ```html
+           * <vaadin-upload-dropzone>
+           *   <!-- Content -->
+           * </vaadin-upload-dropzone>
+           * ```
+           */
+          dropTarget: HTMLElement,
+          // Disables the dropzone and prevents adding files
+          disabled: {
+            type: Boolean,
+            value: false,
+          },
+          // Allow drag and drop events outside of the dropzone target
+          // allowDocumentDrop: {
+          //   type: Boolean,
+          //   value: false,
+          // },
+          // True if the files being dragged over do not meet criteria
+          invalid: {
+            type: Boolean,
+            value: false,
+            notify: true,
+            reflectToAttribute: true,
+            observer: '_invalidChanged',
+          },
+          // True if the dropzone has files being dragged over it
+          active: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true,
+          },
+          // True if the element has been attached to the document
+          _isAttached: {
+            type: Boolean,
+            value: false,
+            readOnly: true,
+          },
+          // Upload reference for handling addition and validation of file(s)
+          _target: HTMLElement,
+          // Stored reference to the dropTarget to allow removal of drag-n-drop listeners
+          _oldDropTarget: HTMLElement,
+          // Reference to the owning document
+          _document: {
+            type: HTMLElement,
+            readOnly: true,
+            value() {
+              return this.ownerDocument.documentElement;
+            },
+          },
+          // Counter for handling children elements firing `dragleave` and `dragenter` events
+          _dragContainerCount: {
+            type: Number,
+            value: 0,
+          },
+        };
+      }
+      static get observers() {
+        return [
+          '_dropTargetChanged(dropTarget, _isAttached)',
+        ];
+      }
+      ready() {
+        super.ready();
+        // this._preventDocumentDrop = this._preventDocumentDrop.bind(this);
+        this._onDrop = this._onDrop.bind(this);
+        this._onDragenter = this._onDragenter.bind(this);
+        this._onDragover = this._onDragover.bind(this);
+        this._onDragleave = this._onDragleave.bind(this);
+        this.addEventListener('click', this._onClick);
+        this.$.upload.addEventListener('slotchange', () => {
+          const nodes = this.$.upload.assignedNodes();
+          this._target = nodes && nodes[0];
+        });
+      }
+      connectedCallback() {
+        super.connectedCallback();
+        this._set_isAttached(true);
+        // this._document.addEventListener('dragover', this._preventDocumentDrop);
+      }
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._set_isAttached(false);
+        // this._document.removeEventListener('dragover', this._preventDocumentDrop);
+      }
+      /**
+       * Toggles aria-invalid attribute based on the invalid state of the dropzone
+       * @private
+       *
+       * @param {Boolean} invalid
+       */
+      _invalidChanged(invalid) {
+        if (invalid) {
+          this.setAttribute('aria-invalid', 'true');
+        } else {
+          this.removeAttribute('aria-invalid');
+        }
+      }
+      /**
+       * Allows the user to click anywhere on the dropzone to trigger the file open dialog. Doesn't
+       * trigger if the dropzone is disabled or not clickable.
+       * @private
+       * @listens click
+       *
+       * @param {ClickEvent} event
+       */
+      _onClick(event) {
+        if (!this.disabled && this.clickable &&
+            this._target && this === event.composedPath()[0]) {
+          event.stopPropagation();
+          event.preventDefault();
+          this._target.openFileDialog();
+        }
+      }
+      /**
+       * Prevents dropping file(s) on the document from causing issues
+       * @private
+       * @listens drop
+       *
+       * @param {DragEvent} event
+       * @return {Boolean} - Always return false. This is considered best practice
+       * FIXME: Fix document drag-n-drop event toggle
+       */
+      // _preventDocumentDrop(event) {
+      //   if (!this.allowDocumentDrop) {
+      //     event.dataTransfer.dropEffect = 'none';
+      //   } else {
+      //     event.stopImmediatePropagation();
+      //     event.dataTransfer.dropEffect = 'copy';
+      //   }
+      //   event.preventDefault();
+      //   return false;
+      // }
+      /**
+       * Triggers the addition of the file(s)
+       * @private
+       * @listens drop
+       *
+       * @param {DragEvent} event
+       * @return {Boolean} - Always return false. This is considered best practice
+       */
+      _onDrop(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (this.disabled) {
+          return false;
+        }
+        const dt = event.dataTransfer;
+        this._target.addFiles(dt.files);
+        dt.clearData();
+        // Reset state and return false
+        return this.active = this.invalid = false;
+      }
+      /**
+       * Validates the objects being dragged over the dropzone
+       * @private
+       * @listens dragover
+       *
+       * @param {DragEvent} event
+       * @return {Boolean} - Always return false. This is considered best practice
+       */
+      _onDragover(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (this.disabled) {
+          return false;
+        }
+        const dt = event.dataTransfer;
+        this.invalid = !Array.from(dt.items).every((file) => {
+          try {
+            return  file.kind === 'file' && this._target.validateFile(file);
+          } catch (ex) {
+            return false;
+          }
+        });
+        this.active = true;
+        dt.dropEffect = (this.invalid || this.disabled) ? 'none' : 'copy';
+        return false;
+      }
+      /**
+       * Used to keep track of number of children the drag has entered. This is to bypass the child
+       * elements from triggering dragleave logic of the parent container.
+       * @private
+       * @listens dragenter
+       *
+       * @param {DragEvent} event
+       * @return {Boolean} - Always return false. This is considered best practice
+       */
+      _onDragenter(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (this.disabled) {
+          return;
+        }
+        this._dragContainerCount++;
+        this.active = true;
+        return false;
+      }
+      /**
+       * Reset the state of the dropzone if leaving the parent container
+       * @private
+       * @listens dragleave
+       *
+       * @param {DragEvent} event
+       * @return {Boolean} - Always return false. This is considered best practice
+       */
+      _onDragleave(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (this.disabled) {
+          return false;
+        }
+        this._dragContainerCount--;
+        if (this._dragContainerCount === 0) {
+          this.active = this.invalid = false;
+        }
+        return false;
+      }
+      /**
+       * Determines which element/document the drag-n-drop event listeners should be attached to
+       * based on the dropTarget attribute.
+       * @private
+       *
+       * @param {HTMLElement|String} dropTarget
+       * @param {Boolean} isAttached
+       */
+      _dropTargetChanged(dropTarget, isAttached) {
+        if (this._oldDropTarget) {
+          this._toggleDropListeners(true, this._oldDropTarget);
+          this._oldDropTarget = null;
+        }
+        if (!isAttached) {
+          return;
+        }
+        if (dropTarget === 'document') {
+          // this.allowDocumentDrop = true;
+          this.dropTarget = this._document;
+        } else if (typeof dropTarget === 'string' || dropTarget instanceof String) {
+          const id = `#${dropTarget}`;
+          this.dropTarget = this.$[dropTarget] || this.parentElement.querySelector(id) || this._document.querySelector(id);
+        } else if (dropTarget instanceof HTMLElement) {
+          this._oldDropTarget = dropTarget;
+          this._toggleDropListeners(false, dropTarget);
+        } else {
+          this.dropTarget = this;
+        }
+      }
+      /**
+       * Adds drag-n-drop listeners to the new dropTarget and removes the previous listeners
+       * @private
+       *
+       * @param {Boolean} remove - True if listeners need removed from a container
+       * @param {HTMLElement} dropTarget
+       */
+      _toggleDropListeners(remove, dropTarget) {
+        if (!dropTarget) {
+          return;
+        }
+        const eventTarget = dropTarget === this._document ? window : dropTarget;
+        if (!remove) {
+          eventTarget.addEventListener('drop', this._onDrop);
+          eventTarget.addEventListener('dragenter', this._onDragenter);
+          eventTarget.addEventListener('dragover', this._onDragover);
+          eventTarget.addEventListener('dragleave', this._onDragleave);
+        } else {
+          eventTarget.removeEventListener('drop', this._onDrop);
+          eventTarget.removeEventListener('dragenter', this._onDragenter);
+          eventTarget.removeEventListener('dragover', this._onDragover);
+          eventTarget.removeEventListener('dragleave', this._onDragleave);
+        }
+      }
+    }
+    customElements.define(UploadDropzoneElement.is, UploadDropzoneElement);
+    /**
+     * @namespace Vaadin
+     */
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.UploadDropzoneElement = UploadDropzoneElement;
+  </script>
+</dom-module>
