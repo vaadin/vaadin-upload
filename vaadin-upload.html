@@ -19,9 +19,11 @@ This program is available under Apache License Version 2.0, available at https:/
       :host {
         display: block;
       }
+
       [part="drop-label-icon"] {
         font-family: 'vaadin-upload-icons';
       }
+
       [part="drop-label-icon"]::before {
         content: "\e905";
       }
@@ -31,9 +33,6 @@ This program is available under Apache License Version 2.0, available at https:/
 
 <dom-module id="vaadin-upload">
   <template>
-    <style>
-    </style>
-
     <vaadin-upload-dropzone disabled$="[[nodrop]]">
       <vaadin-upload-multiple id="upload"
         slot="upload"
@@ -141,7 +140,6 @@ This program is available under Apache License Version 2.0, available at https:/
             value() {
               try {
                 return !!document.createEvent('TouchEvent');
-                return false;
               } catch (e) {
                 return false;
               }
@@ -156,12 +154,11 @@ This program is available under Apache License Version 2.0, available at https:/
       ready() {
         super.ready();
         this.$.upload.addEventListener('file-reject', (e) => {
-          console.log(e)
           this.dispatchEvent(new CustomEvent('file-reject', {
             composed: true,
             detail: e.detail,
           }));
-        })
+        });
       }
     }
     customElements.define(VaadinUpload.is, VaadinUpload);

@@ -17,27 +17,34 @@ This program is available under Apache License Version 2.0, available at https:/
       :host {
         display: block;
       }
+
       :host([hidden]) {
         display: none !important;
       }
+
       div[hidden] {
         display: none;
       }
+
       [part="row"] {
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
+
       [part="row"][errored] > [part="info"],
       [part="row"][errored] > [part="progress"] {
         color: red;
       }
+
       [part="info"] {
         display: flex;
       }
+
       [part="commands"] {
         display: flex;
       }
+
       [part="done-icon"],
       [part="warning-icon"],
       [part="start-button"],
@@ -45,18 +52,23 @@ This program is available under Apache License Version 2.0, available at https:/
       [part="remove-button"] {
         font-family: 'vaadin-upload-icons';
       }
+
       [part="done-icon"]::before {
         content: "\e903";
       }
+
       [part="warning-icon"]::before {
         content: "\e902";
       }
+
       [part="start-button"]::before {
         content: "\e901";
       }
+
       [part="retry-button"]::before {
         content: "\e900";
       }
+
       [part="remove-button"]::before {
         content: "\e904";
       }
@@ -98,10 +110,8 @@ This program is available under Apache License Version 2.0, available at https:/
      * @mixes Vaadin.ThemableMixin
      * @mixes Vaadin.Upload.FileMixin
      */
-    class UploadFileElement extends
-      Vaadin.ThemableMixin(
-      Vaadin.Upload.FileMixin(
-      Polymer.Element)) {
+    class UploadFileElement extends Vaadin.ThemableMixin(
+      Vaadin.Upload.FileMixin(Polymer.Element)) {
       static get is() {
         return 'vaadin-upload-file';
       }

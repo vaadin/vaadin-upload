@@ -127,7 +127,7 @@ This program is available under Apache License Version 2.0, available at https:/
           return;
         }
         file.state.aborted = true;
-        file.status = this.i18n.aborted;;
+        file.status = this.i18n.aborted;
         return this.__abortFileUpload(file);
       }
       /**
@@ -227,7 +227,7 @@ This program is available under Apache License Version 2.0, available at https:/
        *
        * @param {CustomEvent} event
        */
-       _onUploadError(event) {
+      _onUploadError(event) {
         const file = event.detail.file;
         file.retryAttempt = file.retryAttempt || 0;
         if (!this.retryOnError || file.retryAttempt > this.maxRetries) {
@@ -252,7 +252,7 @@ This program is available under Apache License Version 2.0, available at https:/
        * @param {FileList|File[]|File} files
        * @return {File[]}
        */
-       _ensureArray(files) {
+      _ensureArray(files) {
         if (!Number.isInteger(files.length)) {
           return [files];
         }
@@ -264,7 +264,7 @@ This program is available under Apache License Version 2.0, available at https:/
        *
        * @param {File} file
        */
-       _notifyFileChanges(file) {
+      _notifyFileChanges(file) {
         const p = `files.${this.files.indexOf(file)}.`;
         for (const i in file) {
           if (file.hasOwnProperty(i)) {

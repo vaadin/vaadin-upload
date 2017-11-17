@@ -19,9 +19,7 @@ This program is available under Apache License Version 2.0, available at https:/
      * @memberof Vaadin
      * @mixes Vaadin.Upload.UploaderMixin
      */
-    class UploadAjaxUploaderElement extends
-      Vaadin.Upload.UploaderMixin(
-      Polymer.Element) {
+    class UploadAjaxUploaderElement extends Vaadin.Upload.UploaderMixin(Polymer.Element) {
       static get is() {
         return 'vaadin-upload-ajax-uploader';
       }
@@ -198,7 +196,7 @@ This program is available under Apache License Version 2.0, available at https:/
           indeterminate: loaded <= 0 || loaded >= total,
           stallTimerId: null,
         };
-        file.timings.remaining = Math.ceil(file.timings.elapsed * (file.upload.total / file.upload.loaded -1));
+        file.timings.remaining = Math.ceil(file.timings.elapsed * (file.upload.total / file.upload.loaded - 1));
         file.status = null;
         this._notifyFileChanges(file);
         if (file.state.errored) {

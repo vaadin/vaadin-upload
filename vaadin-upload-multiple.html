@@ -38,9 +38,7 @@ This program is available under Apache License Version 2.0, available at https:/
      * @memberof Vaadin
      * @mixes Vaadin.Upload.UploadMixin
      */
-    class UploadMultipleElement extends
-      Vaadin.Upload.UploadMixin(
-      Polymer.Element) {
+    class UploadMultipleElement extends Vaadin.Upload.UploadMixin(Polymer.Element) {
       static get is() {
         return 'vaadin-upload-multiple';
       }
@@ -123,7 +121,7 @@ This program is available under Apache License Version 2.0, available at https:/
        * @param {File[]} files
        * @return {Boolean} True if valid
        */
-       __getValidity(files) {
+      __getValidity(files) {
         return (files.length <= this.maxFiles && files.length >= this.minFiles);
       }
     }

@@ -15,16 +15,20 @@ This program is available under Apache License Version 2.0, available at https:/
         display: block;
         padding: .5em;
       }
+
       :host([hidden]) {
         display: none !important;
       }
+
       :host(:not([disabled])) {
         border: 1px dashed;
         border-radius: 3px;
       }
+
       :host([active]:not([invalid])) {
         border-color: blue;
       }
+
       :host([invalid]) {
         border-color: red;
       }
@@ -40,9 +44,7 @@ This program is available under Apache License Version 2.0, available at https:/
      * @memberof Vaadin
      * @mixes Vaadin.ThemableMixin
      */
-    class UploadDropzoneElement extends
-      Vaadin.ThemableMixin(
-      Polymer.Element) {
+    class UploadDropzoneElement extends Vaadin.ThemableMixin(Polymer.Element) {
       static get is() {
         return 'vaadin-upload-dropzone';
       }
@@ -247,7 +249,7 @@ This program is available under Apache License Version 2.0, available at https:/
         const dt = event.dataTransfer;
         this.invalid = !Array.from(dt.items).every((file) => {
           try {
-            return  file.kind === 'file' && this._target.validateFile(file);
+            return file.kind === 'file' && this._target.validateFile(file);
           } catch (ex) {
             return false;
           }

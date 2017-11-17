@@ -4,6 +4,8 @@ Copyright (c) 2017 Vaadin Ltd.
 This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
 -->
 
+<link rel="import" href="../vaadin-themable-mixin/vaadin-themable-mixin.html">
+
 <script>
   window.Vaadin = window.Vaadin || {};
   Vaadin.Upload = Vaadin.Upload || {};
@@ -11,7 +13,7 @@ This program is available under Apache License Version 2.0, available at https:/
    * @polymerMixin
    */
   Vaadin.Upload.UploadMixin = (baseClass) => {
-    return class extends baseClass {
+    return class extends Vaadin.ThemableMixin(baseClass) {
       static get properties() {
         return {
           // Files to upload
@@ -126,7 +128,7 @@ This program is available under Apache License Version 2.0, available at https:/
        * @return {Boolean} - True if valid
        */
       validateFile(file) {
-        const validationEvent =  new CustomEvent('file-validate', {
+        const validationEvent = new CustomEvent('file-validate', {
           cancelable: true,
           detail: {file},
         });
@@ -244,7 +246,7 @@ This program is available under Apache License Version 2.0, available at https:/
        * @param {Number} [baseSize=this.baseFileSize]
        * @return {Number}
        */
-       _calculateSizeIn(bytes = 0, unit = this.unit, baseSize = this.baseFileSize) {
+      _calculateSizeIn(bytes = 0, unit = this.unit, baseSize = this.baseFileSize) {
         let pos = this._units.indexOf(unit);
         if (pos === -1 || pos === 0) {
           return bytes.toFixed(2);
@@ -350,7 +352,7 @@ This program is available under Apache License Version 2.0, available at https:/
        *
        * @param {File} file
        */
-       _notifyFileChanges(file) {
+      _notifyFileChanges(file) {
         const p = `files.${this.files.indexOf(file)}.`;
         for (const i in file) {
           if (file.hasOwnProperty(i)) {
