@@ -20,10 +20,9 @@
     <vaadin-demo-snippet id='upload-basic-demos-upload-request-properties'>
       <template preserve-content>
         <vaadin-upload
-            target="serverUrl"
             method="POST"
             timeout="300000"
-            headers="{'X-Custom-Header': 'value'}"
+            headers='{"X-Foo": "Bar"}'
             form-data-name="my-attachment">
         </vaadin-upload>
       </template>

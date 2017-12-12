@@ -111,7 +111,7 @@ This program is available under Apache License Version 2.0, available at https:/
           }
         }
         for (const key in this.headers) {
-          xhr.setRquestHeader(key, this.headers[key]);
+          xhr.setRequestHeader(key, this.headers[key]);
         }
         if (this.timeout) {
           xhr.timeout = this.timeout;
@@ -128,7 +128,7 @@ This program is available under Apache License Version 2.0, available at https:/
        * @return {Promise}
        */
       __uploadFile(file) {
-        const xhr = file.xhr = this._createXhr();
+        const xhr = file.xhr = this._createXhr(file); // Pass file for mocking
         file.timings = {
           initial: Date.now(),
         };
