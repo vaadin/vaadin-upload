@@ -1,0 +1,277 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<script>
+  window.Vaadin = window.Vaadin || {};
+  Vaadin.Upload = Vaadin.Upload || {};
+  /**
+   * @polymerMixin
+   */
+  Vaadin.Upload.UploaderMixin = (baseClass) => {
+    return class extends baseClass {
+      static get properties() {
+        return {
+          // Fallback uploader if current implementation isn't supported
+          fallback: {
+            type: HTMLElement,
+            readonly: true,
+          },
+          // Files to upload
+          files: {
+            type: Array,
+            value() {
+              return [];
+            },
+            notify: true,
+          },
+          // Automatically upload upon being added
+          auto: {
+            type: Boolean,
+            value: false,
+          },
+          // Retry a failed upload
+          retryOnError: {
+            type: Boolean,
+            value: false,
+          },
+          // Number of times to automatically retry
+          maxRetries: {
+            type: Number,
+            value: 1,
+          },
+          // TOOD: ???
+          clearOnComplete: {
+            type: Boolean,
+            value: false,
+          },
+          // Localization
+          i18n: {
+            type: Object,
+            value() {
+              return {
+                unsupported: 'Unsupported',
+                aborted: 'Aborted',
+              };
+            },
+          },
+        };
+      }
+      static get observers() {
+        return [
+          '_onFilesChange(files, files.length, files.splices)',
+        ];
+      }
+      ready() {
+        super.ready();
+        // Handle retryOnError flag
+        this.addEventListener('upload-error', this._onUploadError.bind(this));
+        // TODO: Add online/offline events
+      }
+      connectedCallback() {
+        super.connectedCallback();
+        if (this.$.fallback) {
+          this.$.fallback.addEventListener('slotchange', this._onSlotchange.bind(this));
+        }
+      }
+      /**
+       * Triggers the retry of a file upload
+       *
+       * @param {File} file
+       * @return {Promise}
+       */
+      retry(file) {
+        // Exit if still uploading
+        if (file.state.uploading) {
+          return;
+        }
+        const cancelled = !this.dispatchEvent(
+          new CustomEvent('upload-retry', {
+            detail: this._getEventDetail(file),
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+          })
+        );
+        if (cancelled) {
+          // TODO: Add Error for rejection
+          return Promise.reject();
+        }
+        file.state.aborted = false;
+        file.retryAttempt = file.retryAttempt || 0;
+        file.retryAttempt++;
+        return this._uploadFile(file);
+      }
+      /**
+       * Triggers the abort of an in-flight file upload request
+       * @fires upload-abort
+       *
+       * @param {File} file
+       */
+      abort(file) {
+        // Exit if not in flight
+        if (!file.state.uploading) {
+          return;
+        }
+        const cancelled = !this.dispatchEvent(
+          new CustomEvent('upload-abort', {
+            detail: this._getEventDetail(file),
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+          })
+        );
+        if (cancelled) {
+          return;
+        }
+        file.state.aborted = true;
+        file.status = this.i18n.aborted;
+        return this.__abortFileUpload(file);
+      }
+      /**
+       * Defines the event details to fire in events. MUST be implemented
+       * @protected
+       *
+       * @param {File} file
+       */
+      __getEventDetail(file) {}
+      /**
+       * Defines the abort logic. MUST be implemented
+       * @protected
+       *
+       * @param {File} file
+       */
+      __abortFileUpload(file) {}
+      /**
+       * Triggers upload of files
+       *
+       * @param {Array|Object} [files = this.files]
+       * @return {Promise[]}
+       */
+      uploadFiles(files = this.files) {
+        if (!Number.isInteger(files.length)) {
+          files = [files];
+        }
+        files = [...files].filter((file) => file.state && !file.state.completed);
+        if (files.length > 0) {
+          if (!this.supported) {
+            if (this.fallback) {
+              return this.fallback.uploadFiles(files);
+            }
+            const error = new Error(this.i18n.unsupported);
+            error.files = files;
+            return Promise.reject(error);
+          }
+          return files.map(this._uploadFile, this);
+        }
+      }
+      /**
+       * Implements the core upload logic
+       * @private
+       * @fires upload-before
+       *
+       * @param {File} file
+       * @return {Promise}
+       */
+      _uploadFile(file) {
+        // Exit if already inflight
+        if (file.state.uploading) {
+          return; // TODO: Handle as promise
+        }
+        // TODO: Implement error for rejections
+        const cancelled = !this.dispatchEvent(
+          new CustomEvent('upload-before', {
+            detail: {file},
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+          })
+        );
+        if (cancelled) {
+          return Promise.reject();
+        }
+        file.retry = this.retry.bind(this, file);
+        file.abort = this.abort.bind(this, file);
+        file.state.queued = false;
+        file.state.uploading = true;
+        return this.__uploadFile(file);
+      }
+      /**
+       * Defines the upload logic. MUST be implemented.
+       * @protected
+       *
+       * @param {File} file
+       * @return {Promise}
+       */
+      __uploadFile(file) {}
+      /**
+       * Uploads files when added and `auto` property is set
+       * @private
+       *
+       * @param {File[]} files
+       */
+      _onFilesChange(files) {
+        files.forEach((file) => {
+          file.start = this._uploadFile.bind(this, file);
+        });
+        if (this.auto) {
+          this.uploadFiles(files);
+        }
+      }
+      /**
+       * Handles upload request errors and retries if `retryOnError` is set
+       * @private
+       * @listens upload-error
+       *
+       * @param {CustomEvent} event
+       */
+      _onUploadError(event) {
+        const file = event.detail.file;
+        file.retryAttempt = file.retryAttempt || 0;
+        if (!this.retryOnError || file.retryAttempt > this.maxRetries) {
+          return;
+        }
+        event.stopImmediatePropagation();
+        this.retry(file);
+      }
+      /**
+       * Updates the fallback uploader when set/changed
+       * @private
+       * @listens slotchange
+       */
+      _onSlotchange() {
+        const nodes = this.$.fallback.assignedNodes();
+        this._setFallbackUploader(nodes && nodes[0]);
+      }
+      /**
+       * Ensures the passed parameter is an Array
+       * @private
+       *
+       * @param {FileList|File[]|File} files
+       * @return {File[]}
+       */
+      _ensureArray(files) {
+        if (!Number.isInteger(files.length)) {
+          return [files];
+        }
+        return [...files];
+      }
+      /**
+       * Notifies subproperties of change
+       * @private
+       *
+       * @param {File} file
+       */
+      _notifyFileChanges(file) {
+        const p = `files.${this.files.indexOf(file)}.`;
+        for (const i in file) {
+          if (file.hasOwnProperty(i)) {
+            this.notifyPath(p + i, file[i]);
+          }
+        }
+      }
+    };
+  };
+</script>

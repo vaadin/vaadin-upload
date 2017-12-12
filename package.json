@@ -18,8 +18,9 @@
   },
   "homepage": "https://vaadin.com/elements",
   "scripts": {
-    "test": "wct",
-    "preversion": "gulp version:update"
+    "lint": "polymer lint --rules polymer-2 --input *.html && gulp lint version:check",
+    "preversion": "gulp version:update",
+    "test": "wct"
   },
   "devDependencies": {
     "bower": "latest",

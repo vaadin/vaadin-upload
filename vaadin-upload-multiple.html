@@ -1,0 +1,136 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../vaadin-button/vaadin-button.html">
+<link rel="import" href="vaadin-upload-mixin.html">
+
+<dom-module id="vaadin-upload-multiple">
+  <template>
+    <input id="fileInput"
+      type="file"
+      accept$="[[accept]]"
+      capture$="[[capture]]"
+      required$="[[required]]"
+      multiple$="[[_isMultiple(maxFiles)]]"
+      on-change="_onFileInputChange"
+      disabled="[[_isDisabled(disabled, maxFilesReached)]]"
+      hidden>
+
+      <slot name="uploader"></slot>
+      <span on-click="openFileDialog">
+        <slot name="button">
+          <vaadin-button
+            disabled="[[_isDisabled(disabled, maxFilesReached)]]">
+            [[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*, i18n.*)]]
+          </vaadin-button>
+        </slot>
+      </span>
+  </template>
+
+  <script>
+    /**
+     * `vaadin-upload-multiple`
+     *
+     *
+     * @memberof Vaadin
+     * @mixes Vaadin.Upload.UploadMixin
+     */
+    class UploadMultipleElement extends Vaadin.Upload.UploadMixin(Polymer.Element) {
+      static get is() {
+        return 'vaadin-upload-multiple';
+      }
+      static get properties() {
+        return {
+          // Minimum number of files required
+          minFiles: {
+            type: Number,
+            value: 0,
+          },
+          // Maximum number of files allowed
+          maxFiles: {
+            type: Number,
+            value: Infinity,
+          },
+          // True if the max number of files has been reached
+          maxFilesReached: {
+            type: Boolean,
+            value: false,
+            readOnly: true,
+            notify: true,
+            computed: '_computeMaxFilesReached(files.length, maxFiles)',
+          },
+        };
+      }
+      ready() {
+        super.ready();
+        // Add additional i18n keys
+        this.set('i18n.error.tooManyFiles', 'Too Many Files');
+        this.set('i18n.addFiles', {
+          one: 'Select File',
+          many: 'Upload Files',
+        });
+        // Add maxFiles validation logic to addFiles
+        this.addEventListener('file-validate', (event) => {
+          if (this.maxFilesReached) {
+            event.stopImmediatePropagation();
+            event.detail.error = this.i18n.error.tooManyFiles;
+          }
+        });
+      }
+      /**
+       * Determines if the max number of files have been reached
+       * @private
+       *
+       * @param {Number} numFiles
+       * @param {Number} [maxFiles=this.maxFiles]
+       * @return {Boolean} True if the max number of files has been reached
+       */
+      _computeMaxFilesReached(numFiles, maxFiles = this.maxFiles) {
+        return maxFiles >= 0 && numFiles >= maxFiles;
+      }
+      /**
+       * Controls the disabled state of the upload. Allows for disabled property to override
+       * default logic
+       * @private
+       *
+       * @param {Boolean} disabled
+       * @param {Boolean} maxFilesReached
+       * @return {Boolean} True if upload should be disabled
+       */
+      _isDisabled(disabled, maxFilesReached) {
+        return disabled || maxFilesReached;
+      }
+      /**
+       * Determines if the input should be allowed to accept multiple files
+       * @private
+       *
+       * @param {Number} maxFiles
+       * @return {Boolean} True if `maxFiles` is greater than 1
+       */
+      _isMultiple(maxFiles) {
+        return maxFiles > 1;
+      }
+      /**
+       * Overrides the default validation logic to ensure the number of files is between `minFiles`
+       * and `maxFiles`
+       * @private
+       *
+       * @param {File[]} files
+       * @return {Boolean} True if valid
+       */
+      __getValidity(files) {
+        return (files.length <= this.maxFiles && files.length >= this.minFiles);
+      }
+    }
+    customElements.define(UploadMultipleElement.is, UploadMultipleElement);
+    /**
+     * @namespace Vaadin
+     */
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.UploadMultipleElement = UploadMultipleElement;
+  </script>
+</dom-module>
