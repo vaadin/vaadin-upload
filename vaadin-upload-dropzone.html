@@ -129,11 +129,6 @@ This program is available under Apache License Version 2.0, available at https:/
               return this.ownerDocument.documentElement;
             },
           },
-          // Counter for handling children elements firing `dragleave` and `dragenter` events
-          _dragContainerCount: {
-            type: Number,
-            value: 0,
-          },
         };
       }
       static get observers() {
@@ -271,9 +266,8 @@ This program is available under Apache License Version 2.0, available at https:/
         event.stopPropagation();
         event.preventDefault();
         if (this.disabled) {
-          return;
+          return false;
         }
-        this._dragContainerCount++;
         this.active = true;
         return false;
       }
@@ -291,8 +285,12 @@ This program is available under Apache License Version 2.0, available at https:/
         if (this.disabled) {
           return false;
         }
-        this._dragContainerCount--;
-        if (this._dragContainerCount === 0) {
+
+        const {left, width, top, height} = this.getBoundingClientRect();
+        const {clientX, clientY} = event;
+        if (
+          (left > clientX || clientX > (left + width)) ||
+          (top > clientY || clientY > (top + height))) {
           this.active = this.invalid = false;
         }
         return false;
