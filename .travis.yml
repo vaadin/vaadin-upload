@@ -1,7 +1,7 @@
-sudo: true
+sudo: false
 dist: trusty
 language: node_js
-node_js: 8.9
+node_js: 8.11
 
 cache:
   directories:
@@ -12,6 +12,7 @@ addons:
   chrome: stable
 
 install:
+  - npm i -g polymer-cli
   - npm install
   - bower install
 
