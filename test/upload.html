@@ -17,9 +17,33 @@
 </head>
 
 <body>
+  <dom-module id="upload-with-files">
+    <template>
+      <vaadin-upload id="upload" files="{{files}}">
+      </vaadin-upload>
+    </template>
+    <script>
+      document.addEventListener('WebComponentsReady', () => {
+        Polymer({
+          is: 'upload-with-files',
+
+          properties: {
+            files: Array
+          }
+        });
+      });
+    </script>
+  </dom-module>
+
   <test-fixture id="upload">
     <template>
       <vaadin-upload></vaadin-upload>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="upload-with-files-fixture">
+    <template>
+      <upload-with-files></upload-with-files>
     </template>
   </test-fixture>
 
@@ -34,7 +58,7 @@
 
       describe('File upload', () => {
         beforeEach(() => {
-          upload._createXhr = xhrCreator({size: file.size, uploadTime: 200, stepTime: 50});
+          upload._createXhr = xhrCreator({ size: file.size, uploadTime: 200, stepTime: 50 });
         });
 
         describe('Multiple', () => {
@@ -133,7 +157,7 @@
 
             // Monkey-patch xhr.open to check the url param passed into
             const originalOpen = e.detail.xhr.open;
-            e.detail.xhr.open = function(method, url) {
+            e.detail.xhr.open = function (method, url) {
               expect(url).to.equal(modifiedUrl);
               originalOpen.apply(this, arguments);
               done();
@@ -146,8 +170,8 @@
           function MockFormData() {
             this.data = [];
           }
-          MockFormData.prototype.append = function(name, value, filename) {
-            this.data.push({name: name, value: value, filename: filename});
+          MockFormData.prototype.append = function (name, value, filename) {
+            this.data.push({ name: name, value: value, filename: filename });
           };
           const OriginalFormData = window.FormData;
           window.FormData = MockFormData;
@@ -259,7 +283,7 @@
           upload._uploadFile(file);
         });
 
-        it('should apply the capture attribute to the input', function() {
+        it('should apply the capture attribute to the input', function () {
           var input = upload.$.fileInput;
           var captureType = 'camera';
           upload.capture = captureType;
@@ -364,7 +388,7 @@
         let files;
         beforeEach(() => {
           upload.noAuto = true;
-          upload._createXhr = xhrCreator({size: file.size, uploadTime: 200, stepTime: 50});
+          upload._createXhr = xhrCreator({ size: file.size, uploadTime: 200, stepTime: 50 });
         });
 
         it('should be in held status', done => {
@@ -438,7 +462,7 @@
 
             upload.dispatchEvent(
               new CustomEvent('file-start', {
-                detail: {file},
+                detail: { file },
                 cancelable: true
               })
             );
@@ -449,7 +473,7 @@
       describe('Abort Files', () => {
         let files;
         beforeEach(() => {
-          upload._createXhr = xhrCreator({size: file.size, uploadTime: 200, stepTime: 50});
+          upload._createXhr = xhrCreator({ size: file.size, uploadTime: 200, stepTime: 50 });
           files = createFiles(2, 512, 'application/json');
         });
 
@@ -494,6 +518,40 @@
           upload.maxFiles = 1;
           expect(upload.$.dropLabel.textContent.indexOf(upload.i18n.dropFiles.one) >= 0).to.be.true;
           expect(upload.$.addButton.textContent.indexOf(upload.i18n.addFiles.one) >= 0).to.be.true;
+        });
+      });
+    });
+
+    describe('vaadin-upload-files', () => {
+      let uploadWithFilesFixture, upload;
+      beforeEach(() => {
+        uploadWithFilesFixture = fixture('upload-with-files-fixture');
+        upload = uploadWithFilesFixture.$.upload;
+        upload._createXhr = xhrCreator({ uploadTime: 0, stepTime: 0 });
+      });
+
+      it('should show added and removed files properly', done => {
+        upload._addFiles([
+          createFile(100000, 'application/unknown'),
+          createFile(100000, 'application/unknown')
+        ]);
+
+        const fileList = upload.$.fileList;
+        setTimeout(() => {
+          const vaadinUploadFiles = fileList.querySelectorAll('vaadin-upload-file');
+          const clearButton1 = vaadinUploadFiles[0].shadowRoot.querySelector('[part=clear-button]');
+          clearButton1.click();
+          setTimeout(() => {
+            expect(fileList.querySelectorAll('vaadin-upload-file').length).to.equal(1);
+            // vaadinUploadFiles now only has one file after deletion of first file. 
+            // Hence zeroth index is being referred.
+            const clearButton2 = vaadinUploadFiles[0].shadowRoot.querySelector('[part=clear-button]');
+            clearButton2.click();
+            setTimeout(() => {
+              expect(fileList.querySelectorAll('vaadin-upload-file').length).to.equal(0);
+              done();
+            });
+          });
         });
       });
     });
