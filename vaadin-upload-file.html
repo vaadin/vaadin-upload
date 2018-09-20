@@ -25,6 +25,9 @@ Custom property | Description | Default
 `--vaadin-upload-file-status`|A mixin that is applied to the file status label|`{}`
 `--vaadin-upload-file-error`|A mixin that is applied to the file error label|`{}`
 `--vaadin-upload-file-commands`|A mixin that is applied to the buttons container|`{}`
+`--vaadin-upload-file-commands-start`|A mixin that is applied to the start button|`{}`
+`--vaadin-upload-file-commands-refresh`|A mixin that is applied to the clear button|`{}`
+`--vaadin-upload-file-commands-clear`|A mixin that is applied to the refresh button|`{}`
 `--vaadin-upload-file-progress`|A mixin that is applied to the included paper-progress|`{}`
 `--vaadin-upload-file-progress-error`|A mixin that is applied to the progress bar when error is set|`{}`
 `--vaadin-upload-file-progress-indeterminate`|A mixin that is applied to the progress bar when indeterminate|`{}`
@@ -154,6 +157,18 @@ Custom property | Description | Default
         color: var(--primary-color, #00B4F0);
       }
 
+      #commands .start {
+        @apply --vaadin-upload-file-commands-start;
+      }
+
+      #commands .refresh {
+        @apply --vaadin-upload-file-commands-refresh;
+      }
+
+      #commands .clear {
+        @apply --vaadin-upload-file-commands-clear;
+      }
+
       paper-progress {
         --paper-progress-active-color: var(--primary-color, #00B4F0);
         width: 100%;
@@ -230,9 +245,9 @@ Custom property | Description | Default
       </div>
 
       <div id="commands">
-        <paper-icon-button icon="vaadin-upload:start" file-event="file-start" on-tap="_fireFileEvent" hidden$="[[!file.held]]"></paper-icon-button>
-        <paper-icon-button icon="vaadin-upload:refresh" file-event="file-retry" on-tap="_fireFileEvent" hidden$="[[!file.error]]"></paper-icon-button>
-        <paper-icon-button icon="vaadin-upload:clear" file-event="file-abort" on-tap="_fireFileEvent"></paper-icon-button>
+        <paper-icon-button class="start" icon="vaadin-upload:start" file-event="file-start" on-tap="_fireFileEvent" hidden$="[[!file.held]]"></paper-icon-button>
+        <paper-icon-button class="refresh" icon="vaadin-upload:refresh" file-event="file-retry" on-tap="_fireFileEvent" hidden$="[[!file.error]]"></paper-icon-button>
+        <paper-icon-button class="clear" icon="vaadin-upload:clear" file-event="file-abort" on-tap="_fireFileEvent"></paper-icon-button>
       </div>
 
     </div>
