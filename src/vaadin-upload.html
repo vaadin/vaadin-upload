@@ -406,7 +406,7 @@ This program is available under Apache License Version 2.0, available at https:/
           const unit = ~~(Math.log(bytes) / Math.log(base));
           const dec = Math.max(0, Math.min(3, unit - 1));
           const size = parseFloat((bytes / Math.pow(base, unit)).toFixed(dec));
-          return size + ' ' + this.i18n.units.size[unit];
+          return size + ' ' + this.i18n.units[unit];
         }
 
         _splitTimeByUnits(time) {
