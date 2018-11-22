@@ -527,6 +527,7 @@ This program is available under Apache License Version 2.0, available at https:/
 
           const ini = Date.now();
           const xhr = file.xhr = this._createXhr(file);
+          const index = this.files.indexOf(file);
 
           let stalledId, last;
           // onprogress is called always after onreadystatechange
@@ -557,7 +558,7 @@ This program is available under Apache License Version 2.0, available at https:/
             }
 
             this._notifyFileChanges(file);
-            this.dispatchEvent(new CustomEvent('upload-progress', {detail: {file, xhr}}));
+            this.dispatchEvent(new CustomEvent('upload-progress', {detail: {index, file, xhr}}));
           };
 
           // More reliable than xhr.onload
@@ -574,7 +575,7 @@ This program is available under Apache License Version 2.0, available at https:/
               // preventing default, changing the xhr, or setting the file error
               const evt = this.dispatchEvent(
                 new CustomEvent('upload-response', {
-                  detail: {file, xhr},
+                  detail: {index, file, xhr},
                   cancelable: true
                 })
               );
@@ -593,7 +594,7 @@ This program is available under Apache License Version 2.0, available at https:/
               file.complete = !file.error;
               this.dispatchEvent(
                 new CustomEvent(`upload-${file.error ? 'error' : 'success'}`, {
-                  detail: {file, xhr}
+                  detail: {index, file, xhr}
                 })
               );
               this._notifyFileChanges(file);
@@ -607,7 +608,7 @@ This program is available under Apache License Version 2.0, available at https:/
 
           const evt = this.dispatchEvent(
             new CustomEvent('upload-before', {
-              detail: {file, xhr},
+              detail: {index, file, xhr},
               cancelable: true
             })
           );
@@ -627,7 +628,7 @@ This program is available under Apache License Version 2.0, available at https:/
           xhr.upload.onloadstart = () => {
             this.dispatchEvent(
               new CustomEvent('upload-start', {
-                detail: {file, xhr}
+                detail: {index, file, xhr}
               })
             );
             this._notifyFileChanges(file);
@@ -638,7 +639,7 @@ This program is available under Apache License Version 2.0, available at https:/
           // preventing default
           const uploadEvt = this.dispatchEvent(
             new CustomEvent('upload-request', {
-              detail: {file, xhr, formData},
+              detail: {index, file, xhr, formData},
               cancelable: true
             })
           );
@@ -648,9 +649,10 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _retryFileUpload(file) {
+          const index = this.files.indexOf(file);
           const evt = this.dispatchEvent(
             new CustomEvent('upload-retry', {
-              detail: {file, xhr: file.xhr},
+              detail: {index, file, xhr: file.xhr},
               cancelable: true
             })
           );
@@ -660,9 +662,10 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _abortFileUpload(file) {
+          const index = this.files.indexOf(file);
           const evt = this.dispatchEvent(
             new CustomEvent('upload-abort', {
-              detail: {file, xhr: file.xhr},
+              detail: {index, file, xhr: file.xhr},
               cancelable: true
             })
           );
