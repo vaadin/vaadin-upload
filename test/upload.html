@@ -76,9 +76,10 @@
             expect(e.detail.xhr).to.be.ok;
             expect(e.detail.file).to.be.ok;
             expect(e.detail.file.uploading).to.be.ok;
+            expect(e.detail.index).to.be.equal(0);
             done();
           });
-          upload._uploadFile(file);
+          upload._addFile(file);
         });
 
         it('should fire the upload-progress event multiple times', done => {
@@ -87,6 +88,7 @@
             const f = e.detail.file;
             expect(e.detail.xhr).to.be.ok;
             expect(f.totalStr).to.be.equal('100 kB');
+            expect(e.detail.index).to.be.equal(0);
             switch (count++) {
               case 0:
                 expect(f.progress).to.be.equal(0);
@@ -114,7 +116,7 @@
                 done();
             }
           });
-          upload._uploadFile(file);
+          upload._addFile(file);
         });
 
         it('should fire the upload-success', done => {
@@ -123,9 +125,10 @@
             expect(e.detail.file).to.be.ok;
             expect(e.detail.file.uploading).not.to.be.ok;
             expect(e.detail.xhr.status).to.be.equal(200);
+            expect(e.detail.index).to.be.equal(0);
             done();
           });
-          upload._uploadFile(file);
+          upload._addFile(file);
         });
 
         it('should fire the upload-error event on connection error', done => {
@@ -140,9 +143,10 @@
             expect(e.detail.file.uploading).not.to.be.ok;
             expect(e.detail.file.error).to.be.equal('Server Unavailable');
             expect(e.detail.xhr.status).not.to.be.equal(200);
+            expect(e.detail.index).to.be.equal(0);
             done();
           });
-          upload._uploadFile(file);
+          upload._addFile(file);
         });
 
         it('should fire the upload-before with configurable request url', done => {
@@ -151,6 +155,7 @@
             expect(e.detail.xhr).to.be.ok;
             expect(e.detail.xhr.readyState).to.equal(0);
             expect(e.detail.file.uploadTarget).to.be.ok;
+            expect(e.detail.index).to.be.equal(0);
 
             const modifiedUrl = 'http://example.com/modified/url';
             e.detail.file.uploadTarget = modifiedUrl;
@@ -163,7 +168,7 @@
               done();
             };
           });
-          upload._uploadFile(file);
+          upload._addFile(file);
         });
 
         it('should fire the upload-before with configurable form data name', done => {
@@ -217,9 +222,10 @@
             expect(e.detail.xhr).to.be.ok;
             expect(e.detail.xhr.readyState).to.equal(1);
             expect(e.detail.formData).to.be.ok;
+            expect(e.detail.index).to.be.equal(0);
             done();
           });
-          upload._uploadFile(file);
+          upload._addFile(file);
         });
 
         it('should not send xhr if `upload-request` listener prevents default', done => {
