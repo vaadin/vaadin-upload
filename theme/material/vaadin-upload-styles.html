@@ -87,6 +87,10 @@
         transition-duration: 2s, 0.1s;
         transition-delay: 0s, 0s;
       }
+
+      :host([disabled]) [part="drop-label"] {
+        color: var(--material-disabled-text-color);
+      }
     </style>
   </template>
 </dom-module>

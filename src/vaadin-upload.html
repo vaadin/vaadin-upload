@@ -33,7 +33,7 @@ This program is available under Apache License Version 2.0, available at https:/
     <div part="primary-buttons">
       <div id="addFiles" on-touchend="_onAddFilesTouchEnd" on-click="_onAddFilesClick">
         <slot name="add-button">
-          <vaadin-button part="upload-button" id="addButton" disabled="[[maxFilesReached]]">
+          <vaadin-button part="upload-button" id="addButton" disabled="[[_isDisabled(disabled, maxFilesReached)]]">
             [[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]
           </vaadin-button>
         </slot>
@@ -308,7 +308,8 @@ This program is available under Apache License Version 2.0, available at https:/
               error: {
               tooManyFiles: 'Too Many Files.',
               fileIsTooBig: 'File is Too Big.',
-              incorrectFileType: 'Incorrect File Type.'
+              incorrectFileType: 'Incorrect File Type.',
+              disabled: 'Element is disabled.'
               },
               uploading: {
               status: {
@@ -357,7 +358,8 @@ This program is available under Apache License Version 2.0, available at https:/
                   error: {
                     tooManyFiles: 'Too Many Files.',
                     fileIsTooBig: 'File is Too Big.',
-                    incorrectFileType: 'Incorrect File Type.'
+                    incorrectFileType: 'Incorrect File Type.',
+                    disabled: 'Element is disabled.'
                   },
                   uploading: {
                     status: {
@@ -381,7 +383,16 @@ This program is available under Apache License Version 2.0, available at https:/
                   }
                 };
               }
-            }
+            },
+
+            /**
+             * Set to true to disable this element.
+             */
+            disabled: {
+              type: Boolean,
+              value: false,
+              reflectToAttribute: true
+            },
           };
         }
 
@@ -455,7 +466,7 @@ This program is available under Apache License Version 2.0, available at https:/
         _onDragover(event) {
           event.preventDefault();
           if (!this.nodrop && !this._dragover) {
-            this._dragoverValid = !this.maxFilesReached;
+            this._dragoverValid = !this._isDisabled(this.disabled, this.maxFilesReached);
             this._dragover = true;
           }
           event.dataTransfer.dropEffect = !this._dragoverValid || this.nodrop ? 'none' : 'copy';
@@ -697,6 +708,14 @@ This program is available under Apache License Version 2.0, available at https:/
          * @param {File} file File being added
          */
         _addFile(file) {
+          if (this.disabled) {
+            this.dispatchEvent(
+              new CustomEvent('file-reject', {
+                detail: {file, error: this.i18n.error.disabled}
+              })
+            );
+            return;
+          }
           if (this.maxFilesReached) {
             this.dispatchEvent(
               new CustomEvent('file-reject', {
@@ -758,7 +777,7 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _onAddFilesClick() {
-          if (this.maxFilesReached) {
+          if (this._isDisabled(this.disabled, this.maxFilesReached)) {
             return;
           }
 
@@ -800,6 +819,10 @@ This program is available under Apache License Version 2.0, available at https:/
 
         _isMultiple(maxFiles) {
           return maxFiles != 1;
+        }
+
+        _isDisabled(disabled, maxFilesReached) {
+          return disabled || maxFilesReached;
         }
 
         /**

@@ -149,6 +149,24 @@
           expect(clickSpy).not.to.be.called;
         });
 
+        it('should disable add button when disabled', () => {
+          const addButton = upload.$.addButton;
+
+          expect(addButton.disabled).to.be.false;
+
+          upload.disabled = true;
+          expect(addButton.disabled).to.be.true;
+        });
+
+        it('should not open upload dialog when disabled', () => {
+          upload.disabled = true;
+
+          const clickSpy = sinon.spy();
+          upload.$.fileInput.addEventListener('click', clickSpy);
+          upload.$.addFiles.dispatchEvent(new MouseEvent('click'));
+          expect(clickSpy).not.to.be.called;
+        });
+
       });
 
       describeIf(!touchDevice, 'Dropping file', () => {
