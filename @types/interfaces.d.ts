@@ -6,7 +6,6 @@ export interface UploadFile extends File {
   remainingStr: string;
   progress: number;
   speed: number;
-  size: number;
   totalStr: string;
   loaded: number;
   loadedStr: string;
@@ -51,6 +50,7 @@ export interface UploadI18n {
   };
   units: {
     size: string[];
+    sizeBase?: number;
   };
   formatSize?: (bytes: number) => string;
   formatTime?: (seconds: number, units: number[]) => string;

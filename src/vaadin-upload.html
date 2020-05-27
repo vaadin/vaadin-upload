@@ -155,7 +155,7 @@ This program is available under Apache License Version 2.0, available at https:/
              * ```
              * <vaadin-upload headers='{"X-Foo": "Bar"}'></vaadin-upload>
              * ```
-             * @type {object}
+             * @type {object | string}
              */
             headers: {
               type: Object,
@@ -343,7 +343,8 @@ This program is available under Apache License Version 2.0, available at https:/
               }
               },
               units: {
-              size: ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+              size: ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+              sizeBase: 1000
               },
               formatSize: function(bytes) {
               // returns the size followed by the best suitable unit
