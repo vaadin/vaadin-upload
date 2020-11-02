@@ -6,12 +6,21 @@ const config = {
   browserStartTimeout: 60000, // default 30000
   testsStartTimeout: 60000, // default 10000
   testsFinishTimeout: 60000, // default 20000
+  coverageConfig: {
+    include: ['**/src/*'],
+    threshold: {
+      statements: 98,
+      branches: 69,
+      functions: 96,
+      lines: 98
+    }
+  },
   testFramework: {
     config: {
       ui: 'bdd',
-      timeout: '10000',
-    },
-  },
+      timeout: '10000'
+    }
+  }
 };
 
 if (process.env.TEST_ENV === 'sauce') {
