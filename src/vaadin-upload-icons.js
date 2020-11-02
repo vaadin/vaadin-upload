@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright (c) 2020 Vaadin Ltd.
+ * This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+ */
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `
@@ -12,9 +17,3 @@ $_documentContainer.innerHTML = `
 `;
 
 document.head.appendChild($_documentContainer.content);
-
-/**
-@license
-Copyright (c) 2017 Vaadin Ltd.
-This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
-*/
