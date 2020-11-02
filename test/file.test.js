@@ -1,35 +1,13 @@
-<!doctype html>
-<html>
-
-<head>
-  <meta charset="UTF-8">
-  <title>vaadin-upload tests</title>
-  <script src="../../../wct-browser-legacy/browser.js"></script>
-  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-
-  <script src="../../../@polymer/iron-test-helpers/mock-interactions.js" type="module"></script>
-  <script src="../../../mock-http-request/lib/mock.js"></script>
-  <script src="./common.js"></script>
-  <script type="module" src="../../../@polymer/test-fixture/test-fixture.js"></script>
-  <script type="module" src="../../../@polymer/iron-test-helpers/iron-test-helpers.js"></script>
-  <script type="module" src="../vaadin-upload.js"></script>
-</head>
-
-<body>
-  <test-fixture id="upload-file">
-    <template>
-      <vaadin-upload-file></vaadin-upload-file>
-    </template>
-  </test-fixture>
-
-  <script type="module">
-import '@polymer/test-fixture/test-fixture.js';
-import '@polymer/iron-test-helpers/iron-test-helpers.js';
+import { expect } from '@esm-bundle/chai';
+import { fixture, html } from '@open-wc/testing-helpers';
+import { createFile } from './common.js';
 import '../vaadin-upload.js';
+
 describe('<vaadin-upload-file> element', () => {
   let fileElement, fileObject;
-  beforeEach(() => {
-    fileElement = fixture('upload-file');
+
+  beforeEach(async () => {
+    fileElement = await fixture(html`<vaadin-upload-file></vaadin-upload-file>`);
     fileObject = createFile(100000, 'application/unknown');
     fileElement.file = fileObject;
   });
@@ -72,8 +50,3 @@ describe('<vaadin-upload-file> element', () => {
     });
   });
 });
-</script>
-
-</body>
-
-</html>

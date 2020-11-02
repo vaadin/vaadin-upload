@@ -1,67 +1,18 @@
-<!doctype html>
-<html>
-
-<head>
-  <meta charset="UTF-8">
-  <title>vaadin-upload tests</title>
-  <script src="../../../wct-browser-legacy/browser.js"></script>
-  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-
-  <script src="../../../@polymer/iron-test-helpers/mock-interactions.js" type="module"></script>
-  <script src="../../../mock-http-request/lib/mock.js"></script>
-  <script src="./common.js"></script>
-  <script type="module" src="../../../@polymer/test-fixture/test-fixture.js"></script>
-  <script type="module" src="../../../@polymer/iron-test-helpers/iron-test-helpers.js"></script>
-  <script type="module" src="../vaadin-upload.js"></script>
-  <script type="module" src="../../../@polymer/polymer/lib/utils/async.js"></script>
-</head>
-
-<body>
-  <dom-module id="upload-with-files">
-    <template>
-      <vaadin-upload id="upload" files="{{files}}">
-      </vaadin-upload>
-    </template>
-    <script type="module">
-import '@polymer/test-fixture/test-fixture.js';
-import '@polymer/iron-test-helpers/iron-test-helpers.js';
+import { expect } from '@esm-bundle/chai';
+import { fixture, html, nextFrame } from '@open-wc/testing-helpers';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+import { createFile, createFiles, xhrCreator } from './common.js';
 import '../vaadin-upload.js';
-import '@polymer/polymer/lib/utils/async.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-Polymer({
-  is: 'upload-with-files',
 
-  properties: {
-    files: Array
-  }
-});
-</script>
-  </dom-module>
-
-  <test-fixture id="upload">
-    <template>
-      <vaadin-upload></vaadin-upload>
-    </template>
-  </test-fixture>
-
-  <test-fixture id="upload-with-files-fixture">
-    <template>
-      <upload-with-files></upload-with-files>
-    </template>
-  </test-fixture>
-
-  <script type="module">
-import '@polymer/test-fixture/test-fixture.js';
-import '@polymer/iron-test-helpers/iron-test-helpers.js';
-import '../vaadin-upload.js';
-import '@polymer/polymer/lib/utils/async.js';
-describe('Uploader', () => {
+describe('upload', () => {
   let upload, file;
-  beforeEach(() => {
-    upload = fixture('upload');
+
+  beforeEach(async () => {
+    upload = await fixture(html`<vaadin-upload></vaadin-upload>`);
     upload.target = 'http://foo.com/bar';
     file = createFile(100000, 'application/unknown');
   });
+
 
   describe('File upload', () => {
     beforeEach(() => {
@@ -72,6 +23,7 @@ describe('Uploader', () => {
       it('should have the multiple attribute', () => {
         expect(upload.$.fileInput.getAttribute('multiple')).not.to.be.null;
       });
+
       it('should remove multiple attribute when maxFiles = 1', () => {
         upload.maxFiles = 1;
         expect(upload.$.fileInput.getAttribute('multiple')).to.be.null;
@@ -409,11 +361,11 @@ describe('Uploader', () => {
       upload._createXhr = xhrCreator({size: file.size, uploadTime: 200, stepTime: 50});
     });
 
-    it('should be in held status', done => {
+    it('should be in held status', (done) => {
       upload._addFile(file);
-      flush(() => {
+      afterNextRender(upload, () => {
         expect(file.uploaded).not.to.be.ok;
-        expect(file.held).to.equal.true;
+        expect(file.held).to.be.true;
         expect(file.status).to.be.equal(upload.i18n.uploading.status.held);
         done();
       });
@@ -481,9 +433,9 @@ describe('Uploader', () => {
 
     it('should start a file upload from the file-start event', done => {
       upload._addFile(file);
-      flush(() => {
+      afterNextRender(upload, () => {
         expect(file.uploaded).not.to.be.ok;
-        expect(file.held).to.equal.true;
+        expect(file.held).to.be.true;
         expect(file.status).to.be.equal(upload.i18n.uploading.status.held);
 
         upload.addEventListener('upload-start', e => {
@@ -506,6 +458,7 @@ describe('Uploader', () => {
 
   describe('Abort Files', () => {
     let files;
+
     beforeEach(() => {
       upload._createXhr = xhrCreator({size: file.size, uploadTime: 200, stepTime: 50});
       files = createFiles(2, 512, 'application/json');
@@ -538,7 +491,6 @@ describe('Uploader', () => {
       upload.addEventListener('file-remove', removeFirst);
       removeFirst();
     });
-
   });
 
   describe('maxFiles change', () => {
@@ -555,44 +507,3 @@ describe('Uploader', () => {
     });
   });
 });
-
-describe('vaadin-upload-files', () => {
-  let uploadWithFilesFixture, upload;
-  beforeEach(() => {
-    uploadWithFilesFixture = fixture('upload-with-files-fixture');
-    upload = uploadWithFilesFixture.$.upload;
-    upload._createXhr = xhrCreator({
-      uploadTime: 0, stepTime: 0
-    });
-  });
-
-  it('should show added and removed files properly', done => {
-    upload._addFiles([
-      createFile(100000, 'application/unknown'),
-      createFile(100000, 'application/unknown')
-    ]);
-
-    const fileList = upload.$.fileList;
-    setTimeout(() => {
-      const vaadinUploadFiles = fileList.querySelectorAll('vaadin-upload-file');
-      const clearButton1 = vaadinUploadFiles[0].shadowRoot.querySelector('[part=clear-button]');
-      clearButton1.click();
-      setTimeout(() => {
-        expect(fileList.querySelectorAll('vaadin-upload-file').length).to.equal(1);
-        // vaadinUploadFiles now only has one file after deletion of first file.
-        // Hence zeroth index is being referred.
-        const clearButton2 = vaadinUploadFiles[0].shadowRoot.querySelector('[part=clear-button]');
-        clearButton2.click();
-        setTimeout(() => {
-          expect(fileList.querySelectorAll('vaadin-upload-file').length).to.equal(0);
-          done();
-        });
-      });
-    });
-  });
-});
-</script>
-
-</body>
-
-</html>
