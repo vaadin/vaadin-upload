@@ -30,7 +30,9 @@
     "lint": "npm run lint:js && npm run lint:css",
     "lint:css": "stylelint src/*.js theme/**/*-styles.js",
     "lint:js": "eslint src theme test",
+    "prestart": "polymer analyze vaadin-* > analysis.json",
     "screenshots": "hermione test/visual/test.js --update-refs",
+    "start": "web-dev-server --node-resolve demo/index.html --open",
     "test": "web-test-runner test/*.test.js",
     "test:sauce": "TEST_ENV=sauce npm test",
     "test:visual": "hermione test/visual/test.js"
