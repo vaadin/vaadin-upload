@@ -45,7 +45,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
  *
  * See [ThemableMixin – how to apply styles for shadow parts](https://github.com/vaadin/vaadin-themable-mixin/wiki)
  *
- * @extends PolymerElement
+ * @extends HTMLElement
  * @mixes ThemableMixin
  * @mixes ElementMixin
  * @demo demo/index.html

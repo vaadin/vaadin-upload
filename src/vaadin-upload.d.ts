@@ -55,7 +55,7 @@ import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 declare class UploadElement extends
   ThemableMixin(
   ElementMixin(
-  PolymerElement)) {
+  HTMLElement)) {
 
   /**
    * Define whether the element supports dropping files on it for uploading.
