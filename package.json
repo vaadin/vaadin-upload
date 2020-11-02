@@ -26,11 +26,13 @@
     "theme"
   ],
   "scripts": {
+    "check-version": "magi check-version",
     "debug": "web-test-runner test/*.test.js --watch",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:css": "stylelint src/*.js theme/**/*-styles.js",
     "lint:js": "eslint src theme test",
     "prestart": "polymer analyze vaadin-* > analysis.json",
+    "preversion": "magi update-version",
     "screenshots": "hermione test/visual/test.js --update-refs",
     "start": "web-dev-server --node-resolve demo/index.html --open",
     "test": "web-test-runner test/*.test.js",
@@ -74,6 +76,7 @@
     "hermione-sauce": "^0.1.0",
     "husky": "^4.3.0",
     "lint-staged": "^10.4.0",
+    "magi-cli": "^0.28.0",
     "prettier": "^2.1.2",
     "sinon": "^9.2.0",
     "stylelint": "^13.7.1",
