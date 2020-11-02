@@ -1,16 +1,15 @@
-<link rel="import" href="../../../vaadin-lumo-styles/font-icons.html">
-<link rel="import" href="../../../vaadin-lumo-styles/color.html">
-<link rel="import" href="../../../vaadin-lumo-styles/sizing.html">
-<link rel="import" href="../../../vaadin-lumo-styles/spacing.html">
-<link rel="import" href="../../../vaadin-lumo-styles/style.html">
-<link rel="import" href="../../../vaadin-lumo-styles/typography.html">
-<link rel="import" href="../../../vaadin-lumo-styles/mixins/field-button.html">
+import '@vaadin/vaadin-lumo-styles/font-icons.js';
+import '@vaadin/vaadin-lumo-styles/color.js';
+import '@vaadin/vaadin-lumo-styles/sizing.js';
+import '@vaadin/vaadin-lumo-styles/spacing.js';
+import '@vaadin/vaadin-lumo-styles/style.js';
+import '@vaadin/vaadin-lumo-styles/typography.js';
+import '@vaadin/vaadin-lumo-styles/mixins/field-button.js';
+import '@vaadin/vaadin-button/theme/lumo/vaadin-button.js';
+import '@vaadin/vaadin-progress-bar/theme/lumo/vaadin-progress-bar.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
-<link rel="import" href="../../../vaadin-button/theme/lumo/vaadin-button.html">
-<link rel="import" href="../../../vaadin-progress-bar/theme/lumo/vaadin-progress-bar.html">
-
-
-<dom-module id="lumo-upload" theme-for="vaadin-upload">
+const $_documentContainer = html`<dom-module id="lumo-upload" theme-for="vaadin-upload">
   <template>
     <style>
       :host {
@@ -61,9 +60,7 @@
       }
     </style>
   </template>
-</dom-module>
-
-<dom-module id="lumo-upload-file" theme-for="vaadin-upload-file">
+</dom-module><dom-module id="lumo-upload-file" theme-for="vaadin-upload-file">
   <template>
     <style include="lumo-field-button">
       :host {
@@ -181,4 +178,6 @@
 
     </style>
   </template>
-</dom-module>
+</dom-module>`;
+
+document.head.appendChild($_documentContainer.content);

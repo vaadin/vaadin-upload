@@ -4,15 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <title>vaadin-upload tests</title>
-  <script src="../../web-component-tester/browser.js"></script>
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../wct-browser-legacy/browser.js"></script>
+  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-  <script src="../../iron-test-helpers/mock-interactions.js"></script>
-  <script src="../../mock-http-request/lib/mock.js"></script>
-  <script src="common.js"></script>
-  <link rel="import" href="../../test-fixture/test-fixture.html">
-  <link rel="import" href="../../iron-test-helpers/iron-test-helpers.html">
-  <link rel="import" href="../vaadin-upload.html">
+  <script src="../../../@polymer/iron-test-helpers/mock-interactions.js" type="module"></script>
+  <script src="../../../mock-http-request/lib/mock.js"></script>
+  <script src="./common.js"></script>
+  <script type="module" src="../../../@polymer/test-fixture/test-fixture.js"></script>
+  <script type="module" src="../../../@polymer/iron-test-helpers/iron-test-helpers.js"></script>
+  <script type="module" src="../vaadin-upload.js"></script>
 </head>
 
 <body>
@@ -22,54 +22,57 @@
     </template>
   </test-fixture>
 
-  <script>
-    describe('<vaadin-upload-file> element', () => {
-      let fileElement, fileObject;
-      beforeEach(() => {
-        fileElement = fixture('upload-file');
-        fileObject = createFile(100000, 'application/unknown');
-        fileElement.file = fileObject;
-      });
+  <script type="module">
+import '@polymer/test-fixture/test-fixture.js';
+import '@polymer/iron-test-helpers/iron-test-helpers.js';
+import '../vaadin-upload.js';
+describe('<vaadin-upload-file> element', () => {
+  let fileElement, fileObject;
+  beforeEach(() => {
+    fileElement = fixture('upload-file');
+    fileObject = createFile(100000, 'application/unknown');
+    fileElement.file = fileObject;
+  });
 
-      describe('state attributes', () => {
-        it('should not be uploading by default', () => {
-          expect(fileElement.hasAttribute('uploading')).to.be.false;
-        });
-
-        it('should reflect uploading', () => {
-          fileElement.set('file.uploading', true);
-          expect(fileElement.hasAttribute('uploading')).to.be.true;
-        });
-
-        it('should not be indeterminate by default', () => {
-          expect(fileElement.hasAttribute('indeterminate')).to.be.false;
-        });
-
-        it('should reflect indeterminate', () => {
-          fileElement.set('file.indeterminate', true);
-          expect(fileElement.hasAttribute('indeterminate')).to.be.true;
-        });
-
-        it('should not be complete by default', () => {
-          expect(fileElement.hasAttribute('complete')).to.be.false;
-        });
-
-        it('should reflect complete', () => {
-          fileElement.set('file.complete', true);
-          expect(fileElement.hasAttribute('complete')).to.be.true;
-        });
-
-        it('should not be error by default', () => {
-          expect(fileElement.hasAttribute('error')).to.be.false;
-        });
-
-        it('should reflect error', () => {
-          fileElement.set('file.error', true);
-          expect(fileElement.hasAttribute('error')).to.be.true;
-        });
-      });
+  describe('state attributes', () => {
+    it('should not be uploading by default', () => {
+      expect(fileElement.hasAttribute('uploading')).to.be.false;
     });
-  </script>
+
+    it('should reflect uploading', () => {
+      fileElement.set('file.uploading', true);
+      expect(fileElement.hasAttribute('uploading')).to.be.true;
+    });
+
+    it('should not be indeterminate by default', () => {
+      expect(fileElement.hasAttribute('indeterminate')).to.be.false;
+    });
+
+    it('should reflect indeterminate', () => {
+      fileElement.set('file.indeterminate', true);
+      expect(fileElement.hasAttribute('indeterminate')).to.be.true;
+    });
+
+    it('should not be complete by default', () => {
+      expect(fileElement.hasAttribute('complete')).to.be.false;
+    });
+
+    it('should reflect complete', () => {
+      fileElement.set('file.complete', true);
+      expect(fileElement.hasAttribute('complete')).to.be.true;
+    });
+
+    it('should not be error by default', () => {
+      expect(fileElement.hasAttribute('error')).to.be.false;
+    });
+
+    it('should reflect error', () => {
+      fileElement.set('file.error', true);
+      expect(fileElement.hasAttribute('error')).to.be.true;
+    });
+  });
+});
+</script>
 
 </body>
 

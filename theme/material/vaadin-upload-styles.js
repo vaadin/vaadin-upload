@@ -1,10 +1,11 @@
-<link rel="import" href="../../../vaadin-material-styles/color.html">
-<link rel="import" href="../../../vaadin-material-styles/font-icons.html">
-<link rel="import" href="../../../vaadin-material-styles/typography.html">
-<link rel="import" href="../../../vaadin-button/theme/material/vaadin-button.html">
-<link rel="import" href="../../../vaadin-progress-bar/theme/material/vaadin-progress-bar.html">
+import '@vaadin/vaadin-material-styles/color.js';
+import '@vaadin/vaadin-material-styles/font-icons.js';
+import '@vaadin/vaadin-material-styles/typography.js';
+import '@vaadin/vaadin-button/theme/material/vaadin-button.js';
+import '@vaadin/vaadin-progress-bar/theme/material/vaadin-progress-bar.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
-<dom-module id="material-upload" theme-for="vaadin-upload">
+const $_documentContainer = html`<dom-module id="material-upload" theme-for="vaadin-upload">
   <template>
     <style>
       :host(:not([nodrop])) {
@@ -89,9 +90,7 @@
       }
     </style>
   </template>
-</dom-module>
-
-<dom-module id="material-upload-file" theme-for="vaadin-upload-file">
+</dom-module><dom-module id="material-upload-file" theme-for="vaadin-upload-file">
   <template>
     <style>
       :host {
@@ -220,4 +219,6 @@
       }
     </style>
   </template>
-</dom-module>
+</dom-module>`;
+
+document.head.appendChild($_documentContainer.content);

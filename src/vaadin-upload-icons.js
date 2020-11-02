@@ -1,11 +1,7 @@
-<!--
-@license
-Copyright (c) 2017 Vaadin Ltd.
-This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
--->
-<link rel="import" href="../../polymer/lib/elements/custom-style.html">
+import '@polymer/polymer/lib/elements/custom-style.js';
+const $_documentContainer = document.createElement('template');
 
-<custom-style>
+$_documentContainer.innerHTML = `<custom-style>
   <style>
     @font-face {
       font-family: 'vaadin-upload-icons';
@@ -14,4 +10,13 @@ This program is available under Apache License Version 2.0, available at https:/
       font-style: normal;
     }
   </style>
-</custom-style>
+</custom-style>`;
+
+document.head.appendChild($_documentContainer.content);
+
+/**
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+*/
+
