@@ -1,6 +1,6 @@
-import { ThemableMixin } from "@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js";
+import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
 
-import { ElementMixin } from "@vaadin/vaadin-element-mixin/vaadin-element-mixin.js";
+import { ElementMixin } from '@vaadin/vaadin-element-mixin/vaadin-element-mixin.js';
 
 /**
  * `<vaadin-upload>` is a Web Component for uploading multiple files with drag and drop support.
@@ -228,14 +228,14 @@ declare class UploadElement extends ThemableMixin(ElementMixin(HTMLElement)) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "vaadin-upload": UploadElement;
+    'vaadin-upload': UploadElement;
   }
 }
 
 export { UploadElement };
 
-import { UploadMethod } from "../@types/interfaces";
+import { UploadMethod } from '../@types/interfaces';
 
-import { UploadFile } from "../@types/interfaces";
+import { UploadFile } from '../@types/interfaces';
 
-import { UploadI18n } from "../@types/interfaces";
+import { UploadI18n } from '../@types/interfaces';

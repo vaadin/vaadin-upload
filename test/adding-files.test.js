@@ -129,7 +129,7 @@ describe('file list', () => {
     // we have to pass the info in the dataTransfer property
     function createDndEvent(type) {
       const e = new Event(type);
-      e.dataTransfer = {files: createFiles(2, testFileSize, 'application/x-bin')};
+      e.dataTransfer = { files: createFiles(2, testFileSize, 'application/x-bin') };
       return e;
     }
 

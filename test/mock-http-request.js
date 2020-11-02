@@ -275,7 +275,7 @@ MockHttpRequest.prototype = {
           xmlDoc = parser.parseFromString(data, 'text/xml');
         } else {
           // Internet Explorer
-          xmlDoc = new ActiveXObject('Microsoft.XMLDOM');
+          xmlDoc = new ActiveXObject('Microsoft.XMLDOM'); // eslint-disable-line no-undef
           xmlDoc.async = 'false';
           xmlDoc.loadXML(data);
         }
@@ -388,7 +388,7 @@ MockHttpRequest.prototype = {
   // Based on parseUri by Steven Levithan <stevenlevithan.com>
   // See http://blog.stevenlevithan.com/archives/parseuri
   parseUri: function (str) {
-    var pattern = /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/;
+    var pattern = /^(?:([^:/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:/?#]*)(?::(\d*))?))?((((?:[^?#/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/;
     var key = [
       'source',
       'protocol',

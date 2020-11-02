@@ -3,16 +3,14 @@
 Copyright (c) 2017 Vaadin Ltd.
 This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
 */
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-
+import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import { resetMouseCanceller } from '@polymer/polymer/lib/utils/gestures.js';
 import '@polymer/polymer/lib/elements/dom-repeat.js';
+import { ElementMixin } from '@vaadin/vaadin-element-mixin/vaadin-element-mixin.js';
 import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
 import '@vaadin/vaadin-button/src/vaadin-button.js';
 import './vaadin-upload-icons.js';
 import './vaadin-upload-file.js';
-import { ElementMixin } from '@vaadin/vaadin-element-mixin/vaadin-element-mixin.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 /**
  * `<vaadin-upload>` is a Web Component for uploading multiple files with drag and drop support.
@@ -53,48 +51,54 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style>
-      :host {
-        display: block;
-        position: relative;
-      }
+      <style>
+        :host {
+          display: block;
+          position: relative;
+        }
 
-      :host([hidden]) {
-        display: none !important;
-      }
+        :host([hidden]) {
+          display: none !important;
+        }
 
-      [hidden] {
-        display: none !important;
-      }
-    </style>
+        [hidden] {
+          display: none !important;
+        }
+      </style>
 
-    <div part="primary-buttons">
-      <div id="addFiles" on-touchend="_onAddFilesTouchEnd" on-click="_onAddFilesClick">
-        <slot name="add-button">
-          <vaadin-button part="upload-button" id="addButton" disabled="[[maxFilesReached]]">
-            [[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]
-          </vaadin-button>
-        </slot>
+      <div part="primary-buttons">
+        <div id="addFiles" on-touchend="_onAddFilesTouchEnd" on-click="_onAddFilesClick">
+          <slot name="add-button">
+            <vaadin-button part="upload-button" id="addButton" disabled="[[maxFilesReached]]">
+              [[_i18nPlural(maxFiles, i18n.addFiles, i18n.addFiles.*)]]
+            </vaadin-button>
+          </slot>
+        </div>
+        <div part="drop-label" hidden$="[[nodrop]]" id="dropLabelContainer">
+          <slot name="drop-label-icon">
+            <div part="drop-label-icon"></div>
+          </slot>
+          <slot name="drop-label" id="dropLabel"> [[_i18nPlural(maxFiles, i18n.dropFiles, i18n.dropFiles.*)]] </slot>
+        </div>
       </div>
-      <div part="drop-label" hidden\$="[[nodrop]]" id="dropLabelContainer">
-        <slot name="drop-label-icon">
-          <div part="drop-label-icon"></div>
-        </slot>
-        <slot name="drop-label" id="dropLabel">
-          [[_i18nPlural(maxFiles, i18n.dropFiles, i18n.dropFiles.*)]]
-        </slot>
-      </div>
-    </div>
-    <slot name="file-list">
-      <div id="fileList" part="file-list">
-        <template is="dom-repeat" items="[[files]]" as="file">
-          <vaadin-upload-file file="[[file]]"></vaadin-upload-file>
-        </template>
-      </div>
-    </slot>
-    <slot></slot>
-    <input type="file" id="fileInput" on-change="_onFileInputChange" hidden="" accept\$="{{accept}}" multiple\$="[[_isMultiple(maxFiles)]]" capture\$="[[capture]]">
-`;
+      <slot name="file-list">
+        <div id="fileList" part="file-list">
+          <template is="dom-repeat" items="[[files]]" as="file">
+            <vaadin-upload-file file="[[file]]"></vaadin-upload-file>
+          </template>
+        </div>
+      </slot>
+      <slot></slot>
+      <input
+        type="file"
+        id="fileInput"
+        on-change="_onFileInputChange"
+        hidden=""
+        accept$="{{accept}}"
+        multiple$="[[_isMultiple(maxFiles)]]"
+        capture$="[[capture]]"
+      />
+    `;
   }
 
   static get is() {
@@ -120,7 +124,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
       nodrop: {
         type: Boolean,
         reflectToAttribute: true,
-        value: function() {
+        value: function () {
           try {
             return !!document.createEvent('TouchEvent');
           } catch (e) {
@@ -204,7 +208,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
       files: {
         type: Array,
         notify: true,
-        value: function() {
+        value: function () {
           return [];
         }
       },
@@ -364,7 +368,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
       */
       i18n: {
         type: Object,
-        value: function() {
+        value: function () {
           return {
             dropFiles: {
               one: 'Drop file here',
@@ -466,12 +470,16 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
 
   /** @private */
   _formatFileProgress(file) {
-    return file.totalStr + ': ' +
-        file.progress + '% (' +
-        (file.loaded > 0 ?
-          this.i18n.uploading.remainingTime.prefix + file.remainingStr :
-          this.i18n.uploading.remainingTime.unknown) +
-      ')';
+    return (
+      file.totalStr +
+      ': ' +
+      file.progress +
+      '% (' +
+      (file.loaded > 0
+        ? this.i18n.uploading.remainingTime.prefix + file.remainingStr
+        : this.i18n.uploading.remainingTime.unknown) +
+      ')'
+    );
   }
 
   /** @private */
@@ -551,7 +559,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
       files = [files];
     }
     files = files || this.files;
-    files = files.filter(file => (!file.complete));
+    files = files.filter((file) => !file.complete);
     Array.prototype.forEach.call(files, this._uploadFile.bind(this));
   }
 
@@ -562,7 +570,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
     }
 
     const ini = Date.now();
-    const xhr = file.xhr = this._createXhr(file);
+    const xhr = (file.xhr = this._createXhr(file));
 
     let stalledId, last;
     // onprogress is called always after onreadystatechange
@@ -571,7 +579,9 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
 
       last = Date.now();
       const elapsed = (last - ini) / 1000;
-      const loaded = e.loaded, total = e.total, progress = ~~(loaded / total * 100);
+      const loaded = e.loaded,
+        total = e.total,
+        progress = ~~((loaded / total) * 100);
       file.loaded = loaded;
       file.progress = progress;
       file.indeterminate = loaded <= 0 || loaded >= total;
@@ -593,7 +603,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
       }
 
       this._notifyFileChanges(file);
-      this.dispatchEvent(new CustomEvent('upload-progress', {detail: {file, xhr}}));
+      this.dispatchEvent(new CustomEvent('upload-progress', { detail: { file, xhr } }));
     };
 
     // More reliable than xhr.onload
@@ -610,7 +620,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
         // preventing default, changing the xhr, or setting the file error
         const evt = this.dispatchEvent(
           new CustomEvent('upload-response', {
-            detail: {file, xhr},
+            detail: { file, xhr },
             cancelable: true
           })
         );
@@ -629,7 +639,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
         file.complete = !file.error;
         this.dispatchEvent(
           new CustomEvent(`upload-${file.error ? 'error' : 'success'}`, {
-            detail: {file, xhr}
+            detail: { file, xhr }
           })
         );
         this._notifyFileChanges(file);
@@ -643,7 +653,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
 
     const evt = this.dispatchEvent(
       new CustomEvent('upload-before', {
-        detail: {file, xhr},
+        detail: { file, xhr },
         cancelable: true
       })
     );
@@ -663,18 +673,17 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
     xhr.upload.onloadstart = () => {
       this.dispatchEvent(
         new CustomEvent('upload-start', {
-          detail: {file, xhr}
+          detail: { file, xhr }
         })
       );
       this._notifyFileChanges(file);
     };
 
-
     // Custom listener could modify the xhr just before sending it
     // preventing default
     const uploadEvt = this.dispatchEvent(
       new CustomEvent('upload-request', {
-        detail: {file, xhr, formData},
+        detail: { file, xhr, formData },
         cancelable: true
       })
     );
@@ -687,7 +696,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
   _retryFileUpload(file) {
     const evt = this.dispatchEvent(
       new CustomEvent('upload-retry', {
-        detail: {file, xhr: file.xhr},
+        detail: { file, xhr: file.xhr },
         cancelable: true
       })
     );
@@ -700,7 +709,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
   _abortFileUpload(file) {
     const evt = this.dispatchEvent(
       new CustomEvent('upload-abort', {
-        detail: {file, xhr: file.xhr},
+        detail: { file, xhr: file.xhr },
         cancelable: true
       })
     );
@@ -716,7 +725,8 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
   /** @private */
   _notifyFileChanges(file) {
     var p = 'files.' + this.files.indexOf(file) + '.';
-    for (var i in file) {
+    for (let i in file) {
+      // eslint-disable-next-line no-prototype-builtins
       if (file.hasOwnProperty(i)) {
         this.notifyPath(p + i, file[i]);
       }
@@ -738,7 +748,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
     if (this.maxFilesReached) {
       this.dispatchEvent(
         new CustomEvent('file-reject', {
-          detail: {file, error: this.i18n.error.tooManyFiles}
+          detail: { file, error: this.i18n.error.tooManyFiles }
         })
       );
       return;
@@ -746,17 +756,17 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
     if (this.maxFileSize >= 0 && file.size > this.maxFileSize) {
       this.dispatchEvent(
         new CustomEvent('file-reject', {
-          detail: {file, error: this.i18n.error.fileIsTooBig}
+          detail: { file, error: this.i18n.error.fileIsTooBig }
         })
       );
       return;
     }
-    const fileExt = file.name.match(/\.[^\.]*$|$/)[0];
+    const fileExt = file.name.match(/\.[^.]*$|$/)[0];
     const re = new RegExp('^(' + this.accept.replace(/[, ]+/g, '|').replace(/\/\*/g, '/.*') + ')$', 'i');
     if (this.accept && !(re.test(file.type) || re.test(fileExt))) {
       this.dispatchEvent(
         new CustomEvent('file-reject', {
-          detail: {file, error: this.i18n.error.incorrectFileType}
+          detail: { file, error: this.i18n.error.incorrectFileType }
         })
       );
       return;
@@ -854,110 +864,110 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   /**
-  * Fired when a file cannot be added to the queue due to a constrain:
-  *  file-size, file-type or maxFiles
-  *
-  * @event file-reject
-  * @param {Object} detail
-  * @param {Object} detail.file the file added
-  * @param {string} detail.error the cause
-  */
+   * Fired when a file cannot be added to the queue due to a constrain:
+   *  file-size, file-type or maxFiles
+   *
+   * @event file-reject
+   * @param {Object} detail
+   * @param {Object} detail.file the file added
+   * @param {string} detail.error the cause
+   */
 
   /**
-  * Fired before the XHR is opened. Could be used for changing the request
-  * URL. If the default is prevented, then XHR would not be opened.
-  *
-  * @event upload-before
-  * @param {Object} detail
-  * @param {Object} detail.xhr the xhr
-  * @param {Object} detail.file the file being uploaded
-  * @param {Object} detail.file.uploadTarget the upload request URL, initialized with the value of vaadin-upload `target` property
-  */
+   * Fired before the XHR is opened. Could be used for changing the request
+   * URL. If the default is prevented, then XHR would not be opened.
+   *
+   * @event upload-before
+   * @param {Object} detail
+   * @param {Object} detail.xhr the xhr
+   * @param {Object} detail.file the file being uploaded
+   * @param {Object} detail.file.uploadTarget the upload request URL, initialized with the value of vaadin-upload `target` property
+   */
 
   /**
-  * Fired when the XHR has been opened but not sent yet. Useful for appending
-  * data keys to the FormData object, for changing some parameters like
-  * headers, etc. If the event is defaultPrevented, `vaadin-upload` will not
-  * send the request allowing the user to do something on his own.
-  *
-  * @event upload-request
-  * @param {Object} detail
-  * @param {Object} detail.xhr the xhr
-  * @param {Object} detail.file the file being uploaded
-  * @param {Object} detail.formData the FormData object
-  */
+   * Fired when the XHR has been opened but not sent yet. Useful for appending
+   * data keys to the FormData object, for changing some parameters like
+   * headers, etc. If the event is defaultPrevented, `vaadin-upload` will not
+   * send the request allowing the user to do something on his own.
+   *
+   * @event upload-request
+   * @param {Object} detail
+   * @param {Object} detail.xhr the xhr
+   * @param {Object} detail.file the file being uploaded
+   * @param {Object} detail.formData the FormData object
+   */
 
   /**
-  * Fired when the XHR is sent.
-  *
-  * @event upload-start
-  * @param {Object} detail
-  * @param {Object} detail.xhr the xhr
-  * @param {Object} detail.file the file being uploaded
-  */
+   * Fired when the XHR is sent.
+   *
+   * @event upload-start
+   * @param {Object} detail
+   * @param {Object} detail.xhr the xhr
+   * @param {Object} detail.file the file being uploaded
+   */
 
   /**
-  * Fired as many times as the progress is updated.
-  *
-  * @event upload-progress
-  * @param {Object} detail
-  * @param {Object} detail.xhr the xhr
-  * @param {Object} detail.file the file being uploaded with loaded info
-  */
+   * Fired as many times as the progress is updated.
+   *
+   * @event upload-progress
+   * @param {Object} detail
+   * @param {Object} detail.xhr the xhr
+   * @param {Object} detail.file the file being uploaded with loaded info
+   */
 
   /**
-  * Fired when we have the actual server response, and before the component
-  * analyses it. It's useful for developers to make the upload fail depending
-  * on the server response. If the event is defaultPrevented the vaadin-upload
-  * will return allowing the user to do something on his own like retry the
-  * upload, etc. since he has full access to the `xhr` and `file` objects.
-  * Otherwise, if the event is not prevented default `vaadin-upload` continues
-  * with the normal workflow checking the `xhr.status` and `file.error`
-  * which also might be modified by the user to force a customized response.
-  *
-  * @event upload-response
-  * @param {Object} detail
-  * @param {Object} detail.xhr the xhr
-  * @param {Object} detail.file the file being uploaded
-  */
+   * Fired when we have the actual server response, and before the component
+   * analyses it. It's useful for developers to make the upload fail depending
+   * on the server response. If the event is defaultPrevented the vaadin-upload
+   * will return allowing the user to do something on his own like retry the
+   * upload, etc. since he has full access to the `xhr` and `file` objects.
+   * Otherwise, if the event is not prevented default `vaadin-upload` continues
+   * with the normal workflow checking the `xhr.status` and `file.error`
+   * which also might be modified by the user to force a customized response.
+   *
+   * @event upload-response
+   * @param {Object} detail
+   * @param {Object} detail.xhr the xhr
+   * @param {Object} detail.file the file being uploaded
+   */
 
   /**
-  * Fired in case the upload process succeed.
-  *
-  * @event upload-success
-  * @param {Object} detail
-  * @param {Object} detail.xhr the xhr
-  * @param {Object} detail.file the file being uploaded with loaded info
-  */
+   * Fired in case the upload process succeed.
+   *
+   * @event upload-success
+   * @param {Object} detail
+   * @param {Object} detail.xhr the xhr
+   * @param {Object} detail.file the file being uploaded with loaded info
+   */
 
   /**
-  * Fired in case the upload process failed.
-  *
-  * @event upload-error
-  * @param {Object} detail
-  * @param {Object} detail.xhr the xhr
-  * @param {Object} detail.file the file being uploaded
-  */
+   * Fired in case the upload process failed.
+   *
+   * @event upload-error
+   * @param {Object} detail
+   * @param {Object} detail.xhr the xhr
+   * @param {Object} detail.file the file being uploaded
+   */
 
   /**
-  * Fired when retry upload is requested. If the default is prevented, then
-  * retry would not be performed.
-  *
-  * @event upload-retry
-  * @param {Object} detail
-  * @param {Object} detail.xhr the previous upload xhr
-  * @param {Object} detail.file the file being uploaded
-  */
+   * Fired when retry upload is requested. If the default is prevented, then
+   * retry would not be performed.
+   *
+   * @event upload-retry
+   * @param {Object} detail
+   * @param {Object} detail.xhr the previous upload xhr
+   * @param {Object} detail.file the file being uploaded
+   */
 
   /**
-  * Fired when retry abort is requested. If the default is prevented, then the
-  * file upload would not be aborted.
-  *
-  * @event upload-abort
-  * @param {Object} detail
-  * @param {Object} detail.xhr the xhr
-  * @param {Object} detail.file the file being uploaded
-  */
+   * Fired when retry abort is requested. If the default is prevented, then the
+   * file upload would not be aborted.
+   *
+   * @event upload-abort
+   * @param {Object} detail
+   * @param {Object} detail.xhr the xhr
+   * @param {Object} detail.file the file being uploaded
+   */
 }
 
 customElements.define(UploadElement.is, UploadElement);

@@ -27,8 +27,21 @@
   ],
   "scripts": {
     "debug": "web-test-runner test/*.test.js --watch",
+    "lint": "npm run lint:js",
+    "lint:js": "eslint src theme test",
     "test": "web-test-runner test/*.test.js",
     "test:sauce": "TEST_ENV=sauce npm test"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@polymer/polymer": "^3.0.0",
@@ -48,6 +61,12 @@
     "@web/test-runner": "^0.9.2",
     "@web/test-runner-saucelabs": "^0.1.1",
     "@webcomponents/webcomponentsjs": "^2.0.0",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.0",
+    "prettier": "^2.1.2",
     "sinon": "^9.2.0"
   }
 }
