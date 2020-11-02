@@ -1,7 +1,6 @@
-import '@polymer/polymer/lib/elements/custom-style.js';
 const $_documentContainer = document.createElement('template');
 
-$_documentContainer.innerHTML = `<custom-style>
+$_documentContainer.innerHTML = `
   <style>
     @font-face {
       font-family: 'vaadin-upload-icons';
@@ -10,7 +9,7 @@ $_documentContainer.innerHTML = `<custom-style>
       font-style: normal;
     }
   </style>
-</custom-style>`;
+`;
 
 document.head.appendChild($_documentContainer.content);
 
