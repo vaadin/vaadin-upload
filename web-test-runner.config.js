@@ -31,7 +31,7 @@ if (process.env.TEST_ENV === 'sauce') {
 
   const sharedCapabilities = {
     'sauce:options': {
-      name: 'vaadin-select unit tests',
+      name: 'vaadin-upload unit tests',
       build: `${process.env.GITHUB_REF || 'local'} build ${process.env.GITHUB_RUN_NUMBER || ''}`
     }
   };
