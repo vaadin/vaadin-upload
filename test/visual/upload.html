@@ -14,7 +14,7 @@
   </div>
 
   <script type="module">
-	  (async() => {
+    (async () => {
       const theme = window.location.search.replace(/.*theme=(\w+).*/, '$1') || 'lumo';
 
       await import('../../theme/' + theme + '/vaadin-upload.js');
