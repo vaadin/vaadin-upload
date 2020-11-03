@@ -46,7 +46,6 @@ import './vaadin-upload-file.js';
  * @extends HTMLElement
  * @mixes ThemableMixin
  * @mixes ElementMixin
- * @demo demo/index.html
  */
 class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
   static get template() {
