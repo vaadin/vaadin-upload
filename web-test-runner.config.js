@@ -47,8 +47,8 @@ if (process.env.TEST_ENV === 'sauce') {
     sauceLabsLauncher({
       ...sharedCapabilities,
       browserName: 'safari',
-      platform: 'macOS 10.14',
-      browserVersion: '13'
+      platform: 'macOS 10.15',
+      browserVersion: '13.1'
     })
   ];
 }
