@@ -42,9 +42,7 @@ import './vaadin-upload-icons.js';
  *
  * See [ThemableMixin – how to apply styles for shadow parts](https://github.com/vaadin/vaadin-themable-mixin/wiki)
  *
- * @extends PolymerElement
  * @mixes ThemableMixin
- * @demo demo/index.html
  */
 class UploadFileElement extends ThemableMixin(PolymerElement) {
   static get template() {
