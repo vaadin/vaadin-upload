@@ -83,8 +83,7 @@ class UploadFileElement extends ThemableMixin(PolymerElement) {
         indeterminate$="[[file.indeterminate]]"
         uploading$="[[file.uploading]]"
         complete$="[[file.complete]]"
-      >
-      </vaadin-progress-bar>
+      ></vaadin-progress-bar>
     `;
   }
 
