@@ -91,8 +91,8 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
       <input
         type="file"
         id="fileInput"
+        hidden
         on-change="_onFileInputChange"
-        hidden=""
         accept$="{{accept}}"
         multiple$="[[_isMultiple(maxFiles)]]"
         capture$="[[capture]]"
