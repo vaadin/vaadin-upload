@@ -161,8 +161,8 @@ declare class UploadElement extends ThemableMixin(ElementMixin(HTMLElement)) {
    *
    *       {
    *         dropFiles: {
-   *         one: 'Drop file here
-   *         many: 'Drop files here
+   *         one: 'Drop file here'
+   *         many: 'Drop files here'
    *         },
    *         addFiles: {
    *         one: 'Select File...',
@@ -204,7 +204,6 @@ declare class UploadElement extends ThemableMixin(ElementMixin(HTMLElement)) {
    *       }
    */
   i18n: UploadI18n;
-  ready(): void;
 
   /**
    * Triggers the upload of any files that are not completed

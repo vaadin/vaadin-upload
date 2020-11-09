@@ -320,8 +320,8 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
 
       {
         dropFiles: {
-        one: 'Drop file here
-        many: 'Drop files here
+        one: 'Drop file here',
+        many: 'Drop files here'
         },
         addFiles: {
         one: 'Select File...',
