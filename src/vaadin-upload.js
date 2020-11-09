@@ -386,7 +386,7 @@ class UploadElement extends ElementMixin(ThemableMixin(PolymerElement)) {
             uploading: {
               status: {
                 connecting: 'Connecting...',
-                stalled: 'Stalled.',
+                stalled: 'Stalled',
                 processing: 'Processing File...',
                 held: 'Queued'
               },
