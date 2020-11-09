@@ -56,8 +56,8 @@
     "@vaadin/vaadin-themable-mixin": "^1.6.1",
     "@vaadin/vaadin-button": "^2.4.0",
     "@vaadin/vaadin-progress-bar": "^1.3.0",
-    "@vaadin/vaadin-lumo-styles": "^1.1.0",
-    "@vaadin/vaadin-material-styles": "^1.1.0",
+    "@vaadin/vaadin-lumo-styles": "^1.6.1",
+    "@vaadin/vaadin-material-styles": "^1.3.2",
     "@vaadin/vaadin-element-mixin": "^2.4.1"
   },
   "devDependencies": {
