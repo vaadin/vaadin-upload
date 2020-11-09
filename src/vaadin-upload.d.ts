@@ -2,6 +2,8 @@ import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mix
 
 import { ElementMixin } from '@vaadin/vaadin-element-mixin/vaadin-element-mixin.js';
 
+import { UploadEventMap, UploadFile, UploadI18n, UploadMethod } from './interfaces';
+
 /**
  * `<vaadin-upload>` is a Web Component for uploading multiple files with drag and drop support.
  *
@@ -245,111 +247,3 @@ declare global {
 }
 
 export { UploadElement };
-
-import { UploadMethod } from '../@types/interfaces';
-
-import { UploadFile } from '../@types/interfaces';
-
-import { UploadI18n } from '../@types/interfaces';
-
-export type FileReject = CustomEvent<{ file: UploadFile; error: string }>;
-
-export type UploadMaxFilesReachedChanged = CustomEvent<{ value: boolean; path: 'max-files-reached' }>;
-
-export type UploadFilesChanged = CustomEvent<{ value: UploadFile[]; path: 'files' }>;
-
-export type UploadBefore = CustomEvent<{ xhr: XMLHttpRequest; file: UploadFile }>;
-
-export type UploadStart = CustomEvent<{ xhr: XMLHttpRequest; file: UploadFile }>;
-
-export type UploadProgress = CustomEvent<{ xhr: XMLHttpRequest; file: UploadFile }>;
-
-export type UploadSuccess = CustomEvent<{ xhr: XMLHttpRequest; file: UploadFile }>;
-
-export type UploadError = CustomEvent<{ xhr: XMLHttpRequest; file: UploadFile }>;
-
-export type UploadResponse = CustomEvent<{ xhr: XMLHttpRequest; file: UploadFile }>;
-
-export type UploadRetry = CustomEvent<{ xhr: XMLHttpRequest; file: UploadFile }>;
-
-export type UploadAbort = CustomEvent<{ xhr: XMLHttpRequest; file: UploadFile }>;
-
-export type UploadRequest = CustomEvent<{ xhr: XMLHttpRequest; file: UploadFile; formData: FormData }>;
-
-export interface UploadElementEventMap {
-  /**
-   * Fired when a file cannot be added to the queue due to a constrain:
-   * file-size, file-type or maxFiles
-   */
-  'file-reject': FileReject;
-
-  /**
-   * Fired when the `files` property changes.
-   */
-  'files-changed': UploadFilesChanged;
-
-  /**
-   * Fired when the `max-files-reached` property changes.
-   */
-  'max-files-reached-changed': UploadMaxFilesReachedChanged;
-
-  /**
-   * Fired before the XHR is opened. Could be used for changing the request
-   * URL. If the default is prevented, then XHR would not be opened.
-   */
-  'upload-before': UploadBefore;
-
-  /**
-   * Fired when the XHR is sent.
-   */
-  'upload-start': UploadStart;
-
-  /**
-   * Fired as many times as the progress is updated.
-   */
-  'upload-progress': UploadProgress;
-
-  /**
-   * Fired when we have the actual server response, and before the component
-   * analyses it. It's useful for developers to make the upload fail depending
-   * on the server response. If the event is defaultPrevented the vaadin-upload
-   * will return allowing the user to do something on his own like retry the
-   * upload, etc. since he has full access to the `xhr` and `file` objects.
-   * Otherwise, if the event is not prevented default `vaadin-upload` continues
-   * with the normal workflow checking the `xhr.status` and `file.error`
-   * which also might be modified by the user to force a customized response,
-   */
-  'upload-response': UploadResponse;
-
-  /**
-   * Fired in case the upload process succeed.
-   */
-  'upload-success': UploadSuccess;
-
-  /**
-   * Fired in case the upload process failed.
-   */
-  'upload-error': UploadError;
-
-  /**
-   * Fired when retry upload is requested. If the default is prevented, then
-   * retry would not be performed.
-   */
-  'upload-retry': UploadRetry;
-
-  /**
-   * Fired when retry abort is requested. If the default is prevented, then the
-   * file upload would not be aborted.
-   */
-  'upload-abort': UploadAbort;
-
-  /**
-   * Fired when the XHR has been opened but not sent yet. Useful for appending
-   * data keys to the FormData object, for changing some parameters like
-   * headers, etc. If the event is defaultPrevented, `vaadin-upload` will not
-   * send the request allowing the user to do something on his own.
-   */
-  'upload-request': UploadRequest;
-}
-
-export interface UploadEventMap extends HTMLElementEventMap, UploadElementEventMap {}
