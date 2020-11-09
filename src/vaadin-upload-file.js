@@ -107,12 +107,14 @@ class UploadFileElement extends ThemableMixin(PolymerElement) {
     ];
   }
 
+  /** @private */
   _fileAborted(abort) {
     if (abort) {
       this._remove();
     }
   }
 
+  /** @private */
   _remove() {
     this.dispatchEvent(
       new CustomEvent('file-remove', {
@@ -123,10 +125,12 @@ class UploadFileElement extends ThemableMixin(PolymerElement) {
     );
   }
 
+  /** @private */
   _formatProgressValue(progress) {
     return progress / 100;
   }
 
+  /** @private */
   _fireFileEvent(e) {
     e.preventDefault();
     return this.dispatchEvent(
@@ -138,6 +142,7 @@ class UploadFileElement extends ThemableMixin(PolymerElement) {
     );
   }
 
+  /** @private */
   _toggleHostAttribute(value, attributeName) {
     const shouldHave = Boolean(value);
     const has = this.hasAttribute(attributeName);
