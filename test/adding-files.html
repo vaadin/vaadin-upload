@@ -149,6 +149,15 @@
           expect(clickSpy).not.to.be.called;
         });
 
+        it('should set max-files-reached style attribute when max files added', () => {
+          upload.maxFiles = 0;
+
+          expect(upload.hasAttribute('max-files-reached')).to.be.true;
+        });
+
+        it('should not set max-files-reached style attribute when less than max files added', () => {
+          expect(upload.hasAttribute('max-files-reached')).to.be.false;
+        });
       });
 
       describeIf(!touchDevice, 'Dropping file', () => {
