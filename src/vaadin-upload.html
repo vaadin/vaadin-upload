@@ -89,6 +89,7 @@ This program is available under Apache License Version 2.0, available at https:/
        * `nodrop` | Set when drag and drop is disabled (e. g., on touch devices) | `:host`
        * `dragover` | A file is being dragged over the element | `:host`
        * `dragover-valid` | A dragged file is valid with `maxFiles` and `accept` criteria | `:host`
+       * `max-files-reached` | The maximum number of files that the user is allowed to add to the upload has been reached | `:host`
        *
        * See [ThemableMixin – how to apply styles for shadow parts](https://github.com/vaadin/vaadin-themable-mixin/wiki)
        *
@@ -231,6 +232,7 @@ This program is available under Apache License Version 2.0, available at https:/
               value: false,
               notify: true,
               readOnly: true,
+              reflectToAttribute: true,
               computed: '_maxFilesAdded(maxFiles, files.length)'
             },
 

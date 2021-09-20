@@ -23,4 +23,12 @@ gemini.suite('vaadin-upload', function(rootSuite) {
     });
   });
 
+  ['lumo', 'material'].forEach(theme => {
+    gemini.suite(`state-tests-${theme}`, function(suite) {
+      suite
+        .setUrl(`/state.html?theme=${theme}`)
+        .setCaptureElements('#state-tests')
+        .capture(`vaadin-upload`);
+    });
+  });
 });
