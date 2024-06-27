@@ -1,3 +1,5 @@
+TESTING
+
 # &lt;vaadin-upload&gt;
 
 > ⚠️ Starting from Vaadin 20, the source code and issues for this component are migrated to the [`vaadin/web-components`](https://github.com/vaadin/web-components/tree/main/packages/upload) monorepository.
